@@ -11,6 +11,8 @@ services:
       - "8000"
     depends_on:
       - mongo
+      - rabbitmq
+      - rabbitmq_dlq
     volumes:
       - ./backend/src:/app  # temporary, to debug
     logging:
@@ -144,6 +146,7 @@ services:
     depends_on:
       - notificator_postgres
       - rabbitmq
+      - rabbitmq_dlq
      # TODO add permament folder to store file patterns
     networks:
       - development_network
@@ -187,7 +190,7 @@ services:
     env_file:
       - ./.env
     environment:
-      BROKER_HOST: rabbitmq_dlq
+      BROKER_HOST: ${BROKER_HOST_DLQ}
     depends_on:
       - rabbitmq_dlq
     networks:
@@ -198,7 +201,7 @@ services:
     image: rabbitmq:3-management
     container_name: 'rabbitmq'
     healthcheck:
-      test: rabbitmq-diagnostics -q alarm
+      test: rabbitmq-diagnostics -q status
       interval: 30s
       timeout: 30s
       retries: 3
@@ -213,7 +216,7 @@ services:
     image: rabbitmq:3-management
     container_name: 'rabbitmq_dlq'
     healthcheck:
-      test: rabbitmq-diagnostics -q alarm
+      test: rabbitmq-diagnostics -q status
       interval: 30s
       timeout: 30s
       retries: 3

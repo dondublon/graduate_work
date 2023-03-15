@@ -4,14 +4,13 @@ import logging
 import pika
 
 from brokers.rabbitmq import RabbitmqConnection
-from core.config import settings
 from helpers.uuid_generate import generate_uuid
 
 logger = logging.getLogger(__name__)
 
 
-def rabbitmq_publish(queue: str, author_id: str):
-    rabbitmq = RabbitmqConnection(settings.rabbitmq_host)
+def rabbitmq_publish(rabbitmq_host: str, queue: str, author_id: str):
+    rabbitmq = RabbitmqConnection(rabbitmq_host)
     rabbitmq_conn = rabbitmq.init_rabbitmq_connection()
     rabbitmq_channel = rabbitmq_conn.channel()
 
@@ -33,5 +32,6 @@ def rabbitmq_publish(queue: str, author_id: str):
     )
     rabbitmq_conn.close()
 
-    logger.info(f"{body.get('message_id')} successfully publish to rabbitmq")
+    logger.info(f"{body.get('message_id')} successfully publish to {rabbitmq_host}")
     return
+

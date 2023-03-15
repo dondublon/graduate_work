@@ -9,7 +9,7 @@ from helpers.uuid_generate import generate_uuid
 logger = logging.getLogger(__name__)
 
 
-def rabbitmq_publish(rabbitmq_host: str, queue: str, author_id: str):
+def rabbitmq_publish(rabbitmq_host: str, queue: str, payload: dict):
     rabbitmq = RabbitmqConnection(rabbitmq_host)
     rabbitmq_conn = rabbitmq.init_rabbitmq_connection()
     rabbitmq_channel = rabbitmq_conn.channel()
@@ -18,14 +18,14 @@ def rabbitmq_publish(rabbitmq_host: str, queue: str, author_id: str):
 
     body = {
         "message_id": generate_uuid(),
-        "author_id": author_id,
+        "payload": payload
     }
 
     logger.info(f"RABBITMQ body: {body}")
     rabbitmq_channel.basic_publish(
         exchange="",
         routing_key=queue,
-        body=json.dumps(body),
+        body=json.dumps(body).encode(),
         properties=pika.BasicProperties(
             delivery_mode=2,  # make message persistent
         ),

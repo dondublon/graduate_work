@@ -21,6 +21,15 @@ class TestMain(TestCase):
             row_factory=dict_row,
         )
 
+        self.connection_auth = psycopg.connect(
+            host=os.environ["PG_HOST"],
+            port=os.environ["PG_PORT"],
+            user=os.environ["PG_USER"],
+            password=os.environ["PG_PASSWORD"],
+            dbname="movies_database",
+            row_factory=dict_row,
+        )
+
     def send_to_rmq(self):
         broker_host = os.environ["BROKER_HOST"]
         queue_name = os.environ["QUEUE_NAME"]
@@ -29,9 +38,10 @@ class TestMain(TestCase):
 
         print("Send json-compatible string")
         channel.queue_declare(queue=queue_name, durable=True)
+        user = self.get_1st_user()
         payload = {
             "event_type": "review_like",
-            "user": "d99cfebe-0f2c-4098-b5aa-b27229943f2b",  # from the file
+            "author_id": str(user["id"]),  # from the file
             "review": "63ff480aa96c3ea499bc0124",
         }
         message_id = str(uuid4())
@@ -66,3 +76,9 @@ class TestMain(TestCase):
         cur.execute(sql)
         row = cur.fetchone()
         return row
+    def get_1st_user(self):
+        sql = "SELECT * FROM auth.users LIMIT 1"
+        cur = self.connection_auth.cursor()
+        cur.execute(sql)
+        result = cur.fetchone()
+        return result

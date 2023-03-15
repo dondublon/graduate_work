@@ -11,13 +11,14 @@ class InvokationType(IntEnum):
     BY_TIME = 2
     MANUAL = 3
 
+
 class DBHelper:
     def __init__(self, connection):
         self.connection = connection
 
     def choose_event_pattern(self, event_type):
         cur = self.connection.cursor()
-        sql = f"SELECT id, pattern_file, actual_time, settings_::json->'event_type' as event_type" \
+        sql = f"SELECT id, pattern_file, actual_time, settings_::json->'event_type' as event_type, settings_" \
               f" FROM notification_pattern" \
               f" WHERE type_={InvokationType.BY_EVENT.value}" \
               f" AND CAST(settings_::json->'event_type' AS VARCHAR) = '\"{event_type}\"'"

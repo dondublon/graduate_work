@@ -41,6 +41,7 @@ class Worker:
         channel.basic_consume(queue=queue_name, on_message_callback=self.callback, auto_ack=False)
         channel.basic_qos(prefetch_count=1)
         logger.info(f"Starting, url:{self.url}")
+        print(f"(print) Starting, url:{self.url}, broker {broker_host}")
         channel.start_consuming()
 
 

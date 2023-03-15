@@ -1,15 +1,19 @@
 import logging
 from typing import Iterable
 
+from build.db.helper import db_helper
 from build.senders.email import EmailSender
 from flask import current_app
 
 
-def send_all(users: Iterable[dict], patterns):
-    """Send to all channels - email, telegram and so on."""
+def send_all(users: Iterable[dict], patterns, message_id=None):
+    """Send to all channels - email, telegram and so on.
+    message_id actual only for event from RabbitMQ.
+    """
     for pattern in patterns:
         for user in users:
             send_email(user, pattern)
+        db_helper.add_notification_event(message_id, pattern["id"])
 
 
 def send_email(user: dict, pattern):

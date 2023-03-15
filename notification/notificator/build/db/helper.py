@@ -46,5 +46,13 @@ class DBHelper:
         result = cur.fetchall()
         return list(result)
 
+    def already_was_msg_id(self, message_id):
+        sql = f"SELECT COUNT(*) FROM notification_event WHERE " \
+              f"CAST(source::json->'message_id' AS VARCHAR)='\"{message_id}\"'"
+        cur = self.connection.cursor()
+        cur.execute(sql)
+        row = cur.fetchone()
+        count = int(row["count"])
+        return count > 0
 
 db_helper = DBHelper(connection)

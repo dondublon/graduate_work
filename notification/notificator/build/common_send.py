@@ -5,11 +5,17 @@ from build.db.helper import db_helper
 from build.senders.email import EmailSender
 from flask import current_app
 
+logger = logging.getLogger()
+
 
 def send_all(users: Iterable[dict], patterns, message_id=None):
     """Send to all channels - email, telegram and so on.
     message_id actual only for event from RabbitMQ.
     """
+    if message_id is not None:
+        if db_helper.already_was_msg_id(message_id):
+            logger.warning("Message id %s already sent, exiting.", message_id)
+            return
     for pattern in patterns:
         for user in users:
             send_email(user, pattern)

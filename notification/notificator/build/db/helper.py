@@ -28,7 +28,7 @@ class DBHelper:
         if not row:
             raise ValueError(f"No event pattern for event {event_type}")
         # noinspection PyArgumentList
-        return NotificationPattern(row)
+        return NotificationPattern(**row)
 
 
     def add_notification_event(self, message_id, pattern_id):
@@ -45,7 +45,7 @@ class DBHelper:
         cur.execute(sql)
         result = cur.fetchall()
         # noinspection PyArgumentList
-        return [NotificationPattern(item) for item in result]
+        return [NotificationPattern(**item) for item in result]
 
     def already_was_msg_id(self, message_id) -> bool:
         sql = f"SELECT COUNT(*) FROM notification_event WHERE " \

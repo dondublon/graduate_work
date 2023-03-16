@@ -35,16 +35,18 @@ class AuthHelper:
         a_token = get_token()
         if not a_token:
             raise PermissionError("Unauthorized for authorization service")
-        if True: # users_uuids is None:
+        if users_uuids is None:
             users_uuids = ['*']
         # async with aiohttp.ClientSession() as session:
         #     async with session.get(full_url, data=json.dumps({"users": users_uuids}),
         #                            headers=f"Bearer {a_token}") as resp:
         #         response = await resp.json()
         #         return response
-        result = requests.get(full_url, data=json.dumps({"users_id": users_uuids}),
+        response = requests.get(full_url, data=json.dumps({"users_id": users_uuids}),
                                     headers={'Authorization': f"Bearer {a_token}",  'Content-Type': 'application/json'})
-        return result.json()
+        emails = response.json()["emails"]
+        result = [{"email": email} for email in emails]
+        return result
 
 
 auth_helper = AuthHelper()

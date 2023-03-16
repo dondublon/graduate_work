@@ -11,13 +11,6 @@ logger.setLevel(logging.INFO)
 
 class Worker:
     def __init__(self):
-        # TODO delete this comment
-        # os.environ["NOTIFICATOR_HOST"] = '0.0.0.0'
-        # os.environ["NOTIFICATOR_PORT"] = '5000'
-        # os.environ["ON_EVENT_URL"] = 'v1/manual_sender'
-        # os.environ['BROKER_HOST'] = '0.0.0.0'
-        # os.environ['QUEUE_NAME'] = 'ugc_events'
-
         host_port = f'http://{os.environ["NOTIFICATOR_HOST"]}:{os.environ["NOTIFICATOR_PORT"]}'
         self.url = f'{host_port}{os.environ["ON_EVENT_URL"]}'
 

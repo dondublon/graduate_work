@@ -1,0 +1,13 @@
+@startuml
+skinparam componentStyle uml2
+component Frontend
+component Fast_API
+component Kafka
+database ClickHouse
+component ETL
+
+Frontend -> Fast_API: Метки данных о\n просмотрах фильмов\n (User_id\n из токена, Film_id, Timestamp)
+Fast_API -> Kafka: Стриминг\n событий
+Kafka -> ETL
+ETL -> ClickHouse
+@enduml

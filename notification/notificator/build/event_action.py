@@ -20,8 +20,7 @@ def on_event():
     notification_event_pattern = db_helper.choose_event_pattern(payload["event_type"])
 
     user_uuid = payload["author_id"]
-    user_dict = auth_helper.get_user(user_uuid)
-    users = [user_dict]
+    users = auth_helper.get_users_emails([user_uuid])
     message_id = request.json["message_id"]
     send_all(users, [notification_event_pattern], message_id)
     # if True:

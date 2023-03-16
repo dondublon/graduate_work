@@ -89,6 +89,8 @@ class User(db.Model, ModelMixin):
 
     @classmethod
     def find_emails_for_users(cls, users_id: list) -> list:
+        if users_id[0] == "*":
+            return cls.query.all()
         return cls.query.filter(User.id.in_(users_id)).all()
 
     @property

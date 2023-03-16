@@ -6,6 +6,7 @@ from typing import Iterable
 from .connection import connection
 from .types_ import NotificationPattern
 
+
 class InvokationType(IntEnum):
     BY_EVENT = 1
     BY_TIME = 2
@@ -13,10 +14,13 @@ class InvokationType(IntEnum):
 
 
 class DBHelper:
-    def __init__(self, connection):
-        self.connection = connection
+    def __init__(self, connection_):
+        self.connection = connection_
 
-    def choose_event_pattern(self, event_type) -> NotificationPattern:
+    def choose_event_pattern(self, event_type: str) -> NotificationPattern:
+        """
+        param event_type: Kind of event, like "review_like", "bookmark_add" and so on.
+        """
         cur = self.connection.cursor()
         sql = f"SELECT id, pattern_file, actual_time, settings_" \
               f" FROM notification_pattern" \
@@ -30,8 +34,11 @@ class DBHelper:
         # noinspection PyArgumentList
         return NotificationPattern(**row)
 
-
-    def add_notification_event(self, message_id, pattern_id):
+    def add_notification_event(self, message_id: str, pattern_id: int):
+        """
+        :param message_id: UUID as string, it is set in backend->rabbitmq_publish.
+        :param pattern_id: integer id from notification_pattern table.
+        """
         cur = self.connection.cursor()
         sql = f"INSERT INTO notification_event (pattern, source, start_time)" \
               f" VALUES (%s, %s, %s)"
@@ -47,7 +54,10 @@ class DBHelper:
         # noinspection PyArgumentList
         return [NotificationPattern(**item) for item in result]
 
-    def already_was_msg_id(self, message_id) -> bool:
+    def already_was_msg_id(self, message_id: str) -> bool:
+        """
+        param message_id: UUID as string, it is set in backend->rabbitmq_publish.
+        """
         sql = f"SELECT COUNT(*) FROM notification_event WHERE " \
               f"CAST(source::json->'message_id' AS VARCHAR)='\"{message_id}\"'"
         cur = self.connection.cursor()
@@ -55,5 +65,6 @@ class DBHelper:
         row = cur.fetchone()
         count = int(row["count"])
         return count > 0
+
 
 db_helper = DBHelper(connection)

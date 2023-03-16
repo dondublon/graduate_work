@@ -30,6 +30,6 @@ def on_time():
         # We need to scan notification_patterns, read condition there
         # then scan our UGC database and check for condition is True.
         current_app.logger.info("Invoked on time")
-        users = auth_helper.get_all_users()
+        users = auth_helper.get_users_emails(['*'])
         patterns = db_helper.get_time_patterns()
         send_all(users, patterns)

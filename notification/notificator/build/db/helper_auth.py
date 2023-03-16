@@ -1,13 +1,10 @@
 import json
-from typing import TypedDict, Iterable
+from typing import Iterable
 
 import requests
 
 from build.config import settings
-
-
-class User(TypedDict):
-    email: str
+from .types_ import User
 
 
 def get_token():

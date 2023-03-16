@@ -11,6 +11,6 @@ def start_scheduler(app):
         with app.app_context():  # Because we use flask
             on_time()
 
-    sched.add_job(send_by_time, 'interval', seconds=10)
+    sched.add_job(send_by_time, 'interval', hours=1)
 
     sched.start()

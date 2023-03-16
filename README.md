@@ -1,7 +1,7 @@
 # Проектная работа 10 спринта
 
 
-Link to the project: https://github.com/dondublon/ugc_sprint_1-1
+Link to the project: https://github.com/dondublon/notifications_sprint_1
 
 Схема приложения приведена в doc/schema_notification.drawio.png .
 ![Scheme](doc/schema_notification.drawio.png)

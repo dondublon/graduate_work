@@ -60,7 +60,7 @@ class TestMain(TestCase):
         message_id = self.send_to_rmq()
         # Wait for 3 seconds to process everything.
         time.sleep(3)
-        # We take row for last 100 entries and find our:
+        # We take row for last 100 entries and find our one:
         inserted_row = self.find_in_last_entries(100, message_id)
         self.assertIsNotNone(inserted_row)
 
@@ -76,6 +76,7 @@ class TestMain(TestCase):
         cur.execute(sql)
         row = cur.fetchone()
         return row
+
     def get_1st_user(self):
         sql = "SELECT * FROM auth.users LIMIT 1"
         cur = self.connection_auth.cursor()

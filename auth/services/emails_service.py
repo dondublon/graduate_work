@@ -8,7 +8,7 @@ from models import User
 
 def get_users_emails(users_id: list) -> list:
     try:
-        user = User.find_all_emails(users_id)
+        user = User.find_emails_for_users(users_id)
     except DataError:
         abort(HTTPStatus.BAD_REQUEST, "Invalid id")
     else:

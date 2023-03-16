@@ -15,8 +15,5 @@ def index():
     return "Hello to Flask!"
 
 
-for rule in app.url_map.iter_rules():
-    print(rule)
-
 if __name__ == "__main__":
     app.run()

@@ -1,7 +1,6 @@
 import json
 from typing import TypedDict, Iterable
 
-import aiohttp
 import requests
 
 from build.config import settings
@@ -16,12 +15,6 @@ def get_token():
     login = settings.auth_login
     password = settings.auth_password
     login_url = f"{settings.auth_protocol_host_port}{settings.auth_login_url}"
-    # async with aiohttp.ClientSession() as session:
-    #     async with session.post(login_url,
-    #                     data=json.dumps({"login": login, "password": password})) as resp:
-    #         json_obj = await resp.json()
-    #     a_token = json_obj.get("access_token")
-    #     return a_token
     result = requests.post(login_url,
                          data=json.dumps({"login": login, "password": password}),
                         headers={"Content-Type": "application/json"})
@@ -37,11 +30,7 @@ class AuthHelper:
             raise PermissionError("Unauthorized for authorization service")
         if users_uuids is None:
             users_uuids = ['*']
-        # async with aiohttp.ClientSession() as session:
-        #     async with session.get(full_url, data=json.dumps({"users": users_uuids}),
-        #                            headers=f"Bearer {a_token}") as resp:
-        #         response = await resp.json()
-        #         return response
+
         response = requests.get(full_url, data=json.dumps({"users_id": users_uuids}),
                                     headers={'Authorization': f"Bearer {a_token}",  'Content-Type': 'application/json'})
         emails = response.json()["emails"]

@@ -87,6 +87,10 @@ class User(db.Model, ModelMixin):
     def find_by_email(cls, email: str) -> "User":
         return cls.query.filter_by(email=email).first()
 
+    @classmethod
+    def find_emails_for_users(cls, users_id: list) -> list:
+        return cls.query.filter(User.id.in_(users_id)).all()
+
     @property
     def as_dict(self):
         data = super().as_dict

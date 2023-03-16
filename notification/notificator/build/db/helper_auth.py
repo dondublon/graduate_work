@@ -31,7 +31,7 @@ class AuthHelper:
         response = requests.get(full_url, data=json.dumps({"users_id": users_uuids}),
                                 headers={'Authorization': f"Bearer {a_token}",  'Content-Type': 'application/json'})
         emails = response.json()["emails"]
-        result = [{"email": email} for email in emails]
+        result = [User(email=email) for email in emails]
         return result
 
 

@@ -25,10 +25,9 @@ class DBHelper:
         # We expect only ine result here
         cur.execute(sql)
         row = cur.fetchone()
-        if row:
-            return row
-        else:
+        if not row:
             raise ValueError(f"No event pattern for event {event_type}")
+        return row
 
 
     def add_notification_event(self, message_id, pattern_id):

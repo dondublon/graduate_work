@@ -1,41 +1,50 @@
-from typing import Iterable
+import json
+from typing import TypedDict, Iterable
 
-import psycopg
-from psycopg.rows import dict_row
+import aiohttp
+import requests
 
 from build.config import settings
 
 
+class User(TypedDict):
+    email: str
+
+
+def get_token():
+    """Token for authorization service"""
+    login = settings.auth_login
+    password = settings.auth_password
+    login_url = f"{settings.auth_protocol_host_port}{settings.auth_login_url}"
+    # async with aiohttp.ClientSession() as session:
+    #     async with session.post(login_url,
+    #                     data=json.dumps({"login": login, "password": password})) as resp:
+    #         json_obj = await resp.json()
+    #     a_token = json_obj.get("access_token")
+    #     return a_token
+    result = requests.post(login_url,
+                         data=json.dumps({"login": login, "password": password}),
+                        headers={"Content-Type": "application/json"})
+    return result.json().get("access_token")
+
+
 class AuthHelper:
-    def __init__(self, connection):
-        self.connection = connection
-
-    # TODO Make async?
-    def get_all_users(self) -> Iterable[dict]:
-        sql = "SELECT * FROM auth.users"
-        cur = self.connection.cursor()
-        cur.execute(sql)
-        result = cur.fetchall()
-        for item in result:
-            yield item
-
-    # TODO Make async?
-    def get_user(self, user_uuid) -> dict:
-        sql = f"SELECT * FROM auth.users WHERE id='{user_uuid}'"
-        cur = self.connection.cursor()
-        cur.execute(sql)
-        result = cur.fetchone()
-        return result
+    def get_users_emails(self, users_uuids: list[str]=None) -> Iterable[User]:
+        """We need email here. If users list is "all", we get each user."""
+        full_url = f"{settings.auth_protocol_host_port}{settings.auth_emails_url}"
+        a_token = get_token()
+        if not a_token:
+            raise PermissionError("Unauthorized for authorization service")
+        if True: # users_uuids is None:
+            users_uuids = ['*']
+        # async with aiohttp.ClientSession() as session:
+        #     async with session.get(full_url, data=json.dumps({"users": users_uuids}),
+        #                            headers=f"Bearer {a_token}") as resp:
+        #         response = await resp.json()
+        #         return response
+        result = requests.get(full_url, data=json.dumps({"users_id": users_uuids}),
+                                    headers={'Authorization': f"Bearer {a_token}",  'Content-Type': 'application/json'})
+        return result.json()
 
 
-connection_auth = psycopg.connect(
-    host=settings.pg_host,
-    port=settings.pg_port,
-    user=settings.pg_user,
-    password=settings.pg_password,
-    dbname=settings.pg_db_name,
-    row_factory=dict_row
-)
-
-
-auth_helper = AuthHelper(connection_auth)
+auth_helper = AuthHelper()

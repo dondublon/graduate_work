@@ -18,11 +18,16 @@ class Settings(BaseSettings):
     smtp_server: str = Field("smtp.yandex.ru", env="SMTP_SERVER")
     smtp_server_port: int = Field(465, env="SMTP_SERVER_PORT")
 
-    pg_host: str = Field("0.0.0.0", env="PG_HOST")
-    pg_port: int = Field(5432, env="PG_PORT")
-    pg_user: str = Field("app", env="PG_USER")
-    pg_password: str = Field("123qwe", env="PG_PASSWORD")
-    pg_db_name: str = Field("movies_database", env="PG_DB_NAME")
+    auth_login: str = Field(env="AUTH_LOGIN")
+    auth_password: str = Field(env="AUTH_PASSWORD")
+    auth_host: str = Field("auth", env="AUTH_HOST")
+    auth_port: str = Field(5001, env="AUTH_PORT")
+    auth_emails_url: str = Field("/api/v1/user/users-emails", env="AUTH_EMAILS_URL")
+    auth_login_url: str = Field("/api/v1/user/login", env="AUTH_LOGIN_URL")
+
+    @property
+    def auth_protocol_host_port(self):
+        return f"http://{self.auth_host}:{self.auth_port}"
 
     class Config:
         case_sensitive = False

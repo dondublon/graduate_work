@@ -1,11 +1,12 @@
 import os
-import smtplib
 from email.message import EmailMessage
 from http import HTTPStatus
 
+from flask import current_app
 from jinja2 import Environment, FileSystemLoader
 
 from build.config import settings
+from build.utils.smtp_connect import connect_smtp_sever
 
 
 class EmailSender:
@@ -18,8 +19,6 @@ class EmailSender:
                   text: str,
                   image: str = ""
                   ) -> (str, HTTPStatus):  # type: ignore
-        server = smtplib.SMTP_SSL(settings.smtp_server, settings.smtp_server_port)
-        server.login(settings.email_user, settings.email_password)
 
         message = EmailMessage()
         message["From"] = settings.email_user
@@ -36,6 +35,12 @@ class EmailSender:
             'image': image
         })
         message.add_alternative(output, subtype='html')
-        server.sendmail(settings.email_user, destination, message.as_string())
-        server.close()
+        try:
+            global smtp_server
+            smtp_server.sendmail(settings.email_user, destination, message.as_string())  # type: ignore
+        except Exception as e:
+            current_app.logger.error(e)
+            smtp_server = connect_smtp_sever(settings.smtp_server, settings.smtp_server_port,  # type: ignore
+                                             settings.email_user, settings.email_password)
+
         return "Success", HTTPStatus.OK

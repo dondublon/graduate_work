@@ -3,6 +3,8 @@ from logging.config import dictConfig
 
 from pydantic import BaseSettings, Field
 
+from build.utils.smtp_connect import connect_smtp_sever
+
 
 class Settings(BaseSettings):
     debug: bool = Field(False, env="DEBUG")
@@ -49,3 +51,6 @@ settings = Settings()
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
+
+mail_server = connect_smtp_sever(settings.smtp_server, settings.smtp_server_port,
+                                 settings.email_user, settings.email_password)

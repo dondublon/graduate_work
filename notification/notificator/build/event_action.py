@@ -13,14 +13,14 @@ manual = Blueprint('manual', __name__, url_prefix=V1)
 
 
 @event_page.route('/on_event', methods=['POST'])
-def on_event():
+async def on_event():
     # TODO Place some dispatching code here, "if .... :",
     # refer to request.data.
     payload = request.json["payload"]
     notification_event_pattern = db_helper.choose_event_pattern(payload["event_type"])
 
     user_uuid = payload["author_id"]
-    users = auth_helper.get_users_emails([user_uuid])
+    users = await auth_helper.get_users_emails([user_uuid])
     message_id = request.json["message_id"]
     send_all(users, [notification_event_pattern], message_id)
     # if True:

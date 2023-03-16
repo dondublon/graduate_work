@@ -16,13 +16,13 @@ def get_token():
     password = settings.auth_password
     login_url = f"{settings.auth_protocol_host_port}{settings.auth_login_url}"
     result = requests.post(login_url,
-                         data=json.dumps({"login": login, "password": password}),
-                        headers={"Content-Type": "application/json"})
+                           data=json.dumps({"login": login, "password": password}),
+                           headers={"Content-Type": "application/json"})
     return result.json().get("access_token")
 
 
 class AuthHelper:
-    def get_users_emails(self, users_uuids: list[str]=None) -> Iterable[User]:
+    def get_users_emails(self, users_uuids: list[str] | None = None) -> Iterable[User]:
         """We need email here. If users list is "all", we get each user."""
         full_url = f"{settings.auth_protocol_host_port}{settings.auth_emails_url}"
         a_token = get_token()
@@ -32,7 +32,7 @@ class AuthHelper:
             users_uuids = ['*']
 
         response = requests.get(full_url, data=json.dumps({"users_id": users_uuids}),
-                                    headers={'Authorization': f"Bearer {a_token}",  'Content-Type': 'application/json'})
+                                headers={'Authorization': f"Bearer {a_token}",  'Content-Type': 'application/json'})
         emails = response.json()["emails"]
         result = [{"email": email} for email in emails]
         return result

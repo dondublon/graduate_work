@@ -5,11 +5,12 @@ from build.db.helper import db_helper
 from build.senders.email import EmailSender
 from flask import current_app
 from build.db.types_ import User
+from build.db.types_ import NotificationPattern
 
 logger = logging.getLogger()
 
 
-def send_all(users: Iterable[User], patterns, message_id=None):
+def send_all(users: Iterable[User], patterns: Iterable[NotificationPattern], message_id=None):
     """Send to all channels - email, telegram and so on.
     message_id actual only for event from RabbitMQ.
     """
@@ -20,10 +21,10 @@ def send_all(users: Iterable[User], patterns, message_id=None):
     for pattern in patterns:
         for user in users:
             send_email(user, pattern)
-        db_helper.add_notification_event(message_id, pattern["id"])
+        db_helper.add_notification_event(message_id, pattern.id)
 
 
-def send_email(user: User, pattern):
+def send_email(user: User, pattern: NotificationPattern):
     """
     Sample notification_pattern row:
     type_: 2
@@ -33,8 +34,8 @@ def send_email(user: User, pattern):
         "image": "https://upload.wikimedia.org/wikipedia/ru/4/4d/Wojak.png"}
     """
     addresses = [user["email"]]
-    file_pattern = pattern["pattern_file"]
-    settings_ = pattern["settings_"]
+    file_pattern = pattern.pattern_file
+    settings_ = pattern.settings_
     EmailSender.send_mail(addresses, settings_["subject"], file_pattern, settings_["title"],
                           settings_["text"], settings_["image"])
     current_app.logger.info(f"Sent to {addresses}, {file_pattern}, {settings_}")

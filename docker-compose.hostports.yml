@@ -1,0 +1,43 @@
+version: '3.5'
+
+services:
+  backend:
+    ports:
+      - "8000:8000"
+  auth:
+    ports:
+      - "5001:5001"
+  logstash:
+    ports:
+      - "5044:5043/udp"
+  postgres:
+    ports:
+      - "5432:5432"
+  redis:
+    ports:
+      - "6379:6379"
+  mongo:
+    ports:
+      - "27017:27017"
+  elasticsearch:
+    ports:
+      - "9200:9200"
+  kibana:
+    ports:
+      - "5601:5601"
+  # region Notification
+  notificator:
+    ports:
+      - "5000:5000"
+  notificator_postgres:
+    ports:
+      - "5433:5432"
+  rabbitmq:
+    ports:
+      - 5672:5672
+      - 15672:15672
+  rabbitmq_dlq:
+    ports:
+      - 5673:5672
+      - 15673:15672
+  # endregion

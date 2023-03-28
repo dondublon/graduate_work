@@ -1,0 +1,247 @@
+version: '3.5'
+
+services:
+  backend:
+    build:
+      context:
+        ./backend
+    env_file:
+      - ./.env
+    expose:
+      - "8000"
+    depends_on:
+      - mongo
+      - rabbitmq
+      - rabbitmq_dlq
+    volumes:
+      - ./backend/src:/app  # temporary, to debug
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "20"
+        max-size: "100m"
+    networks:
+      - development_network
+    restart: always
+
+
+  auth:
+    build:
+      context: auth
+      dockerfile: Dockerfile
+    container_name: auth
+    volumes:
+      - ./.env:/opt/app/.env
+    expose:
+      - "5001"
+    networks:
+      - development_network
+    depends_on:
+      - postgres
+      - redis
+    restart: always
+
+  postgres:
+    image: postgres:15.1
+    container_name: postgres
+    expose:
+      - "5432"
+    environment:
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+      POSTGRES_DB: ${PG_DB_NAME}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - .:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - development_network
+    restart: always
+
+  redis:
+    image: redis:7.0.5
+    container_name: redis
+    restart: always
+    expose:
+      - "6379"
+    networks:
+      - development_network
+
+  mongo:
+    container_name: mongosingle
+    image: mongo
+    expose:
+      - "27017"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ~/tmp/mongo_single/data1:/data/db
+    networks:
+      - development_network
+    restart: always
+
+  logstash:
+    image: logstash:7.10.1
+    env_file:
+      - ./.env
+    environment:
+      XPACK_MONITORING_ENABLED: "true"
+    expose:
+      - "5043/udp"
+    volumes:
+      - ./deploy/logstash.conf:/config/logstash.conf:ro
+      - ./tmp/logs/nginx/:/var/log/nginx/:ro
+    command: logstash -f /config/logstash.conf
+    networks:
+      - development_network
+
+  elasticsearch:
+    image: elasticsearch:7.10.1
+    environment:
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+      - discovery.type=single-node
+    expose:
+      - "9200"
+    volumes:
+      - /tmp/esdata:/tmp/elasticsearch/data
+    networks:
+      - development_network
+
+  kibana:
+    image: kibana:7.10.1
+    expose:
+      - "5601"
+    depends_on:
+      - elasticsearch
+    networks:
+      - development_network
+
+  nginx:
+    image: nginx:1.23.2
+    container_name: nginx_backend
+    env_file:
+      - ./.env
+    logging:
+      driver: gelf
+      options:
+        gelf-address: udp://localhost:${LOGSTASH_PORT}
+        tag: nginx
+    volumes:
+      - ./configs/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./configs/site.conf:/etc/nginx/conf.d/site.conf:ro
+      - ./tmp/logs/nginx/:/var/log/nginx/
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+    networks:
+      - development_network
+    restart: always
+
+  #region Notification
+  notificator:
+    build:
+      context: notification/notificator/
+      dockerfile: Dockerfile
+    depends_on:
+      - notificator_postgres
+      - rabbitmq
+      - rabbitmq_dlq
+     # TODO add permament folder to store file patterns
+    networks:
+      - development_network
+    env_file:
+       - ".env"
+    restart: always
+
+  notificator_postgres:
+    image: postgres:15.1
+    expose:
+      - 5432
+    env_file:
+      - ./.env
+    environment:
+      POSTGRES_USER: ${NOTIFICATION_PG_USER}
+      POSTGRES_PASSWORD: ${NOTIFICATION_PG_PASSWORD}
+      POSTGRES_DB: notification
+    networks:
+      - development_network
+    volumes:
+      - ./notification/notificator/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./notification_data:/var/lib/postgresql/data
+    restart: always
+
+  events_consumer:
+    container_name: 'events_consumer'
+    build:
+      context: ./notification/events_consumer
+    env_file:
+      - ./.env
+    depends_on:
+      - rabbitmq
+    networks:
+      - development_network
+    restart: always
+
+  events_consumer_dlq:
+    container_name: 'events_consumer_dlq'
+    build:
+      context: ./notification/events_consumer
+    env_file:
+      - ./.env
+    environment:
+      BROKER_HOST: ${BROKER_HOST_DLQ}
+    depends_on:
+      - rabbitmq_dlq
+    networks:
+      - development_network
+    restart: always
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: 'rabbitmq'
+    healthcheck:
+      test: rabbitmq-diagnostics -q status
+      interval: 30s
+      timeout: 30s
+      retries: 3
+    volumes:
+      - ./rabbitmq/:/var/lib/rabbitmq/
+      - ./rabbitmq/log/:/var/log/rabbitmq/
+    networks:
+      - development_network
+    restart: always
+
+  rabbitmq_dlq:
+    image: rabbitmq:3-management
+    container_name: 'rabbitmq_dlq'
+    healthcheck:
+      test: rabbitmq-diagnostics -q status
+      interval: 30s
+      timeout: 30s
+      retries: 3
+    volumes:
+      - ./rabbitmq_dlq/:/var/lib/rabbitmq/
+      - ./rabbitmq_dlq/log/:/var/log/rabbitmq/
+    networks:
+      - development_network
+    restart: always
+
+  #endregion
+  tests:  # TODO To another file?
+    build:
+      context: notification/tests/
+      dockerfile: Dockerfile
+    depends_on:
+      - notificator_postgres
+      - events_consumer
+    networks:
+      - development_network
+    env_file:
+      - ".env"
+
+
+networks:
+  development_network:
+    name: development_network
+    external: true

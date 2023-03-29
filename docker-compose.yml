@@ -228,6 +228,7 @@ services:
     restart: always
 
   #endregion
+  # Test for notification:
   tests:  # TODO To another file?
     build:
       context: notification/tests/
@@ -239,6 +240,23 @@ services:
       - development_network
     env_file:
       - ".env"
+
+  profiles_db:
+    image: postgres:15.1
+    expose:
+      - 5434
+    env_file:
+      - ./.env
+    environment:
+      POSTGRES_USER: ${PROFILES_PG_USER}
+      POSTGRES_PASSWORD: ${PROFILES_PG_PASSWORD}
+      POSTGRES_DB: profiles
+    networks:
+      - development_network
+    volumes:
+      #- ./profiles/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./profiles_data:/var/lib/postgresql/data
+    restart: always
 
 
 networks:

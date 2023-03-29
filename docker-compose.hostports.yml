@@ -41,3 +41,6 @@ services:
       - 5673:5672
       - 15673:15672
   # endregion
+  profiles_db:
+    ports:
+      - 5434:5432

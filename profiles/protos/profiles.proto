@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package helloworld;
+package profiles;
 
 // The greeting service definition.
 service Profiles {

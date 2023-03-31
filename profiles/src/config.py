@@ -5,12 +5,13 @@ from pydantic import BaseSettings, PostgresDsn, Field  # RedisDsn
 
 class Settings(BaseSettings):
     # redis_dsn: RedisDsn
-    pg_dsn: PostgresDsn = Field("postgresql://app:123qwe@localhost:5432/postgres")  # TODO Change for container
+    pg_dsn: PostgresDsn = Field("postgresql://app:123qwe@localhost:5434/postgres")  # TODO Change for container
     pg_schema: str = Field("public", env="PROFILES_PG_DEFAULT_SCHEMA")
-    name: str = Field("app")
+    name: str = Field("app", env="PROFILES_PG_USER")
     host: str = Field("profiles", env="PROFILES_PG_HOST")
-    port: int = Field(50051, env="AUTH_PORT")
-    debug: bool = Field(False, env="DEBUG")
+    port: int = Field(5432, env="PROFILES_PG_PORT")
+    debug: bool = Field(False, env="PROFILES_DEBUG")
+    password: str = Field("", env="PROFILES_PG_PASSWORD")
     # jwt_secrete_key: str = Field("foo", env="JWT_SECRETE_KEY")
     # jwt_cookie_secure: str = Field(False, env="JWT_COOKIE_SECURE")
     # jwt_token_location: list = Field(["headers"], env="JWT_TOKEN_LOCATION")
@@ -21,6 +22,10 @@ class Settings(BaseSettings):
     # logstash_host: str = Field("logstash", env="LOGSTASH_HOST")
     # logstash_port: int = Field(5044, env="LOGSTASH_PORT")
     # logstash_traces_sample_rate: float = Field(1.0, env="LOGSTASH_TRACES_SAMPLE_RATE")
+
+#    @property
+ #   def pg_dsn(self) -> PostgresDsn:
+
 
     class Config:
         case_sensitive = False

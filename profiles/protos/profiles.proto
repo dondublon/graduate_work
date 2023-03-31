@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package helloworld;
+
+// The greeting service definition.
+service Profiles {
+  // Sends a greeting
+  //rpc SayHello (HelloRequest) returns (HelloReply) {}
+
+  //rpc SayHelloStreamReply (HelloRequest) returns (stream HelloReply) {}
+  rpc Register(RegisterCredentials) returns (RegisterReply) {}
+}
+
+message RegisterCredentials {
+  string id = 1;
+  string first_name = 2;
+  string family_name = 3;
+  string father_name = 4;
+  string phone = 5;
+  string email = 6;
+}
+
+message RegisterReply {
+  bool success = 1;
+}

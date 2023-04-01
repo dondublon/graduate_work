@@ -5,11 +5,11 @@ from grpc_ import profiles_pb2
 from grpc_ import profiles_pb2_grpc
 
 
-def run():
+def run_register():
     # NOTE(gRPC Python Team): .close() is possible on a channel and should be
     # used in circumstances in which the with statement does not fit the needs
     # of the code.
-    print("Will try to greet world ...")
+    print("Will try to register a user ...")
     with grpc.insecure_channel('localhost:50051') as channel:
         stub = profiles_pb2_grpc.ProfilesStub(channel)
         response = stub.Register(profiles_pb2.RegisterCredentials(
@@ -17,9 +17,9 @@ def run():
             first_name='Иван', family_name='Иванов', father_name='Иванович',
             email='yandex@forever.ru', phone='+79173712345'))
 
-        print(f"Greeter client received: {response.success}")
+        print(f"Client received: {response.success}")
 
 
 if __name__ == '__main__':
     logging.basicConfig()
-    run()
+    run_register()

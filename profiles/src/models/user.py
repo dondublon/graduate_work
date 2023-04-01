@@ -3,14 +3,17 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy_utils import EmailType, PhoneNumberType
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import mapped_column
-from sqlalchemy import String
+from sqlalchemy import String, inspect
 
-# from werkzeug.security import generate_password_hash, check_password_hash
 
-# from db import db
-# from models.mixins import ModelMixin
 class Base(DeclarativeBase):
-    pass
+    def as_dict(obj, to_str=False):
+        def getattr_here(attr_name):
+            raw = getattr(obj, attr_name)
+            return str(raw) if to_str else raw
+        return {c.key: getattr_here(c.key)
+                for c in inspect(obj).mapper.column_attrs}
+
 
 class User(Base):  # ModelMixin
     __tablename__ = "users"
@@ -26,14 +29,6 @@ class User(Base):  # ModelMixin
     family_name = mapped_column(String(100), nullable=False)
     father_name = mapped_column(String(100), nullable=True)
     phone = mapped_column(PhoneNumberType, unique=True, nullable=True)
-
-    # def save(self) -> None:
-    #     db.session.add(self)
-    #     db.session.commit()
-
-    # @classmethod
-    # def find_by_email(cls, email: str) -> "User":
-    #     return cls.query.filter_by(email=email).first()
 
     def __repr__(self):
         return f"<User {self.first_name} {self.family_name} <{self.email}>>"

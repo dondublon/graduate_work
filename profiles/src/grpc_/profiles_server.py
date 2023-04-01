@@ -2,11 +2,14 @@ from concurrent import futures
 import logging
 import uuid  ## TODO temporary
 
+from sqlalchemy import select
+
 import grpc
 from grpc_ import profiles_pb2
 from grpc_ import profiles_pb2_grpc
 from db import get_session
 from models.user import User
+
 
 
 class Profiles(profiles_pb2_grpc.ProfilesServicer):
@@ -18,8 +21,21 @@ class Profiles(profiles_pb2_grpc.ProfilesServicer):
             session.add(new_user)
             session.commit()
 
-        return profiles_pb2.RegisterReply(success=True) # % request.name
+        return profiles_pb2.RegisterReply(success=True)
 
+    def Get(self, request, context):
+        user_q = select(User).where(User.id == request.id)
+        with get_session() as session:
+            user = session.scalar(user_q)
+            if user:
+                as_dict = user.as_dict(to_str=True)
+                reply = profiles_pb2.UserReply(**as_dict)
+                print("Got user ok")
+                return reply
+            else:
+                context.set_code(grpc.StatusCode.NOT_FOUND)
+                context.set_details(f'User with {request.id} not found.')
+                return profiles_pb2.ErrorReply(details=f'User with {request.id} not found.')
 
 def serve():
     port = '50051'

@@ -24,7 +24,7 @@ services:
       - development_network
     restart: always
 
-
+  # region Autentication
   auth:
     build:
       context: auth
@@ -66,7 +66,9 @@ services:
       - "6379"
     networks:
       - development_network
+  # endregion
 
+  # region UGC
   mongo:
     container_name: mongosingle
     image: mongo
@@ -78,7 +80,9 @@ services:
     networks:
       - development_network
     restart: always
+  # endregion
 
+  # region ELK
   logstash:
     image: logstash:7.10.1
     env_file:
@@ -115,7 +119,7 @@ services:
       - elasticsearch
     networks:
       - development_network
-
+  # endregion
   nginx:
     image: nginx:1.23.2
     container_name: nginx_backend
@@ -240,7 +244,7 @@ services:
       - development_network
     env_file:
       - ".env"
-
+  # region Profiles
   profiles_db:
     image: postgres:15.1
     expose:
@@ -257,6 +261,23 @@ services:
       #- ./profiles/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
       - ./profiles_data:/var/lib/postgresql/data
     restart: always
+
+  profiles_service:
+    build:
+      context:
+        ./profiles
+    env_file:
+      - ./.env
+    expose:
+      - "50051"
+    depends_on:
+      - profiles_db
+    volumes:
+      - ./profiles/src:/app  # temporary, to debug
+    networks:
+      - development_network
+    restart: always
+    # endregion
 
 
 networks:

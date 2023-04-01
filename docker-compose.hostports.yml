@@ -44,3 +44,6 @@ services:
   profiles_db:
     ports:
       - 5434:5432
+  profiles_service:
+    ports:
+      - "50051:50051"

@@ -1,6 +1,5 @@
 from concurrent import futures
 import logging
-import uuid  ## TODO temporary
 
 from sqlalchemy import select
 
@@ -9,6 +8,7 @@ import profiles_pb2
 import profiles_pb2_grpc
 from db import get_session
 from models.user import User
+from config import settings
 
 
 
@@ -41,12 +41,14 @@ class Profiles(profiles_pb2_grpc.ProfilesServicer):
                 return profiles_pb2.ErrorReply(details=f'User with {request.id} not found.')
 
 def serve():
-    port = '50051'
+    port = str(settings.port)
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     profiles_pb2_grpc.add_ProfilesServicer_to_server(Profiles(), server)
     server.add_insecure_port('[::]:' + port)
     server.start()
     print("Server started, listening on " + port)
+    print("Postgres dsn: ", settings.host, settings.pg_schema)
+
     server.wait_for_termination()
 
 

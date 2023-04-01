@@ -16,8 +16,10 @@ class Profiles(profiles_pb2_grpc.ProfilesServicer):
 
     def Register(self, request, context):
         with get_session() as session:
-            new_user = User(id=uuid.uuid4(), first_name="qwe", family_name="weqcfsd",
-                            father_name="father name", phone="+721893101924", email="dfsd@gogo.ru")
+            new_user = User(id=request.id, first_name=request.first_name, family_name=request.family_name,
+                            father_name=request.father_name,
+                            # phone=request.phone,  # TODO Add later.
+                            email=request.email)
             session.add(new_user)
             session.commit()
 

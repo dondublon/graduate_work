@@ -2,12 +2,9 @@ syntax = "proto3";
 
 package profiles;
 
-// The greeting service definition.
+// Comment for the service
 service Profiles {
-  // Sends a greeting
-  //rpc SayHello (HelloRequest) returns (HelloReply) {}
-
-  //rpc SayHelloStreamReply (HelloRequest) returns (stream HelloReply) {}
+  // Comment for the procedure.
   rpc Register(RegisterCredentials) returns (RegisterReply) {}
   rpc Get(GettingRequest) returns (UserReply) {}
 }

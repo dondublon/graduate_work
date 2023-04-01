@@ -1,8 +1,8 @@
 import logging
 
 import grpc
-from grpc_ import profiles_pb2
-from grpc_ import profiles_pb2_grpc
+import profiles_pb2
+import profiles_pb2_grpc
 
 
 def run_register():

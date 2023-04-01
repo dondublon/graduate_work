@@ -5,8 +5,8 @@ import uuid  ## TODO temporary
 from sqlalchemy import select
 
 import grpc
-from grpc_ import profiles_pb2
-from grpc_ import profiles_pb2_grpc
+import profiles_pb2
+import profiles_pb2_grpc
 from db import get_session
 from models.user import User
 
@@ -24,6 +24,7 @@ class Profiles(profiles_pb2_grpc.ProfilesServicer):
         return profiles_pb2.RegisterReply(success=True)
 
     def Get(self, request, context):
+        # noinspection PyTypeChecker
         user_q = select(User).where(User.id == request.id)
         with get_session() as session:
             user = session.scalar(user_q)

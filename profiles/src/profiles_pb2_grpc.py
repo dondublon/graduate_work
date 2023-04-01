@@ -6,9 +6,7 @@ import profiles_pb2 as profiles__pb2
 
 
 class ProfilesStub(object):
-    """The greeting service definition.
-    Sends a greeting
-    rpc SayHello (HelloRequest) returns (HelloReply) {}
+    """Comment for the service
     """
 
     def __init__(self, channel):
@@ -30,13 +28,11 @@ class ProfilesStub(object):
 
 
 class ProfilesServicer(object):
-    """The greeting service definition.
-    Sends a greeting
-    rpc SayHello (HelloRequest) returns (HelloReply) {}
+    """Comment for the service
     """
 
     def Register(self, request, context):
-        """rpc SayHelloStreamReply (HelloRequest) returns (stream HelloReply) {}
+        """Comment for the procedure.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -69,9 +65,7 @@ def add_ProfilesServicer_to_server(servicer, server):
 
  # This class is part of an EXPERIMENTAL API.
 class Profiles(object):
-    """The greeting service definition.
-    Sends a greeting
-    rpc SayHello (HelloRequest) returns (HelloReply) {}
+    """Comment for the service
     """
 
     @staticmethod

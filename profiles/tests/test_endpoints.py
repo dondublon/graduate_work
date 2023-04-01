@@ -6,7 +6,7 @@ import uuid
 
 import grpc
 # import grpc_
-from grpc_ import profiles_pb2, profiles_pb2_grpc
+import profiles_pb2, profiles_pb2_grpc
 #profiles_pb2 = grpc_.profiles_pb2
 #profiles_pb2_grpc = grpc_.profiles_pb2_grpc
 # TODO Use host from env

@@ -11,7 +11,7 @@ import names
 import profiles_pb2, profiles_pb2_grpc
 
 # TODO Use host from env
-from randoms import random_email, random_phone
+from randoms import random_email  # , random_phone
 from utils.reply import reply_to_dict
 
 
@@ -54,4 +54,5 @@ class TestEndpoints(TestCase):
         # noinspection PyTypedDict
         inserted['phone'] = ''  # Because gRPC Reply converts None to ''.
         self.assertDictEqual(inserted, got_dict)
+        # TODO Add deleting the user.
 

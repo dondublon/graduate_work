@@ -28,10 +28,10 @@ class TestEndpoints(TestCase):
             name2 = names.get_last_name()
             name3 = names.get_first_name()
             email = random_email()
-            phone = random_phone()
+            # phone = random_phone()
             all_attrs = {'id':id_,
                 'first_name': name1, 'family_name':name2, 'father_name':name3,
-                'email':email, 'phone':phone}
+                'email':email, 'phone': None}  # TODO Add phone later.
             response = stub.Register(profiles_pb2.RegisterCredentials(**all_attrs))
 
             print(f"Client received: {response.success}")
@@ -51,5 +51,7 @@ class TestEndpoints(TestCase):
         inserted = self._register(id_)
         got = self._get(id_)
         got_dict = reply_to_dict(got)
+        # noinspection PyTypedDict
+        inserted['phone'] = ''  # Because gRPC Reply converts None to ''.
         self.assertDictEqual(inserted, got_dict)
 

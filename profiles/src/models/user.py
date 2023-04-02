@@ -10,7 +10,12 @@ class Base(DeclarativeBase):
     def as_dict(obj, to_str=False):
         def getattr_here(attr_name):
             raw = getattr(obj, attr_name)
-            return str(raw) if to_str else raw
+            if raw is None:
+                return None
+            elif type(raw) in (int, float):
+                return raw
+            else:
+                return str(raw) if to_str else raw
         return {c.key: getattr_here(c.key)
                 for c in inspect(obj).mapper.column_attrs}
 

@@ -1,1 +1,1 @@
-types-protobuf==4.22.0.0
+protobuf==4.22.1

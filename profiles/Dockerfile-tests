@@ -1,0 +1,18 @@
+FROM python:3.10
+
+WORKDIR /app
+
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED=1
+
+COPY requirements-tests.txt requirements.txt
+
+RUN pip install --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt
+
+COPY src/profiles_pb2.py profiles_pb2.py
+COPY src/profiles_pb2_grpc.py profiles_pb2_grpc.py
+COPY src/utils utils
+COPY tests .
+
+ENTRYPOINT ["python", "-m", "unittest", "test_endpoints.py"]

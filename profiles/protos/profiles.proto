@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package profiles;
+
+// Comment for the service
+service Profiles {
+  // Comment for the procedure.
+  rpc Register(RegisterCredentials) returns (RegisterReply) {}
+  rpc Get(GettingRequest) returns (UserReply) {}
+}
+
+message RegisterCredentials {
+  string id = 1;
+  string first_name = 2;
+  string family_name = 3;
+  string father_name = 4;
+  string phone = 5;
+  string email = 6;
+}
+
+message RegisterReply {
+  bool success = 1;
+}
+
+message GettingRequest {
+  string id = 1;
+}
+
+message UserReply {
+  string id = 1;
+  string first_name = 2;
+  string family_name = 3;
+  string father_name = 4;
+  string phone = 5;
+  string email = 6;
+}
+
+message ErrorReply {
+  string details = 1;
+}

@@ -269,7 +269,7 @@ services:
     env_file:
       - ./.env
     expose:
-      - "50051"
+      - "50051" # ${PROFILES_SERVICE_PORT}"
     depends_on:
       - profiles_db
     volumes:
@@ -277,6 +277,17 @@ services:
     networks:
       - development_network
     restart: always
+
+  profiles_tests:
+    build:
+      context: ./profiles
+      dockerfile: Dockerfile-tests
+    env_file:
+      - ./.env
+    depends_on:
+      - profiles_service
+    networks:
+      - development_network
     # endregion
 
 

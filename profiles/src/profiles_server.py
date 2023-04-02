@@ -41,13 +41,14 @@ class Profiles(profiles_pb2_grpc.ProfilesServicer):
                 return profiles_pb2.ErrorReply(details=f'User with {request.id} not found.')
 
 def serve():
-    port = str(settings.port)
+    port = str(settings.service_port)
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     profiles_pb2_grpc.add_ProfilesServicer_to_server(Profiles(), server)
     server.add_insecure_port('[::]:' + port)
     server.start()
     print("Server started, listening on " + port)
-    print("Postgres dsn: ", settings.host, settings.pg_schema)
+    print("Postgres host and schema: ", settings.pg_host, settings.pg_port, settings.pg_schema)
+    print("Postgres dsn: ", settings.profiles_pg_dsn)  # Insecure
 
     server.wait_for_termination()
 

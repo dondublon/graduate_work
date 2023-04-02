@@ -5,13 +5,14 @@ from pydantic import BaseSettings, PostgresDsn, Field  # RedisDsn
 
 class Settings(BaseSettings):
     # redis_dsn: RedisDsn
-    pg_dsn: PostgresDsn
+    profiles_pg_dsn: PostgresDsn
     pg_schema: str = Field("public", env="PROFILES_PG_DEFAULT_SCHEMA")
-    name: str = Field("app", env="PROFILES_PG_USER")
-    host: str = Field("profiles", env="PROFILES_PG_HOST")
-    port: int = Field(5432, env="PROFILES_PG_PORT")
+    pg_name: str = Field("app", env="PROFILES_PG_USER")
+    pg_host: str = Field("profiles", env="PROFILES_PG_HOST")
+    pg_port: int = Field(5432, env="PROFILES_PG_PORT")
     debug: bool = Field(False, env="PROFILES_DEBUG")
-    password: str = Field("", env="PROFILES_PG_PASSWORD")
+    pg_password: str = Field("", env="PROFILES_PG_PASSWORD")
+    service_port: int = Field(50051, env="PROFILES_SERVICE_PORT")
 
     class Config:
         case_sensitive = False

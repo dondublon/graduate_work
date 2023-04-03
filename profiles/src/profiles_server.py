@@ -18,7 +18,7 @@ class Profiles(profiles_pb2_grpc.ProfilesServicer):
         with get_session() as session:
             new_user = User(id=request.id, first_name=request.first_name, family_name=request.family_name,
                             father_name=request.father_name,
-                            # phone=request.phone,  # TODO Add later.
+                            phone=request.phone,  # TODO Add later.
                             email=request.email)
             session.add(new_user)
             session.commit()

@@ -11,7 +11,7 @@ import names
 import profiles_pb2, profiles_pb2_grpc
 
 # TODO Use host from env
-from randoms import random_email  # , random_phone
+from randoms import random_email, random_phone
 from utils.reply import reply_to_dict
 
 
@@ -28,10 +28,10 @@ class TestEndpoints(TestCase):
             name2 = names.get_last_name()
             name3 = names.get_first_name()
             email = random_email()
-            # phone = random_phone()
+            phone = random_phone()
             all_attrs = {'id':id_,
-                'first_name': name1, 'family_name':name2, 'father_name':name3,
-                'email':email, 'phone': None}  # TODO Add phone later.
+                         'first_name': name1, 'family_name': name2, 'father_name': name3,
+                         'email':email, 'phone': None}
             response = stub.Register(profiles_pb2.RegisterCredentials(**all_attrs))
 
             print(f"Client received: {response.success}")

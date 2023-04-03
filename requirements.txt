@@ -1,3 +1,4 @@
 wemake-python-styleguide==0.17.0
 flake8-html==0.4.3
 mypy==1.0.1
+protobuf==4.22.1  # Temporary. See issue 14.

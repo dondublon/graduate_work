@@ -1,44 +1,41 @@
 from concurrent import futures
 import logging
 
-from sqlalchemy import select
-
 import grpc
+
 import profiles_pb2
 import profiles_pb2_grpc
-from db import get_session
-from models.user import User
-from config import settings
 
+from config import settings
+from services.user_service import UserService
 
 
 class Profiles(profiles_pb2_grpc.ProfilesServicer):
-
     def Register(self, request, context):
-        with get_session() as session:
-            new_user = User(id=request.id, first_name=request.first_name, family_name=request.family_name,
-                            father_name=request.father_name,
-                            phone=request.phone,  # TODO Add later.
-                            email=request.email)
-            session.add(new_user)
-            session.commit()
-
-        return profiles_pb2.RegisterReply(success=True)
+        try:
+            UserService.register(id_=request.id, first_name=request.first_name,
+                                 father_name=request.father_name, family_name=request.family_name,
+                                 phone=None,  # TODO Add later
+                                 email=request.email)
+            return profiles_pb2.RegisterReply(success=True)
+        except Exception as e:
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details(str(e))
+            return profiles_pb2.ErrorReply(details=str(e))
 
     def Get(self, request, context):
         # noinspection PyTypeChecker
-        user_q = select(User).where(User.id == request.id)
-        with get_session() as session:
-            user = session.scalar(user_q)
-            if user:
-                as_dict = user.as_dict(to_str=True)
-                reply = profiles_pb2.UserReply(**as_dict)
-                print("Got user ok")
-                return reply
-            else:
-                context.set_code(grpc.StatusCode.NOT_FOUND)
-                context.set_details(f'User with {request.id} not found.')
-                return profiles_pb2.ErrorReply(details=f'User with {request.id} not found.')
+
+        user = UserService.get_by_id(request.id)
+        if user:
+            reply = profiles_pb2.UserReply(**user)
+            print("Got user ok")
+            return reply
+        else:
+            context.set_code(grpc.StatusCode.NOT_FOUND)
+            context.set_details(f'User with {request.id} not found.')
+            return profiles_pb2.ErrorReply(details=f'User with {request.id} not found.')
+
 
 def serve():
     port = str(settings.service_port)

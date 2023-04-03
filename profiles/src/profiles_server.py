@@ -6,7 +6,7 @@ from sqlalchemy import select
 import grpc
 import profiles_pb2
 import profiles_pb2_grpc
-from db import get_session
+from db_profiles import get_session
 from models.user import User
 from config import settings
 

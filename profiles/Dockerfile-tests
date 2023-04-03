@@ -13,6 +13,7 @@ RUN pip install --upgrade pip \
 COPY src/profiles_pb2.py profiles_pb2.py
 COPY src/profiles_pb2_grpc.py profiles_pb2_grpc.py
 COPY src/utils utils
+COPY src/services services
 COPY tests .
 
 ENTRYPOINT ["python", "-m", "unittest", "test_endpoints.py"]

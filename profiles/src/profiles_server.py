@@ -15,7 +15,7 @@ class Profiles(profiles_pb2_grpc.ProfilesServicer):
         try:
             UserService.register(id_=request.id, first_name=request.first_name,
                                  father_name=request.father_name, family_name=request.family_name,
-                                 phone=None,  # TODO Add later
+                                 phone=request.phone,
                                  email=request.email)
             return profiles_pb2.RegisterReply(success=True)
         except Exception as e:

@@ -10,7 +10,7 @@ class UserService:
         with get_session() as session:
             new_user = User(id=id_, first_name=first_name, family_name=family_name,
                             father_name=father_name,
-                            # phone=phone,  # TODO Add later.
+                            phone=phone,
                             email=email)
             session.add(new_user)
             session.commit()

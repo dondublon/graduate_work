@@ -2,10 +2,10 @@ from typing import Tuple
 
 from models.models import ReviewLike
 
-from .common import Service
+from .mongo import ServiceMongo
 
 
-class ReviewLikes(Service):
+class ReviewLikes(ServiceMongo):
     COLLECTION_NAME = "review_likes"
 
     @classmethod

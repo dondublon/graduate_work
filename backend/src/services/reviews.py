@@ -2,10 +2,10 @@ import datetime
 from typing import Literal, Optional
 
 from models.models import Movie, Review
-from services.common import Service
+from .mongo import ServiceMongo
 
 
-class Reviews(Service):
+class Reviews(ServiceMongo):
     COLLECTION_NAME = "reviews"
 
     @classmethod

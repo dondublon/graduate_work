@@ -27,12 +27,18 @@ class Settings(BaseSettings):
     rabbitmq_host: str = Field("rabbitmq", env="BROKER_HOST")
     rabbitmq_host_dlq: str = Field("rabbitmq_dlq", env="BROKER_HOST_DLQ")
     rabbitmq_queue: str = Field("ugc_events", env="QUEUE_NAME")
+    profiles_host: str = Field("profiles_service", env="PROFILES_SERVICE_HOST")
+    profiles_port: int = Field(50051, env="PROFILES_SERVICE_PORT")
 
     # We get environment variables from the docker-compose, reference to .env.
 
     @property
     def auth_protocol_host_port(self):
         return f"http://{self.auth_host}:{self.auth_port}"
+
+    @property
+    def profiles_host_port(self):
+        return f'{self.profiles_host}:{self.profiles_port}'
 
 
 settings = Settings()

@@ -34,16 +34,19 @@ services:
       - "5433:5432"
   rabbitmq:
     ports:
-      - 5672:5672
-      - 15672:15672
+      - "5672:5672"
+      - "15672:15672"
   rabbitmq_dlq:
     ports:
-      - 5673:5672
-      - 15673:15672
+      - "5673:5672"
+      - "15673:15672"
   # endregion
   profiles_db:
     ports:
-      - 5434:5432
+      - "5434:5432"
   profiles_service:
     ports:
       - "50051:50051"
+  admin_panel:
+    ports:
+      - "8080:8080"

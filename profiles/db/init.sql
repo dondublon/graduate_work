@@ -4,7 +4,8 @@ create table if not exists users
     first_name  varchar(100) not null,
     family_name varchar(100) not null,
     father_name varchar(100),
-    phone       varchar(20)
+    phone       varchar(20),
+    email       varchar(100)
 );
 
 comment on table users is 'email is in auth-db';

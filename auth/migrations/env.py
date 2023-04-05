@@ -77,15 +77,13 @@ def run_migrations_online():
                 logger.info('No changes in schema detected.')
 
     connectable = get_engine()
-    get_metadata().reflect(connectable, schema='public')
 
     with connectable.connect() as connection:
         context.configure(
             connection=connection,
             target_metadata=get_metadata(),
             include_schemas=True,
-            process_revision_directives=process_revision_directives,
-            **current_app.extensions['migrate'].configure_args
+            process_revision_directives=process_revision_directives
         )
 
         with context.begin_transaction():

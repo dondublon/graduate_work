@@ -29,4 +29,4 @@ def init_db(app: Flask):
 
 
 def init_migrate(app: Flask, database: SQLAlchemy):
-    Migrate(app, database)
+    Migrate(app, database, compare_type=True)

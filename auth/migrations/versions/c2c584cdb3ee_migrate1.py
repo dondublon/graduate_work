@@ -1,8 +1,8 @@
 """Migrate1
 
-Revision ID: 2398a5a9c943
+Revision ID: c2c584cdb3ee
 Revises: 
-Create Date: 2023-04-05 22:03:40.689159
+Create Date: 2023-04-06 13:52:13.829650
 
 """
 import sqlalchemy_utils
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '2398a5a9c943'
+revision = 'c2c584cdb3ee'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -29,17 +29,13 @@ def upgrade():
     )
     op.create_table('users',
     sa.Column('id', sa.UUID(), nullable=False),
-    sa.Column('login', sa.String(), nullable=False),
+    sa.Column('email', sqlalchemy_utils.types.email.EmailType(length=255), nullable=False),
     sa.Column('password', sa.String(), nullable=False),
-    sa.Column('email', sqlalchemy_utils.types.email.EmailType(length=255), nullable=True),
-    sa.Column('first_name', sa.String(), nullable=True),
-    sa.Column('last_name', sa.String(), nullable=True),
     sa.Column('active', sa.Boolean(), nullable=True),
     sa.Column('is_superuser', sa.Boolean(), nullable=True),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email'),
     sa.UniqueConstraint('id'),
-    sa.UniqueConstraint('login'),
     schema='auth'
     )
     op.create_table('login_histories',

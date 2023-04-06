@@ -1,7 +1,7 @@
 from flask_restx import Namespace, fields
 
 
-ns = Namespace("Login", description="Here the user can authorization")
+ns = Namespace("Email", description="Here the user can authorization")
 
 
 tokens = ns.model(

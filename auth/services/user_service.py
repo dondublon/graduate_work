@@ -47,28 +47,20 @@ class UserService:
     @classmethod
     def register(
         cls,
-        login: str,
+        email: str,
         password: str,
         password_confirmation: str,
-        email: str = None,
         *args,
         **kwargs,
     ) -> (dict, int):
-        if User.find_by_login(login):
+        if User.find_by_email(email):
             abort(
                 HTTPStatus.BAD_REQUEST,
-                "User with login {} already exists".format(login),
+                "User with email {} already exists".format(email),
             )
 
-        if len(login) <= 6:
-            abort(HTTPStatus.BAD_REQUEST, "Login has to contains more pr equal 6 symbols")
-
-        if email:
-            if User.find_by_email(email):
-                abort(
-                    HTTPStatus.BAD_REQUEST,
-                    "User with email {} already exists".format(email),
-                )
+        if len(email) <= 6 or "@" not in email:
+            abort(HTTPStatus.BAD_REQUEST, "Email is incorrect")
 
         if password != password_confirmation:
             abort(HTTPStatus.BAD_REQUEST, "Passwords do not match")
@@ -79,7 +71,7 @@ class UserService:
                 "Password has to contains more pr equal 6 symbols",
             )
 
-        new_user = User(login=login, password=password, email=email)
+        new_user = User(email=email, password=password)
         try:
             new_user.save()
             tokens: JWTs = cls.get_tokens(new_user)
@@ -90,12 +82,12 @@ class UserService:
             return abort(HTTPStatus.INTERNAL_SERVER_ERROR, "Something went wrong")
 
     @classmethod
-    def login(cls, login: str, password: str, user_agent: str = None, device: str = None):
-        user = User.find_by_login(login)
+    def login(cls, email: str, password: str, user_agent: str = None, device: str = None):
+        user = User.find_by_email(email)
         if not user:
             abort(
                 HTTPStatus.BAD_REQUEST,
-                "User with login {} does not exist".format(login),
+                "User with email {} does not exist".format(email),
             )
 
         is_correct_password = user.verify_password(password)
@@ -125,23 +117,16 @@ class UserService:
         return {"message": "Token successfully revoked"}, HTTPStatus.OK
 
     @classmethod
-    def logout_from_all_devices(cls, user_id: UUID):
-        # TODO:
-        #  find all active access and refresh tokens
-        #  and block them
-        return {"msg": "Tokens successfully revoked"}, HTTPStatus.OK
-
-    @classmethod
     def change_password(cls, user_id: UUID, password: str) -> (dict, HTTPStatus):
         user = get_user_or_error(user_id)
         user.set_password(password)
         return {"message": "Password was successfully changed"}, HTTPStatus.OK
 
     @classmethod
-    def change_login(cls, user_id: UUID, login: str) -> (dict, HTTPStatus):
+    def change_email(cls, user_id: UUID, login: str) -> (dict, HTTPStatus):
         user = get_user_or_error(user_id)
-        user.set_password(login)
-        return {"message": "Login was successfully changed"}, HTTPStatus.OK
+        user.set_email(login)
+        return {"message": "Email was successfully changed"}, HTTPStatus.OK
 
     @classmethod
     def get_login_histories(cls, user_id: UUID, page: int = 1, page_size: int = 10) -> dict:
@@ -153,23 +138,3 @@ class UserService:
     def get_user_profile(cls, user_id: UUID) -> User:
         user = get_user_or_error(user_id)
         return user
-
-    @classmethod
-    def update_user_profile(
-        cls,
-        user_id: UUID,
-        first_name: str = None,
-        last_name: str = None,
-        email: str = None,
-    ) -> User:
-        user = get_user_or_error(user_id)
-        if first_name:
-            user.first_name = first_name
-        if last_name:
-            user.last_name = last_name
-        if email:
-            user.email = email
-
-        if email or last_name or first_name:
-            user.save()
-            return user

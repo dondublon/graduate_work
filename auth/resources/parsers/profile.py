@@ -5,10 +5,5 @@ change_password.add_argument(
     "password", help="This field cannot be blank", required=True
 )
 
-change_login = reqparse.RequestParser()
-change_login.add_argument("login", help="This field cannot be blank", required=True)
-
-change_profile = reqparse.RequestParser()
-change_profile.add_argument("first_name", required=False)
-change_profile.add_argument("last_name", required=False)
-change_profile.add_argument("email", required=False)
+change_email = reqparse.RequestParser()
+change_email.add_argument("email", help="This field cannot be blank", required=True)

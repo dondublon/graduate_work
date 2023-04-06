@@ -7,13 +7,13 @@ from starlette.requests import Request
 from core.config import logger
 from services.user import UserService
 from .common import check_auth
-from models.models import UserModel
+from models.models import UserRegisterModel
 
 router_user = APIRouter(prefix=f"/user")
 
 
 @router_user.post('/register')
-async def register(user: UserModel, request: Request):
+async def register(user: UserRegisterModel, request: Request):
     """
     An example request JSON:
     {
@@ -25,9 +25,9 @@ async def register(user: UserModel, request: Request):
         user_uuid: d16b19e7-e116-43b1-a95d-cd5a11e8f1b4
         ...
     """
-    user_uuid = await check_auth(request)
     try:
-        result = await UserService.register(user.first_name, user.last_name, user.father_name,
+        result = await UserService.register(user.login, user.password, user.password_confirmation, user.first_name,
+                                            user.last_name, user.father_name,
                                             user.email, user.phone)
 
         success = True

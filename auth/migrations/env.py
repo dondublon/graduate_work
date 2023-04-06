@@ -47,7 +47,7 @@ def run_migrations_offline():
     """
     url = config.get_main_option("sqlalchemy.url")
     context.configure(
-        url=url, target_metadata=get_metadata(), literal_binds=True
+        url=url, target_metadata=get_metadata(), literal_binds=True, include_schemas=True
     )
 
     with context.begin_transaction():
@@ -62,6 +62,13 @@ def run_migrations_online():
 
     """
 
+    from models.user import User
+    from models.role import Role
+    from models.login_history import LoginHistory
+
+    # this callback is used to prevent an auto-migration from being generated
+    # when there are no changes to the schema
+    # reference: http://alembic.zzzcomputing.com/en/latest/cookbook.html
     def process_revision_directives(context, revision, directives):
         if getattr(config.cmd_opts, 'autogenerate', False):
             script = directives[0]
@@ -70,14 +77,13 @@ def run_migrations_online():
                 current_app.logger.info('No changes in schema detected.')
 
     connectable = get_engine()
-    get_metadata().reflect(connectable, schema='public')
 
     with connectable.connect() as connection:
         context.configure(
             connection=connection,
             target_metadata=get_metadata(),
-            process_revision_directives=process_revision_directives,
-            **current_app.extensions['migrate'].configure_args
+            include_schemas=True,
+            process_revision_directives=process_revision_directives
         )
 
         with context.begin_transaction():

@@ -53,7 +53,7 @@ services:
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - .:/var/lib/postgresql/data
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./sqlite_to_postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - development_network
     restart: always
@@ -100,6 +100,11 @@ services:
 
   elasticsearch:
     image: elasticsearch:7.10.1
+    healthcheck:
+      test: curl -s http://${ES_HOST} >/dev/null || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 50
     environment:
       - xpack.security.enabled=false
       - ES_JAVA_OPTS=-Xms1g -Xmx1g
@@ -161,7 +166,7 @@ services:
   notificator_postgres:
     image: postgres:15.1
     expose:
-      - 5432
+      - "5432"
     env_file:
       - ./.env
     environment:
@@ -248,7 +253,7 @@ services:
   profiles_db:
     image: postgres:15.1
     expose:
-      - 5434
+      - "5434"
     env_file:
       - ./.env
     environment:
@@ -258,7 +263,7 @@ services:
     networks:
       - development_network
     volumes:
-      #- ./profiles/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./profiles/db/init.sql:/docker-entrypoint-initdb.d/init.sql
       - ./profiles_data:/var/lib/postgresql/data
     restart: always
 
@@ -290,6 +295,35 @@ services:
       - development_network
     # endregion
 
+  etl_films:
+    container_name: etl_async_api
+    build:
+      context: etl_films/postgres_to_es
+      dockerfile: Dockerfile
+    env_file:
+      - ./.env
+    restart: always
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - development_network
+
+  admin_panel:
+    container_name: admin_panel_async_api
+    build:
+      context: admin-panel/movies
+      dockerfile: Dockerfile
+    expose:
+      - "8080"
+    restart: always
+    volumes:
+      - ./.env:/opt/app/.env
+      - ./admin-panel/movies/static:/opt/app/static
+    depends_on:
+      - postgres
+    networks:
+      - development_network
 
 networks:
   development_network:

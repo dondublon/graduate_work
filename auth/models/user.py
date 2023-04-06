@@ -1,5 +1,7 @@
 import uuid
+from http import HTTPStatus
 
+from flask import abort
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy_utils import EmailType
@@ -19,21 +21,17 @@ class User(db.Model, ModelMixin):
         unique=True,
         nullable=False,
     )
-    login = db.Column(db.String, unique=True, nullable=False)
+    email = db.Column(EmailType, unique=True, nullable=False)
     _password = db.Column("password", db.String, nullable=False)
-    email = db.Column(EmailType, unique=True, nullable=True)
-    first_name = db.Column(db.String, nullable=True)
-    last_name = db.Column(db.String, nullable=True)
 
     active = db.Column(db.Boolean(), default=False)
     is_superuser = db.Column(db.Boolean(), default=False)
 
     roles = db.relationship("Role", secondary=f"{db.metadata.schema}.user_roles")
 
-    def __init__(self, login: str, password: str, email=None):
-        self.login = login
-        self.password = password
+    def __init__(self, email: str, password: str):
         self.email = email
+        self.password = password
 
     @hybrid_property
     def password(self):
@@ -52,8 +50,10 @@ class User(db.Model, ModelMixin):
         self.password = password
         self.save()
 
-    def set_login(self, login: str) -> None:
-        self.login = login
+    def set_email(self, email: str) -> None:
+        if self.find_by_email(email):
+            abort(HTTPStatus.BAD_REQUEST, "Email is already used")
+        self.email = email
         db.session.commit()
 
     def verify_password(self, password: str) -> bool:
@@ -80,10 +80,6 @@ class User(db.Model, ModelMixin):
         return cls.query.filter_by(id=user_id).first()
 
     @classmethod
-    def find_by_login(cls, login: str) -> "User":
-        return cls.query.filter_by(login=login).first()
-
-    @classmethod
     def find_by_email(cls, email: str) -> "User":
         return cls.query.filter_by(email=email).first()
 
@@ -102,4 +98,4 @@ class User(db.Model, ModelMixin):
         return data
 
     def __repr__(self):
-        return f"<User {self.login or self.email}>"
+        return f"<User {self.email}>"

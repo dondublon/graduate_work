@@ -11,15 +11,12 @@ user = ns.model(
         "id": fields.String(
             readonly=True, description="The login history UUID identifier"
         ),
-        "login": fields.String(readonly=True),
-        "first_name": fields.String(),
-        "last_name": fields.String(),
-        "email": fields.String(),
+        "email": fields.String(readonly=True),
     },
 )
 
-login = reqparse.RequestParser()
-login.add_argument("login", type=str, required=True, location="json")
+email = reqparse.RequestParser()
+email.add_argument("email", type=str, required=True, location="json")
 
 password = reqparse.RequestParser()
 password.add_argument("password", type=str, required=True, location="json")

@@ -26,7 +26,7 @@ async def register(user: UserRegisterModel, request: Request):
         ...
     """
     try:
-        result = await UserService.register(user.login, user.password, user.password_confirmation, user.first_name,
+        result = await UserService.register(user.password, user.password_confirmation, user.first_name,
                                             user.last_name, user.father_name,
                                             user.email, user.phone)
 
@@ -36,5 +36,5 @@ async def register(user: UserRegisterModel, request: Request):
         logger.error("Error adding %s, error=%s", user, e)
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
 
-    return orjson.dumps({"success": success, "upserted_id": str(result.upserted_id)})
+    return orjson.dumps({"success": success, "inserted_id": str(result.id_)})
 

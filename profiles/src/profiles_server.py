@@ -7,7 +7,7 @@ import profiles_pb2
 import profiles_pb2_grpc
 
 from config import settings
-from services.user_service import UserService
+from services_profiles.user_service import UserService
 
 
 class Profiles(profiles_pb2_grpc.ProfilesServicer):

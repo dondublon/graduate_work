@@ -6,6 +6,7 @@ import uuid
 from typing import NamedTuple
 
 import grpc
+import jwt
 import requests
 
 from .profiles import ProfilesService
@@ -21,15 +22,16 @@ class RegisterAuthResult(NamedTuple):
 
 class UserService(ProfilesService):
     @classmethod
-    async def register(cls, login, password, password_confirmation, first_name, family_name, father_name, email, phone):
+    async def register(cls, password, password_confirmation, first_name, family_name, father_name, email, phone) -> RegisterAuthResult:
         # Make in simultaneously?
 
         # Checking for password confirmation is here:
-        result = await cls.register_on_auth(login, password, password_confirmation, first_name, family_name, email)
-        await cls.register_on_profiles(result.id_, first_name, family_name, father_name, email, phone)
+        result = cls.register_on_auth(password, password_confirmation, first_name, family_name, email)
+        cls.register_on_profiles(result.id_, first_name, family_name, father_name, email, phone)
+        return result
 
     @classmethod
-    async def register_on_profiles(cls, id_, first_name, family_name, father_name, email, phone):
+    def register_on_profiles(cls, id_, first_name, family_name, father_name, email, phone):
         with grpc.insecure_channel(settings.profiles_host_port) as channel:
             stub = profiles_pb2_grpc.ProfilesStub(channel)
             all_attrs = {'id': id_,
@@ -41,17 +43,19 @@ class UserService(ProfilesService):
             return all_attrs
 
     @classmethod
-    async def register_on_auth(cls, login, password, password_confirmation, first_name, last_name, email) -> RegisterAuthResult:
+    def register_on_auth(cls, password, password_confirmation, first_name, last_name, email) -> RegisterAuthResult:
         # TODO Make async
-        obj = {"login": login, "password": password,
+        obj = {"password": password,
                "password_confirmation": password_confirmation,
                "first_name": first_name, "last_name": last_name, "email": email}
-        try:
-            full_url = f'{settings.auth_protocol_host_port}{settings.auth_register_url}'
-            response = requests.post(full_url, headers={"Content-Type": "application/json"},
-                                     data=json.dumps(obj))
+        full_url = f'{settings.auth_protocol_host_port}{settings.auth_register_url}'
+        response = requests.post(full_url, headers={"Content-Type": "application/json"},
+                                 data=json.dumps(obj))
 
-            json_obj = response.json()
-            return RegisterAuthResult(id_=json_obj["id"], access_token=json_obj["access_token"] )
-        except Exception as e:
-            raise e
+        json_obj = response.json()
+        if 200 <= response.status_code < 300:
+            decoded_at = jwt.decode(json_obj["access_token"], settings.auth_secret_key, algorithms=["HS256"])
+            return RegisterAuthResult(id_=decoded_at["sub"], access_token=json_obj["access_token"] )
+        else:
+            raise Exception(response.text)
+

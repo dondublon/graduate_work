@@ -26,12 +26,12 @@ class UserService(ProfilesService):
         # Make in simultaneously?
 
         # Checking for password confirmation is here:
-        result = cls.register_on_auth(password, password_confirmation, first_name, family_name, email)
-        cls.register_on_profiles(result.id_, first_name, family_name, father_name, email, phone)
+        result = await cls.register_on_auth(password, password_confirmation, first_name, family_name, email)
+        await cls.register_on_profiles(result.id_, first_name, family_name, father_name, email, phone)
         return result
 
     @classmethod
-    def register_on_profiles(cls, id_, first_name, family_name, father_name, email, phone):
+    async def register_on_profiles(cls, id_, first_name, family_name, father_name, email, phone):
         with grpc.insecure_channel(settings.profiles_host_port) as channel:
             stub = profiles_pb2_grpc.ProfilesStub(channel)
             all_attrs = {'id': id_,
@@ -43,7 +43,7 @@ class UserService(ProfilesService):
             return all_attrs
 
     @classmethod
-    def register_on_auth(cls, password, password_confirmation, first_name, last_name, email) -> RegisterAuthResult:
+    async def register_on_auth(cls, password, password_confirmation, first_name, last_name, email) -> RegisterAuthResult:
         # TODO Make async
         obj = {"password": password,
                "password_confirmation": password_confirmation,

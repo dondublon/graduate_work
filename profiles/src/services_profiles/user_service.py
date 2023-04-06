@@ -1,7 +1,7 @@
 from sqlalchemy import select
 
 from db_profiles import get_session
-from models.user import User
+from models_profiles.user import User
 
 
 class UserService:

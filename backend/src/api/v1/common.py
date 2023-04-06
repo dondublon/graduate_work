@@ -39,7 +39,7 @@ async def check_auth(request: Request):
     data_obj = await request.json()
     login = data_obj.get("login")
     password = data_obj.get("password")
-    login_url = f"{settings.auth_protocol_host_port}{settings.auth_url}"
+    login_url = f"{settings.auth_protocol_host_port}{settings.auth_login_url}"
     auth_response = requests.post(
         login_url,
         data=json.dumps({"login": login, "password": password}),

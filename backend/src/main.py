@@ -8,6 +8,7 @@ from api.v1.likes import router_likes
 from api.v1.main import router
 from api.v1.review_likes import router_reviewlikes
 from api.v1.reviews import router_reviews
+from api.v1.user import router_user
 from core.config import settings
 from core.logger import LOGGING
 from db import mongo
@@ -47,6 +48,7 @@ app.include_router(router_likes, prefix=V1)
 app.include_router(router_reviews, prefix=V1)
 app.include_router(router_reviewlikes, prefix=V1)
 app.include_router(router_bookmarks, prefix=V1)
+app.include_router(router_user, prefix=V1)
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, log_config=LOGGING,

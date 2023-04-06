@@ -2,10 +2,10 @@ import datetime
 
 from models.models import Bookmark
 
-from .common import Service
+from .mongo import ServiceMongo
 
 
-class Bookmarks(Service):
+class Bookmarks(ServiceMongo):
     COLLECTION_NAME = "bookmarks"
 
     @classmethod

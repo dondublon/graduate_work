@@ -1,4 +1,6 @@
 import uuid
+from typing import Optional
+from pydantic import EmailStr
 
 from .common import BaseOrjsonModel
 
@@ -35,3 +37,12 @@ class ReviewLike(BaseOrjsonModel):
 class Bookmark(BaseOrjsonModel):
     movie: uuid.UUID
     # user: uuid.UUID
+
+
+class UserModel(BaseOrjsonModel):
+    id: uuid.UUID
+    first_name: str
+    last_name: str # == family_name
+    father_name: str
+    email: EmailStr
+    phone: str

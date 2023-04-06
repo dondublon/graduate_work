@@ -2,10 +2,10 @@ from typing import Tuple
 
 from models.models import Like, Movie
 
-from .common import Service
+from .mongo import ServiceMongo
 
 
-class Likes(Service):
+class Likes(ServiceMongo):
     COLLECTION_NAME = "likes"
 
     @classmethod

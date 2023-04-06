@@ -37,10 +37,10 @@ class Authorization(Resource):
         """Authorization by credentials"""
         data = auth_parser.parse_args()
         payload, status = UserService.login(
-            data["login"], data["password"], data.get("User-Agent"), data.get("Device")
+            data["email"], data["password"], data.get("User-Agent"), data.get("Device")
         )
         if status == HTTPStatus.OK and isinstance(payload, JWTs):
-            current_app.logger.info(f"{data['login']} successful authorization")
+            current_app.logger.info(f"{data['email']} successful authorization")
             return payload.dict(), status
         return payload, status
 

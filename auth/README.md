@@ -36,17 +36,16 @@
 
 Для этого необходимо перейти в `auth` и ввести команду.
 ```commandline
-flask create-superuser <login>
+flask create-superuser <email>
 ```
-После чего вам предложат ввести пароль, подтвердить его и email. Итоговый вывод в консоли может выглядеть вот так:
+После чего вам предложат ввести пароль, подтвердить его. Итоговый вывод в консоли может выглядеть вот так:
 ```commandline
-(venv) developer@MacBook-Pro auth % flask --app app create-superuser ADMIN
+(venv) developer@MacBook-Pro auth % flask --app app create-superuser ADMIN@email.com
 Enter password: ADMIN
 Confirm password: ADMIN
-Enter email (optional): 
 Superuser was successfully created
-(venv) developer@MacBook-Pro auth % flask create-superuser ADMIN 
-User already exists. Try again with another login
+(venv) developer@MacBook-Pro auth % flask create-superuser ADMIN@email.com
+User already exists. Try again with another email
 
 ```
 

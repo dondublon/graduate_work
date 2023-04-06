@@ -263,7 +263,7 @@ services:
     networks:
       - development_network
     volumes:
-      #- ./profiles/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./profiles/db/init.sql:/docker-entrypoint-initdb.d/init.sql
       - ./profiles_data:/var/lib/postgresql/data
     restart: always
 

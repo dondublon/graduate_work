@@ -4,7 +4,9 @@ from core.config import settings
 from db.mongo import get_mongo_client
 
 
-class Service:
+class ServiceMongo:
+    # Make as a mixin?
+    # Don't use directly, only descendants with shadowed Mongo specific.
     COLLECTION_NAME: Optional[str] = None
 
     @classmethod

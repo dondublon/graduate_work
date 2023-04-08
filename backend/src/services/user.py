@@ -10,7 +10,7 @@ import jwt
 import requests
 
 from .profiles import ProfilesService
-from core.config import settings
+from core.config import settings, logger
 import profiles_pb2
 import profiles_pb2_grpc
 from .service_types import RegisterAuthResult
@@ -29,6 +29,7 @@ class UserService(ProfilesService):
             await cls.register_on_profiles(result.id_, first_name, family_name, father_name, email, phone)
             return result
         except Exception as e:
+            logger.error("Error on registration %s, %s", (result.id_, first_name, family_name, father_name, email, phone), e)
             # TODO Delete the record on auth.
             return RegisterAuthResult(None, None)
 

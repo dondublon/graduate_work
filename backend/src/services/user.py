@@ -31,7 +31,7 @@ class UserService(ProfilesService):
         except Exception as e:
             logger.error("Error on registration %s, %s", (result.id_, first_name, family_name, father_name, email, phone), e)
             # TODO Delete the record on auth.
-            return RegisterAuthResult(None, None)
+            raise e
 
     @classmethod
     async def register_on_profiles(cls, id_, first_name, family_name, father_name, email, phone):

@@ -12,4 +12,4 @@ RUN pip install --upgrade pip \
 
 COPY tests .
 
-ENTRYPOINT ["python", "-m", "unittest", "./test*.py"]
+ENTRYPOINT ["python", "-m", "unittest", "discover", "."]

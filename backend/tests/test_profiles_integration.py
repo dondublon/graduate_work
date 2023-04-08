@@ -3,7 +3,7 @@ from unittest import TestCase
 
 import requests
 import names
-from .randoms import random_string, random_email
+from randoms import random_string, random_email
 from string import ascii_letters
 
 

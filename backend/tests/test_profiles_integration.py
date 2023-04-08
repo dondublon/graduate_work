@@ -1,3 +1,4 @@
+import json
 import os
 from unittest import TestCase
 
@@ -14,6 +15,11 @@ class TestBackend(TestCase):
         self.full_host = f'http://{backend_host}:{backend_port}'
 
     def test_registration(self):
+        response, obj = self._register()
+        self.assertTrue(200 <= response.status_code < 300)
+        print(response)
+
+    def _register(self):
         url = os.environ['BACKEND_REGISTER_URL']
         full_url = f'{self.full_host}{url}'
 
@@ -23,5 +29,15 @@ class TestBackend(TestCase):
             "first_name": names.get_first_name(), "last_name": names.get_last_name(), "father_name": None,
                 "email": random_email(), "phone": None}
         response = requests.post(full_url, headers=headers, json=obj)
-        self.assertTrue(200 <= response.status_code < 300)
-        print(response)
+        return response, obj
+
+    def test_change_email(self):
+        response_reg, user_obj = self._register()
+        assert 200 <= response_reg.status_code < 300  # this is not a test assert
+        url = os.environ['BACKEND_CHANGE_EMAIL_URL']
+        full_url = f'{self.full_host}{url}'
+        headers = {'Content-Type': 'application/json'}
+        response_json = json.loads(response_reg.json())
+        obj = {"id": response_json["inserted_id"], "email": user_obj["email"]}
+        response = requests.post(full_url, headers=headers, json=obj)
+        print(response.text)

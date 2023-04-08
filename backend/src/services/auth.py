@@ -28,17 +28,16 @@ class AuthClient:
         else:
             raise Exception(response.text)
 
-    # For the future:
-    # @classmethod
-    # async def change_email(cls, id_, email):
-    #     obj = {"email": email}
-    #     full_url = f'{settings.auth_protocol_host_port}{settings.auth_change_email}'
-    #     response = requests.post(full_url, headers={"Content-Type": "application/json"},
-    #                              json=obj)
-    #     json_obj = response.json()
-    #     if 200 <= response.status_code < 300:
-    #         decoded_at = jwt.decode(json_obj["access_token"], settings.auth_secret_key, algorithms=["HS256"])
-    #     else:
-    #         raise Exception(response.text)
+    @classmethod
+    async def change_email(cls, id_, email):
+        obj = {"email": email}
+        full_url = f'{settings.auth_protocol_host_port}{settings.auth_change_email}'
+        response = requests.post(full_url, headers={"Content-Type": "application/json"},
+                                 json=obj)
+        json_obj = response.json()
+        if 200 <= response.status_code < 300:
+            decoded_at = jwt.decode(json_obj["access_token"], settings.auth_secret_key, algorithms=["HS256"])
+        else:
+            raise Exception(response.text)
 
 

@@ -39,12 +39,18 @@ class Bookmark(BaseOrjsonModel):
     # user: uuid.UUID
 
 
-class UserRegisterModel(BaseOrjsonModel):
-    id: Optional[uuid.UUID]  # Optional - because we don't need it on registration.
-    password: str
-    password_confirmation: str
+class UserBasic(BaseOrjsonModel):
     first_name: str
     last_name: str  # == family_name
     father_name: Optional[str]
-    email: EmailStr
     phone: Optional[str]
+
+
+class UserRegisterModel(UserBasic):
+    password: str
+    password_confirmation: str
+    email: EmailStr
+
+
+class UserUpdateModel(UserBasic):
+    id: uuid.UUID

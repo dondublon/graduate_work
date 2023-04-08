@@ -13,11 +13,8 @@ from .profiles import ProfilesService
 from core.config import settings
 import profiles_pb2
 import profiles_pb2_grpc
-
-
-class RegisterAuthResult(NamedTuple):
-    id_: uuid.UUID
-    access_token: str
+from .service_types import RegisterAuthResult
+from .auth import AuthClient
 
 
 class UserService(ProfilesService):
@@ -26,9 +23,14 @@ class UserService(ProfilesService):
         # Make in simultaneously?
 
         # Checking for password confirmation is here:
-        result = await cls.register_on_auth(password, password_confirmation, first_name, family_name, email)
-        await cls.register_on_profiles(result.id_, first_name, family_name, father_name, email, phone)
-        return result
+        result = await AuthClient.register_on_auth(password, password_confirmation, email)
+        # noinspection PyUnusedLocal
+        try:
+            await cls.register_on_profiles(result.id_, first_name, family_name, father_name, email, phone)
+            return result
+        except Exception as e:
+            # TODO Delete the record on auth.
+            return RegisterAuthResult(None, None)
 
     @classmethod
     async def register_on_profiles(cls, id_, first_name, family_name, father_name, email, phone):
@@ -42,20 +44,29 @@ class UserService(ProfilesService):
             print(f"Client received: {response.success}")
             return all_attrs
 
-    @classmethod
-    async def register_on_auth(cls, password, password_confirmation, first_name, last_name, email) -> RegisterAuthResult:
-        # TODO Make async
-        obj = {"password": password,
-               "password_confirmation": password_confirmation,
-               "first_name": first_name, "last_name": last_name, "email": email}
-        full_url = f'{settings.auth_protocol_host_port}{settings.auth_register_url}'
-        response = requests.post(full_url, headers={"Content-Type": "application/json"},
-                                 data=json.dumps(obj))
+    # @classmethod
+    # async def change_email(cls, access_token, user_id, email):
+    #     """
+    #     Yes, access token and user id togeher is redundant, but for the convenience.
+    #     """
+    #     await AuthClient.change_email(access_token, email)
+    #     await cls.change_profiles_email(user_id, email)
+    #
+    # @classmethod
+    # async def change_profiles_email(cls, id_, email):
+    #     with grpc.insecure_channel(settings.profiles_host_port) as channel:
+    #         stub = profiles_pb2_grpc.ProfilesStub(channel)
+    #         all_attrs = {'id': id_, 'email': email}
+    #         response = stub.Register(profiles_pb2.ChangeEmailRequest(**all_attrs))  # TODO make async
+    #
+    #         print(f"Client received: {response.success}")
+    #         return all_attrs
+    #
+    #
+    # @classmethod
+    # async def update_profile(cls, at, first_name, family_name, father_name, phone):
+    #     """Without email"""
+    #     pass
 
-        json_obj = response.json()
-        if 200 <= response.status_code < 300:
-            decoded_at = jwt.decode(json_obj["access_token"], settings.auth_secret_key, algorithms=["HS256"])
-            return RegisterAuthResult(id_=decoded_at["sub"], access_token=json_obj["access_token"] )
-        else:
-            raise Exception(response.text)
+
 

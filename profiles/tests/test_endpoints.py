@@ -1,5 +1,5 @@
 """
-Integration tests
+Integration tests for gRPC
 """
 import os
 from unittest import TestCase

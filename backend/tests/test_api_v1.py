@@ -1,6 +1,8 @@
 """Integration tests with launched services"""
 import json
+import os
 from unittest import TestCase
+
 
 import requests
 
@@ -13,7 +15,9 @@ class Likes(TestCase):
         #     self.users = [s.strip() for s in fu.readlines()]
         # with open(movies_file) as fm:
         #     self.movies = [s.strip() for s in fm.readlines()]
-        self.host_port = "127.0.0.1:8000"
+        backend_host = os.environ['BACKEND_HOST']
+        backend_port = os.environ['BACKEND_PORT']
+        self.host_port = f'{backend_host}:{backend_port}'
 
     def test_add_like(self):
         result = requests.post(

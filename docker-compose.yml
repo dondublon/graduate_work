@@ -24,6 +24,17 @@ services:
       - development_network
     restart: always
 
+  backend_tests:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile-tests
+    env_file:
+      - ./backend/tests/.env
+    depends_on:
+      - backend
+    networks:
+      - development_network
+
   # region Autentication
   auth:
     build:

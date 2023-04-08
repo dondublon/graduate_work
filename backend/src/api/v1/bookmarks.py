@@ -27,7 +27,7 @@ async def add_bookmark(bookmark: Bookmark, request: Request):
         user_uuid: d16b19e7-e116-43b1-a95d-cd5a11e8f1b4
         ...
     """
-    user_uuid = await check_auth(request)
+    user_uuid = (await check_auth(request)).user_uuid
     try:
         result = await Bookmarks.add(user_uuid, bookmark)
         success = True
@@ -54,7 +54,7 @@ async def remove_bookmark(bookmark: Bookmark, request: Request):
         user_uuid: d16b19e7-e116-43b1-a95d-cd5a11e8f1b4
         ...
     """
-    user_uuid = await check_auth(request)
+    user_uuid = (await check_auth(request)).user_uuid
     try:
         result = await Bookmarks.remove(user_uuid, bookmark)
         success = True
@@ -84,7 +84,7 @@ async def list_bookmarks(movie: Movie, request: Request):
         sort: likes_count | average_rate
     """
     # TODO Make pagination.
-    user_uuid = await check_auth(request)
+    user_uuid = (await check_auth(request)).user_uuid
     try:
         objects_list = await Bookmarks.list(movie)
 

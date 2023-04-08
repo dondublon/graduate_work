@@ -20,6 +20,7 @@ auth_api.add_resource(auth.RefreshToken, "/token-refresh")
 auth_api.add_resource(profile.Profile, "/profile")
 auth_api.add_resource(profile.ChangePassword, "/profile/change-password")
 auth_api.add_resource(profile.ChangeEmail, "/profile/change-email")
+auth_api.add_resource(profile.ChangeProfile, "/profile/change-profile")
 
 auth_api.add_resource(login_history.LoginHistories, "/login-histories")
 

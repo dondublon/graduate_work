@@ -5,8 +5,9 @@ package profiles;
 // Comment for the service
 service Profiles {
   // Comment for the procedure.
-  rpc Register(RegisterCredentials) returns (RegisterReply) {}
+  rpc Register(RegisterCredentials) returns (BooleanReply) {}
   rpc Get(GettingRequest) returns (UserReply) {}
+  rpc ChangeEMail(ChangeEmailRequest) returns (BooleanReply) {}
 }
 
 message RegisterCredentials {
@@ -18,7 +19,7 @@ message RegisterCredentials {
   string email = 6;
 }
 
-message RegisterReply {
+message BooleanReply {
   bool success = 1;
 }
 
@@ -37,4 +38,9 @@ message UserReply {
 
 message ErrorReply {
   string details = 1;
+}
+
+message ChangeEmailRequest {
+  string user_id = 1;
+  string email = 2;
 }

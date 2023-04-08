@@ -1,6 +1,7 @@
 import json
 from functools import wraps
 from http import HTTPStatus
+from typing import NamedTuple
 
 import jwt
 import requests
@@ -35,7 +36,17 @@ def authorize(func):
     return inner
 
 
-async def check_auth(request: Request):
+class AuthResult(NamedTuple):
+    access_token: str
+
+    @property
+    def user_uuid(self):
+        decoded = jwt.decode(self.access_token, settings.auth_secret_key, algorithms=["HS256"])
+        user_uuid = decoded.get("sub")
+        return user_uuid
+
+
+async def check_auth(request: Request) -> AuthResult:
     data_obj = await request.json()
     login = data_obj.get("login")
     password = data_obj.get("password")
@@ -49,8 +60,7 @@ async def check_auth(request: Request):
     a_token = json_obj.get("access_token")
     if not a_token:
         raise HTTPException(HTTPStatus.UNAUTHORIZED)
-    decoded = jwt.decode(a_token, settings.auth_secret_key, algorithms=["HS256"])
-    user_uuid = decoded.get("sub")
-    if not user_uuid:
+    result = AuthResult(a_token)
+    if not result.user_uuid:
         raise HTTPException(HTTPStatus.UNAUTHORIZED)
-    return user_uuid
+    return result

@@ -4,8 +4,10 @@ from http import HTTPStatus
 
 import jwt
 import requests
+from fastapi_jwt_auth import AuthJWT
+
 from core.config import settings
-from fastapi import HTTPException
+from fastapi import HTTPException, Depends
 from starlette.requests import Request
 
 
@@ -35,14 +37,18 @@ def authorize(func):
     return inner
 
 
-async def check_auth(request: Request):
+async def check_auth(request: Request, authorize: AuthJWT):
     data_obj = await request.json()
-    login = data_obj.get("login")
+    current_user_in_token = authorize.get_jwt_subject()
+    if current_user_in_token:
+        authorize.jwt_required()
+        return current_user_in_token
+    email = data_obj.get("email")
     password = data_obj.get("password")
     login_url = f"{settings.auth_protocol_host_port}{settings.auth_login_url}"
     auth_response = requests.post(
         login_url,
-        data=json.dumps({"login": login, "password": password}),
+        data=json.dumps({"email": email, "password": password}),
         headers={"Content-Type": "application/json"},  # "Authorization": authorization,
     )
     json_obj = auth_response.json()

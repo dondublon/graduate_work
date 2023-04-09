@@ -1,9 +1,11 @@
 from http import HTTPStatus
 
 import orjson
+from fastapi_jwt_auth import AuthJWT
+
 from brokers.rabbitmq_publish import rabbitmq_publish
 from core.config import settings, logger
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from models.models import ReviewId, ReviewLike
 from services.review_likes import ReviewLikes
 from starlette.requests import Request
@@ -15,7 +17,7 @@ router_reviewlikes = APIRouter(prefix=f"/{COLLECTION_NAME}")
 
 
 @router_reviewlikes.post("/add")
-async def add_like(like: ReviewLike, request: Request):
+async def add_like(like: ReviewLike, request: Request, authorize: AuthJWT = Depends()):
     """
     An example request JSON:
     {
@@ -30,7 +32,7 @@ async def add_like(like: ReviewLike, request: Request):
         user_uuid: d16b19e7-e116-43b1-a95d-cd5a11e8f1b4
         ...
     """
-    user_uuid = await check_auth(request)
+    user_uuid = await check_auth(request, authorize)
     if not (0 <= like.value <= 10):
         raise HTTPException(HTTPStatus.BAD_REQUEST, "Value must be from 0 to 10.s")
     try:
@@ -55,7 +57,7 @@ async def add_like(like: ReviewLike, request: Request):
 
 
 @router_reviewlikes.post("/remove")
-async def remove_like(review: ReviewId, request: Request):
+async def remove_like(review: ReviewId, request: Request, authorize: AuthJWT = Depends()):
     """
     An example request JSON:
     {
@@ -67,7 +69,7 @@ async def remove_like(review: ReviewId, request: Request):
         user_uuid: d16b19e7-e116-43b1-a95d-cd5a11e8f1b4
         ...
     """
-    user_uuid = await check_auth(request)
+    user_uuid = await check_auth(request, authorize)
     try:
         result = await ReviewLikes.remove(user_uuid, review)
         success = True
@@ -82,7 +84,7 @@ async def remove_like(review: ReviewId, request: Request):
 
 
 @router_reviewlikes.get("/count")
-async def count_likes(review: ReviewId, user_uuid, request: Request):
+async def count_likes(review: ReviewId, user_uuid, request: Request, authorize: AuthJWT = Depends()):
     """
     An example request JSON:
     {
@@ -94,7 +96,7 @@ async def count_likes(review: ReviewId, user_uuid, request: Request):
         user_uuid: d16b19e7-e116-43b1-a95d-cd5a11e8f1b4
         ...
     """
-    user_uuid = await check_auth(request)
+    user_uuid = await check_auth(request, authorize)
     try:
         count, average = ReviewLikes.count(review=review)
         success = True

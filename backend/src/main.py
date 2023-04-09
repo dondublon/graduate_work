@@ -2,6 +2,10 @@ import logging
 
 import sentry_sdk
 import uvicorn
+from fastapi_jwt_auth import AuthJWT
+from fastapi_jwt_auth.exceptions import AuthJWTException
+from fastapi import Request, Depends
+from starlette.responses import JSONResponse
 
 from api.v1.bookmarks import router_bookmarks
 from api.v1.likes import router_likes
@@ -9,12 +13,25 @@ from api.v1.main import router
 from api.v1.review_likes import router_reviewlikes
 from api.v1.reviews import router_reviews
 from api.v1.user import router_user
-from core.config import settings
+from core.config import settings, jwt_settings
 from core.logger import LOGGING
 from db import mongo
 from fastapi import FastAPI
 
 app = FastAPI()
+
+
+@AuthJWT.load_config
+def get_config():
+    return jwt_settings
+
+
+@app.exception_handler(AuthJWTException)
+def authjwt_exception_handler(request: Request, exc: AuthJWTException):
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"detail": exc.message}
+    )
 
 
 @app.get("/")

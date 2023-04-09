@@ -2,7 +2,7 @@ import logging
 from logging import config as logging_config
 
 import logstash
-from pydantic import BaseSettings, Field
+from pydantic import BaseSettings, Field, BaseModel
 
 from core.logger import LOGGING
 
@@ -43,6 +43,11 @@ class Settings(BaseSettings):
         return f'{self.profiles_host}:{self.profiles_port}'
 
 
+class JWTSettings(BaseModel):
+    authjwt_secret_key: str = Field("foo", env="JWT_SECRETE_KEY")
+
+
+jwt_settings = JWTSettings()
 settings = Settings()
 
 logger = logging.getLogger(__name__)

@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     logstash_host: str = Field("logstash", env="LOGSTASH_HOST")
     logstash_port: int = Field(5044, env="LOGSTASH_PORT")
     logstash_traces_sample_rate: float = Field(1.0, env="LOGSTASH_TRACES_SAMPLE_RATE")
-    mongo_dsn: str = Field("mongo", env="MONGO_DSN")
+    mongo_dsn: str = Field("localhost", env="MONGO_DSN")
     db_name: str = Field("cinema", env="DB_NAME")
     auth_host: str = Field("auth", env="AUTH_HOST")
     auth_port: int = Field(5001, env="AUTH_PORT")

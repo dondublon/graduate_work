@@ -1,7 +1,4 @@
-import logging
-
-from flask import request
-from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt, get_unverified_jwt_headers
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_restful import Resource
 
 from resources.parsers.profile import change_password, change_email, change_profile
@@ -34,13 +31,6 @@ class ChangeEmail(Resource):
         """Change login"""
         data = change_email.parse_args()
         user_id = get_jwt_identity()
-        full = get_jwt()
-        #header = get_unverified_jwt_headers()
-        logging.info('get_jwt_identity %s', user_id)
-        logging.info('get_jwt %s', full)  # decoded
-        #logging.info('header %s', header)  # alg, typ
-        raw_token = request.headers['Authorization']
-        logging.info('Authorization %s', raw_token)
         payload, status = UserService.change_email(user_id, data["email"])
         return payload, status
 

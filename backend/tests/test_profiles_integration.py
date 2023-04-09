@@ -4,7 +4,7 @@ from unittest import TestCase
 
 import requests
 import names
-from randoms import random_string, random_email
+from randoms import random_string, random_email, random_phone
 from string import ascii_letters
 
 
@@ -50,5 +50,21 @@ class TestBackend(TestCase):
     def test_profile_update(self):
         response_reg, user_obj = self._register()
         assert 200 <= response_reg.status_code < 300  # this is not a test assert
-        url = os.environ['BACKEND_CHANGE_PROFILE_URL']
+        url = os.environ['BACKEND_UPDATE_PROFILE_URL']
         full_url = f'{self.full_host}{url}'
+
+        new_first_name = names.get_first_name()
+        new_family_name = names.get_last_name()
+        new_phone = random_phone()
+
+        response_reg_json = json.loads(response_reg.json())
+        obj = {"id": response_reg_json["inserted_id"], "first_name": new_first_name,
+               "family_name": new_family_name, 'father_name':names.get_first_name(),
+               "phone": new_phone}
+        headers = {'Content-Type': 'application/json', "Authorization": f'Bearer {response_reg_json["access_token"]}'}
+        response = requests.post(full_url, headers=headers, json=obj)
+        status = response.status_code
+        self.assertTrue(200 <= status < 300)
+        response_change_json = json.loads(response.json())
+        self.assertTrue(response_change_json["success"])
+        # TODO CHeck that we got, by id.

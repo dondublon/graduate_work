@@ -22,6 +22,7 @@ def authorize(func):
         data_obj = await request.json()
         login = data_obj.get("login")
         password = data_obj.get("password")
+        # noinspection PyUnusedLocal
         authorization = request.headers.get("Authorization")
         login_url = f"{settings.auth_protocol_host_port}/api/v1/user/login"
         auth_response = requests.post(
@@ -42,12 +43,7 @@ def authorize(func):
 
 class AuthResult(NamedTuple):
     access_token: str
-
-    @property
-    def user_uuid(self):
-        decoded = jwt.decode(self.access_token, settings.auth_secret_key, algorithms=["HS256"])
-        user_uuid = decoded.get("sub")
-        return user_uuid
+    user_uuid: str
 
 
 class CheckJWTResult(Enum):
@@ -72,7 +68,8 @@ async def check_auth(request: Request, authorize: AuthJWT) -> AuthResult:
     current_user_in_token = authorize.get_jwt_subject()
     if current_user_in_token:
         authorize.jwt_required()
-        return current_user_in_token
+        result = AuthResult(authorize._token, current_user_in_token)  # :( private field is bad, I know
+        return result
     email = data_obj.get("email")
     password = data_obj.get("password")
     login_url = f"{settings.auth_protocol_host_port}{settings.auth_login_url}"
@@ -86,7 +83,7 @@ async def check_auth(request: Request, authorize: AuthJWT) -> AuthResult:
     if not a_token:
         raise HTTPException(HTTPStatus.UNAUTHORIZED)
     decoded = jwt.decode(a_token, settings.auth_secret_key, algorithms=["HS256"])
-    user_uuid = decoded.get("sub")
+    user_uuid: str = decoded.get("sub")
     if not user_uuid:
         raise HTTPException(HTTPStatus.UNAUTHORIZED)
-    return user_uuid
+    return AuthResult(a_token, user_uuid)

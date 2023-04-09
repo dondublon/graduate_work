@@ -1,6 +1,7 @@
 from http import HTTPStatus
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+from fastapi_jwt_auth import AuthJWT
 import orjson
 from starlette.requests import Request
 
@@ -12,6 +13,7 @@ from models.models import UserRegisterModel, UserUpdateModel, ChangeEmailModel
 router_user = APIRouter(prefix=f"/user")
 
 
+# noinspection PyUnusedLocal
 @router_user.post('/register')
 async def register(user: UserRegisterModel, request: Request):
     """
@@ -40,9 +42,10 @@ async def register(user: UserRegisterModel, request: Request):
 
 
 @router_user.post('/update')
-async def update_profile(user: UserUpdateModel, request: Request):
+async def update_profile(user: UserUpdateModel, request: Request, authorize: AuthJWT):
     """No email"""
-    at = (await check_auth(request)).access_token
+    # NOT TESTED YET!
+    at = (await check_auth(request, authorize)).access_token
 
     try:
         result = await UserService.update_profile(at, user.first_name,
@@ -58,9 +61,9 @@ async def update_profile(user: UserUpdateModel, request: Request):
 
 
 @router_user.post('/change-email')
-async def change_email(user: ChangeEmailModel, request: Request):
+async def change_email(user: ChangeEmailModel, request: Request, authorize: AuthJWT = Depends()):
     """No email"""
-    auth_result = await check_auth(request)
+    auth_result = await check_auth(request, authorize)
 
     try:
         result = await UserService.change_email(auth_result.access_token, auth_result.user_uuid,

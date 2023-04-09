@@ -41,14 +41,14 @@ async def register(user: UserRegisterModel, request: Request):
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
 
 
-@router_user.post('/update')
+@router_user.post('/update-profile')
 async def update_profile(user: UserUpdateModel, request: Request, authorize: AuthJWT = Depends()):
     """No email"""
     # NOT TESTED YET!
-    at = (await check_auth(request, authorize)).access_token
+    user_id = (await check_auth(request, authorize)).user_uuid
 
     try:
-        result = await UserService.update_profile(at, user.first_name,
+        result = await UserService.update_profile(user_id, user.first_name,
                                             user.last_name, user.father_name,
                                             user.phone)
 

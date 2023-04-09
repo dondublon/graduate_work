@@ -1,12 +1,13 @@
 from concurrent import futures
-import logging
 
 import grpc
+import sentry_sdk
 
 import profiles_pb2
 import profiles_pb2_grpc
 
 from config import settings
+from logger import logger
 from services_profiles.user_service import UserService
 
 
@@ -43,13 +44,23 @@ def serve():
     profiles_pb2_grpc.add_ProfilesServicer_to_server(Profiles(), server)
     server.add_insecure_port('[::]:' + port)
     server.start()
-    print("Server started, listening on " + port)
-    print("Postgres host and schema: ", settings.pg_host, settings.pg_port, settings.pg_schema)
-    print("Postgres dsn: ", settings.profiles_pg_dsn)  # Insecure
+    logger.info("Server started, listening on %s", port)
+    logger.info("Postgres host %s, port %s, and schema: %s", settings.pg_host, settings.pg_port, settings.pg_schema)
+    logger.info("Postgres dsn: %s", settings.profiles_pg_dsn)  # Insecure
 
     server.wait_for_termination()
 
 
+def init_logging():
+    sentry_sdk.init(
+        dsn=settings.sentry_dsn,
+        # Set traces_sample_rate to 1.0 to capture 100%
+        # of transactions for performance monitoring.
+        # We recommend adjusting this value in production.
+        traces_sample_rate=settings.logstash_traces_sample_rate,
+    )
+
+
 if __name__ == '__main__':
-    logging.basicConfig()
+    # logging.basicConfig()
     serve()

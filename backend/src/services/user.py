@@ -65,7 +65,7 @@ class UserService(ProfilesService):
 
 
     @classmethod
-    async def update_profile(cls, at, first_name, family_name, father_name, phone):
+    async def update_profile(cls, user_id, first_name, family_name, father_name, phone):
         """Without email"""
         pass
 

@@ -1,9 +1,9 @@
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_restful import Resource
 
-from resources.parsers.profile import change_password, change_email
+from resources.parsers.profile import change_password, change_email, change_profile
 from services.user_service import UserService
-from utils.namespaces.profile import ns, user, email, password
+from utils.namespaces.profile import ns, user, email, password, user_profile
 from utils.parsers.auth import access_token_required
 from utils.token import check_if_token_in_blacklist
 
@@ -32,6 +32,22 @@ class ChangeEmail(Resource):
         data = change_email.parse_args()
         user_id = get_jwt_identity()
         payload, status = UserService.change_email(user_id, data["email"])
+        return payload, status
+
+
+@ns.route("/change-profile")
+@ns.expect(access_token_required)
+class ChangeProfile(Resource):
+    """Change profile without email."""
+    @ns.marshal_with(user_profile)
+    @jwt_required()
+    @check_if_token_in_blacklist()
+    def post(self):
+        """Change login"""
+        data = change_profile.parse_args()
+        user_id = get_jwt_identity()
+
+        payload, status = UserService.change_profile(user_id, **data)
         return payload, status
 
 

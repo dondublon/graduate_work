@@ -52,5 +52,10 @@ class UserRegisterModel(UserBasic):
     email: EmailStr
 
 
+class ChangeEmailModel(BaseOrjsonModel):
+    id: uuid.UUID
+    email: EmailStr
+
+
 class UserUpdateModel(UserBasic):
     id: uuid.UUID

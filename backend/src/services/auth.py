@@ -6,7 +6,7 @@ import requests
 
 import jwt
 
-from core.config import settings
+from core.config import settings, logger
 from .service_types import RegisterAuthResult
 
 
@@ -24,21 +24,24 @@ class AuthClient:
         json_obj = response.json()
         if 200 <= response.status_code < 300:
             decoded_at = jwt.decode(json_obj["access_token"], settings.auth_secret_key, algorithms=["HS256"])
-            return RegisterAuthResult(id_=decoded_at["sub"], access_token=json_obj["access_token"] )
+            return RegisterAuthResult(id_=decoded_at["sub"], access_token=json_obj["access_token"],
+                                      refresh_token=json_obj["refresh_token"])
         else:
             raise Exception(response.text)
 
-    # For the future:
-    # @classmethod
-    # async def change_email(cls, id_, email):
-    #     obj = {"email": email}
-    #     full_url = f'{settings.auth_protocol_host_port}{settings.auth_change_email}'
-    #     response = requests.post(full_url, headers={"Content-Type": "application/json"},
-    #                              json=obj)
-    #     json_obj = response.json()
-    #     if 200 <= response.status_code < 300:
-    #         decoded_at = jwt.decode(json_obj["access_token"], settings.auth_secret_key, algorithms=["HS256"])
-    #     else:
-    #         raise Exception(response.text)
+    @classmethod
+    async def change_email(cls, access_token, id_, email):
+        """Request from backend to auth. """
+        obj = {"email": email}
+        full_url = f'{settings.auth_protocol_host_port}{settings.auth_change_email}'
+        headers = {"Content-Type": "application/json", "Authorization": f'Bearer {access_token}'}
+        response = requests.post(full_url, headers=headers,
+                                 json=obj)
+        json_obj = response.json()
+        if 200 <= response.status_code < 300:
+            logger.info(json_obj.get("message"))
+            return True
+        else:
+            raise Exception(response.text)
 
 

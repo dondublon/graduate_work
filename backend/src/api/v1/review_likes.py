@@ -32,7 +32,7 @@ async def add_like(like: ReviewLike, request: Request, authorize: AuthJWT = Depe
         user_uuid: d16b19e7-e116-43b1-a95d-cd5a11e8f1b4
         ...
     """
-    user_uuid = await check_auth(request, authorize)
+    user_uuid = (await check_auth(request, authorize)).user_uuid
     if not (0 <= like.value <= 10):
         raise HTTPException(HTTPStatus.BAD_REQUEST, "Value must be from 0 to 10.s")
     try:
@@ -69,7 +69,7 @@ async def remove_like(review: ReviewId, request: Request, authorize: AuthJWT = D
         user_uuid: d16b19e7-e116-43b1-a95d-cd5a11e8f1b4
         ...
     """
-    user_uuid = await check_auth(request, authorize)
+    user_uuid = (await check_auth(request, authorize)).user_uuid
     try:
         result = await ReviewLikes.remove(user_uuid, review)
         success = True
@@ -96,7 +96,7 @@ async def count_likes(review: ReviewId, user_uuid, request: Request, authorize: 
         user_uuid: d16b19e7-e116-43b1-a95d-cd5a11e8f1b4
         ...
     """
-    user_uuid = await check_auth(request, authorize)
+    user_uuid = (await check_auth(request, authorize)).user_uuid
     try:
         count, average = ReviewLikes.count(review=review)
         success = True

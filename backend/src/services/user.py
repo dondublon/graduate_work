@@ -45,29 +45,29 @@ class UserService(ProfilesService):
             print(f"Client received: {response.success}")
             return all_attrs
 
-    # @classmethod
-    # async def change_email(cls, access_token, user_id, email):
-    #     """
-    #     Yes, access token and user id togeher is redundant, but for the convenience.
-    #     """
-    #     await AuthClient.change_email(access_token, email)
-    #     await cls.change_profiles_email(user_id, email)
-    #
-    # @classmethod
-    # async def change_profiles_email(cls, id_, email):
-    #     with grpc.insecure_channel(settings.profiles_host_port) as channel:
-    #         stub = profiles_pb2_grpc.ProfilesStub(channel)
-    #         all_attrs = {'id': id_, 'email': email}
-    #         response = stub.Register(profiles_pb2.ChangeEmailRequest(**all_attrs))  # TODO make async
-    #
-    #         print(f"Client received: {response.success}")
-    #         return all_attrs
-    #
-    #
-    # @classmethod
-    # async def update_profile(cls, at, first_name, family_name, father_name, phone):
-    #     """Without email"""
-    #     pass
+    @classmethod
+    async def change_email(cls, access_token, user_id, email):
+        """
+        Yes, access token and user id togeher is redundant, but for the convenience.
+        """
+        await AuthClient.change_email(access_token, user_id, email)
+        await cls._change_profiles_email(user_id, email)
+
+    @classmethod
+    async def _change_profiles_email(cls, id_, email):
+        with grpc.insecure_channel(settings.profiles_host_port) as channel:
+            stub = profiles_pb2_grpc.ProfilesStub(channel)
+            all_attrs = {'user_id': id_, 'email': email}
+            response = stub.Register(profiles_pb2.ChangeEmailRequest(**all_attrs))  # TODO make async
+
+            print(f"Client received: {response.success}")
+            return all_attrs
+
+
+    @classmethod
+    async def update_profile(cls, at, first_name, family_name, father_name, phone):
+        """Without email"""
+        pass
 
 
 

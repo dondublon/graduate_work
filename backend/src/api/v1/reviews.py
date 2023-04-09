@@ -56,7 +56,7 @@ async def remove_review(movie: Movie, request: Request, authorize: AuthJWT = Dep
         user_uuid: d16b19e7-e116-43b1-a95d-cd5a11e8f1b4
         ...
     """
-    user_uuid = await check_auth(request, authorize)
+    user_uuid = (await check_auth(request, authorize)).user_uuid
     try:
         result = await Reviews.remove(user_uuid, movie)
         success = True
@@ -82,7 +82,7 @@ async def get_review(movie: Movie, request: Request, authorize: AuthJWT = Depend
         user_uuid: d16b19e7-e116-43b1-a95d-cd5a11e8f1b4
         ...
     """
-    user_uuid = await check_auth(request, authorize)
+    user_uuid = (await check_auth(request, authorize)).user_uuid
     try:
         review = await Reviews.get(user_uuid, movie)
         if review is None:
@@ -114,7 +114,7 @@ async def list_reviews(movie: Movie, request: Request, authorize: AuthJWT = Depe
         sort: likes_count | average_rate
     """
     # TODO Make pagination.
-    user_uuid = await check_auth(request, authorize)
+    user_uuid = (await check_auth(request, authorize)).user_uuid
     try:
         sort_way = request.query_params.get("sort")
         reviews_list = await Reviews.list(movie, sort_way)

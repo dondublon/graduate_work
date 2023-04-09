@@ -1,17 +1,19 @@
 from http import HTTPStatus
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+from fastapi_jwt_auth import AuthJWT
 import orjson
 from starlette.requests import Request
 
 from core.config import logger
 from services.user import UserService
 from .common import check_auth
-from models.models import UserRegisterModel, UserUpdateModel
+from models.models import UserRegisterModel, UserUpdateModel, ChangeEmailModel
 
 router_user = APIRouter(prefix=f"/user")
 
 
+# noinspection PyUnusedLocal
 @router_user.post('/register')
 async def register(user: UserRegisterModel, request: Request):
     """
@@ -32,27 +34,46 @@ async def register(user: UserRegisterModel, request: Request):
 
         success = True
         logger.info("Successfully added user %s", user)
-        return orjson.dumps({"success": success, "inserted_id": str(result.id_)})
+        return orjson.dumps({"success": success, "inserted_id": str(result.id_),
+                             "access_token": result.access_token, "refresh_token": result.refresh_token})
     except Exception as e:
         logger.error("Error adding %s, error=%s", user, e)
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
 
 
-# @router_user.post('/update')
-# async def update_profile(user: UserUpdateModel, request: Request):
-#     """No email"""
-#     at = (await check_auth(request)).access_token
-#
-#     try:
-#         result = await UserService.update_profile(at, user.first_name,
-#                                             user.last_name, user.father_name,
-#                                             user.phone)
-#
-#         success = True
-#         logger.info("Successfully updated user %s", user)
-#         return orjson.dumps({"success": success, "updated_id": str(result.id_)})
-#     except Exception as e:
-#         logger.error("Error adding %s, error=%s", user, e)
-#         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
+@router_user.post('/update')
+async def update_profile(user: UserUpdateModel, request: Request, authorize: AuthJWT = Depends()):
+    """No email"""
+    # NOT TESTED YET!
+    at = (await check_auth(request, authorize)).access_token
+
+    try:
+        result = await UserService.update_profile(at, user.first_name,
+                                            user.last_name, user.father_name,
+                                            user.phone)
+
+        success = True
+        logger.info("Successfully updated user %s", user)
+        return orjson.dumps({"success": success, "updated_id": str(result.id_)})
+    except Exception as e:
+        logger.error("Error adding %s, error=%s", user, e)
+        raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
+
+
+@router_user.post('/change-email')
+async def change_email(user: ChangeEmailModel, request: Request, authorize: AuthJWT = Depends()):
+    """No email"""
+    auth_result = await check_auth(request, authorize)
+
+    try:
+        result = await UserService.change_email(auth_result.access_token, auth_result.user_uuid,
+                                            user.email)
+
+        success = True
+        logger.info("Successfully updated email for user %s to %s", auth_result.user_uuid, user.email)
+        return orjson.dumps({"success": success, "new email": user.email})
+    except Exception as e:
+        logger.error("Error changing email %s, error=%s", user, e)
+        raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
 
 

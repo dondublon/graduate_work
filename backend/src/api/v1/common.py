@@ -1,6 +1,9 @@
+from enum import Enum
 import json
 from functools import wraps
 from http import HTTPStatus
+import time
+from typing import NamedTuple
 
 import jwt
 import requests
@@ -19,6 +22,7 @@ def authorize(func):
         data_obj = await request.json()
         login = data_obj.get("login")
         password = data_obj.get("password")
+        # noinspection PyUnusedLocal
         authorization = request.headers.get("Authorization")
         login_url = f"{settings.auth_protocol_host_port}/api/v1/user/login"
         auth_response = requests.post(
@@ -37,12 +41,35 @@ def authorize(func):
     return inner
 
 
-async def check_auth(request: Request, authorize: AuthJWT):
+class AuthResult(NamedTuple):
+    access_token: str
+    user_uuid: str
+
+
+class CheckJWTResult(Enum):
+    VALID = 0
+    UNDECODABLE = 1
+    EXPIRED = 2
+
+
+def check_jwt(token: str) -> CheckJWTResult:
+    try:
+        decoded_token = jwt.decode(token, settings.auth_secret_key, algorithms=["HS256"])
+        if decoded_token["exp"] >= time.time():
+            return CheckJWTResult.VALID
+        else:
+            return CheckJWTResult.EXPIRED
+    except:
+        return CheckJWTResult.UNDECODABLE
+
+
+async def check_auth(request: Request, authorize: AuthJWT) -> AuthResult:
     data_obj = await request.json()
     current_user_in_token = authorize.get_jwt_subject()
     if current_user_in_token:
         authorize.jwt_required()
-        return current_user_in_token
+        result = AuthResult(authorize._token, current_user_in_token)  # :( private field is bad, I know
+        return result
     email = data_obj.get("email")
     password = data_obj.get("password")
     login_url = f"{settings.auth_protocol_host_port}{settings.auth_login_url}"
@@ -59,4 +86,4 @@ async def check_auth(request: Request, authorize: AuthJWT):
     user_uuid = decoded.get("sub")
     if not user_uuid:
         raise HTTPException(HTTPStatus.UNAUTHORIZED)
-    return user_uuid
+    return AuthResult(a_token, user_uuid)

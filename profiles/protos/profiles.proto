@@ -8,6 +8,7 @@ service Profiles {
   rpc Register(RegisterCredentials) returns (BooleanReply) {}
   rpc Get(GettingRequest) returns (UserReply) {}
   rpc ChangeEMail(ChangeEmailRequest) returns (BooleanReply) {}
+  rpc GetProfiles(GettingProfilesRequest) returns (stream UserReply) {}
 }
 
 message RegisterCredentials {
@@ -43,4 +44,8 @@ message ErrorReply {
 message ChangeEmailRequest {
   string user_id = 1;
   string email = 2;
+}
+
+message GettingProfilesRequest {
+  repeated string users_id = 1;
 }

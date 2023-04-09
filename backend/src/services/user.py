@@ -1,21 +1,16 @@
 """
 A service for backed that send requests to Profiles service.
 """
-import json
-import uuid
-from typing import NamedTuple
-
 import grpc
-import jwt
-import requests
+from google.protobuf.json_format import MessageToJson, MessageToDict
 
+from grpc_files import profiles_pb2_grpc, profiles_pb2
+from models.models import UserUpdateModel
 from .profiles import ProfilesService
 from core.config import settings, logger
-import profiles_pb2
-import profiles_pb2_grpc
+
 from .service_types import RegisterAuthResult
 from .auth import AuthClient
-
 
 class UserService(ProfilesService):
     @classmethod
@@ -70,4 +65,10 @@ class UserService(ProfilesService):
         pass
 
 
-
+    @classmethod
+    async def get_profiles(cls, users_id):
+        with grpc.insecure_channel(settings.profiles_host_port) as channel:
+            stub = profiles_pb2_grpc.ProfilesStub(channel)
+            responses = stub.GetProfiles(profiles_pb2.GettingProfilesRequest(users_id=users_id))
+            cash = [MessageToDict(response) for response in responses]
+            return cash

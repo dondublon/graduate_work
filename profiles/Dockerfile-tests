@@ -10,8 +10,8 @@ COPY requirements-tests.txt requirements.txt
 RUN pip install --upgrade pip \
     && pip install --no-cache-dir -r requirements.txt
 
-COPY src/profiles_pb2.py profiles_pb2.py
-COPY src/profiles_pb2_grpc.py profiles_pb2_grpc.py
+COPY src/grpc_files/profiles_pb2.py grpc_files/profiles_pb2.py
+COPY src/grpc_files/profiles_pb2_grpc.py grpc_files/profiles_pb2_grpc.py
 COPY src/utils utils
 COPY src/services services
 COPY tests .

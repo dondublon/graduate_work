@@ -7,8 +7,8 @@ from starlette.requests import Request
 
 from core.config import logger
 from services.user import UserService
-from .common import check_auth
-from models.models import UserRegisterModel, UserUpdateModel, ChangeEmailModel
+from .common import check_auth, check_role
+from models.models import UserRegisterModel, UserUpdateModel, ChangeEmailModel, UserProfilesModel
 
 router_user = APIRouter(prefix=f"/user")
 
@@ -49,8 +49,8 @@ async def update_profile(user: UserUpdateModel, request: Request, authorize: Aut
 
     try:
         result = await UserService.update_profile(at, user.first_name,
-                                            user.last_name, user.father_name,
-                                            user.phone)
+                                                  user.last_name, user.father_name,
+                                                  user.phone)
 
         success = True
         logger.info("Successfully updated user %s", user)
@@ -67,7 +67,7 @@ async def change_email(user: ChangeEmailModel, request: Request, authorize: Auth
 
     try:
         result = await UserService.change_email(auth_result.access_token, auth_result.user_uuid,
-                                            user.email)
+                                                user.email)
 
         success = True
         logger.info("Successfully updated email for user %s to %s", auth_result.user_uuid, user.email)
@@ -77,3 +77,15 @@ async def change_email(user: ChangeEmailModel, request: Request, authorize: Auth
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
 
 
+@router_user.get('/profiles')
+async def get_profiles(users: UserProfilesModel, request: Request, authorize: AuthJWT = Depends()):
+    """Request to Profiles service"""
+    auth_result = await check_auth(request, authorize)
+    roles_list = await check_role(auth_result.user_uuid, auth_result.access_token)
+    try:
+        result = await UserService.get_profiles(users.users_id)
+        logger.info("Successfully get profiles for users %s", users.users_id)
+        return orjson.dumps({"profiles": result})  # TODO Add pagination
+    except Exception as e:
+        logger.error("Error get profiles %s, error=%s", users.users_id, e)
+        raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))

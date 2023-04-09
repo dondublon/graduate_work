@@ -3,10 +3,8 @@ import logging
 
 import grpc
 
-import profiles_pb2
-import profiles_pb2_grpc
-
 from config import settings
+from grpc_files import profiles_pb2, profiles_pb2_grpc
 from services_profiles.user_service import UserService
 
 
@@ -17,7 +15,7 @@ class Profiles(profiles_pb2_grpc.ProfilesServicer):
                                  father_name=request.father_name, family_name=request.family_name,
                                  phone=request.phone,
                                  email=request.email)
-            return profiles_pb2.RegisterReply(success=True)
+            return profiles_pb2.BooleanReply(success=True)
         except Exception as e:
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(str(e))
@@ -34,6 +32,16 @@ class Profiles(profiles_pb2_grpc.ProfilesServicer):
         else:
             context.set_code(grpc.StatusCode.NOT_FOUND)
             context.set_details(f'User with {request.id} not found.')
+            return profiles_pb2.ErrorReply(details=f'User with {request.id} not found.')
+
+    def GetProfiles(self, request, context):
+        profiles = UserService.get_users_profiles(request.users_id)
+        if profiles:
+            for profile in profiles:
+                yield profiles_pb2.UserReply(**profile)
+        else:
+            context.set_code(grpc.StatusCode.NOT_FOUND)
+            context.set_details(f'Users with {request.users_id} not found.')
             return profiles_pb2.ErrorReply(details=f'User with {request.id} not found.')
 
 

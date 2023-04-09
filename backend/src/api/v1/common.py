@@ -10,7 +10,7 @@ import requests
 from fastapi_jwt_auth import AuthJWT
 
 from core.config import settings
-from fastapi import HTTPException, Depends
+from fastapi import HTTPException
 from starlette.requests import Request
 
 
@@ -87,3 +87,13 @@ async def check_auth(request: Request, authorize: AuthJWT) -> AuthResult:
     if not user_uuid:
         raise HTTPException(HTTPStatus.UNAUTHORIZED)
     return AuthResult(a_token, user_uuid)
+
+
+async def check_role(user_uuid: str, access_token: str) -> list:
+    login_url = f"{settings.auth_protocol_host_port}{settings.auth_role_url}?user_id={user_uuid}"
+    response = requests.get(login_url, headers={"Authorization": f"Bearer {access_token}"})
+    result = response.json()
+    roles_list = [role.get('name').lower() for role in result]
+    if settings.admin_roles.lower() not in roles_list:
+        raise HTTPException(HTTPStatus.UNAUTHORIZED)
+    return roles_list

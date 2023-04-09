@@ -59,3 +59,7 @@ class ChangeEmailModel(BaseOrjsonModel):
 
 class UserUpdateModel(UserBasic):
     id: uuid.UUID
+
+
+class UserProfilesModel(BaseOrjsonModel):
+    users_id: list[Optional[str]]

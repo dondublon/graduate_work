@@ -47,16 +47,18 @@ class RegisterCredentials(_message.Message):
     def __init__(self, id: _Optional[str] = ..., first_name: _Optional[str] = ..., family_name: _Optional[str] = ..., father_name: _Optional[str] = ..., phone: _Optional[str] = ..., email: _Optional[str] = ...) -> None: ...
 
 class UpdateProfileRequest(_message.Message):
-    __slots__ = ["family_name", "father_name", "first_name", "phone"]
+    __slots__ = ["family_name", "father_name", "first_name", "phone", "user_id"]
     FAMILY_NAME_FIELD_NUMBER: _ClassVar[int]
     FATHER_NAME_FIELD_NUMBER: _ClassVar[int]
     FIRST_NAME_FIELD_NUMBER: _ClassVar[int]
     PHONE_FIELD_NUMBER: _ClassVar[int]
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
     family_name: str
     father_name: str
     first_name: str
     phone: str
-    def __init__(self, first_name: _Optional[str] = ..., family_name: _Optional[str] = ..., father_name: _Optional[str] = ..., phone: _Optional[str] = ...) -> None: ...
+    user_id: str
+    def __init__(self, user_id: _Optional[str] = ..., first_name: _Optional[str] = ..., family_name: _Optional[str] = ..., father_name: _Optional[str] = ..., phone: _Optional[str] = ...) -> None: ...
 
 class UserReply(_message.Message):
     __slots__ = ["email", "family_name", "father_name", "first_name", "id", "phone"]

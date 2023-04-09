@@ -38,10 +38,11 @@ message UserReply {
 }
 
 message UpdateProfileRequest {
-  string first_name = 1;
-  string family_name = 2;
-  string father_name = 3;
-  string phone = 4;
+  string user_id = 1;
+  string first_name = 2;
+  string family_name = 3;
+  string father_name = 4;
+  string phone = 5;
 }
 
 message ErrorReply {

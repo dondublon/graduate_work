@@ -38,9 +38,11 @@ class Profiles(profiles_pb2_grpc.ProfilesServicer):
 
     def UpdateProfile(self, request, context):
         try:
-            UserService.update(user_id=request.id, first_name=request.first_name,
-                           family_name=request.family_name, father_name=request.father_name,
-                           phone=request.phone)
+            logger.info("Before update")
+            UserService.update(user_id=request.user_id, first_name=request.first_name,
+                               family_name=request.family_name, father_name=request.father_name,
+                               phone=request.phone)
+            return profiles_pb2.BooleanReply(success=True)
         except Exception as e:
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(f'Error updating user {request.id}: {e}')

@@ -26,8 +26,8 @@ class TestBackend(TestCase):
         headers = {'Content-Type': 'application/json'}
         password = random_string(6, 8, ascii_letters)
         obj = {"password": password, "password_confirmation": password,
-            "first_name": names.get_first_name(), "last_name": names.get_last_name(), "father_name": None,
-                "email": random_email(), "phone": None}
+               "first_name": names.get_first_name(), "last_name": names.get_last_name(), "father_name": None,
+               "email": random_email(), "phone": None}
         response = requests.post(full_url, headers=headers, json=obj)
         return response, obj
 
@@ -58,13 +58,17 @@ class TestBackend(TestCase):
         new_phone = random_phone()
 
         response_reg_json = json.loads(response_reg.json())
-        obj = {"id": response_reg_json["inserted_id"], "first_name": new_first_name,
-               "family_name": new_family_name, 'father_name':names.get_first_name(),
+        # We don't need id here because we take it from authorization token.
+        obj = {"first_name": new_first_name,
+               "last_name": new_family_name, 'father_name':names.get_first_name(),
                "phone": new_phone}
         headers = {'Content-Type': 'application/json', "Authorization": f'Bearer {response_reg_json["access_token"]}'}
         response = requests.post(full_url, headers=headers, json=obj)
         status = response.status_code
-        self.assertTrue(200 <= status < 300)
+        status_ok = 200 <= status < 300
+        if not status_ok:
+            print(response.text)
+        self.assertTrue(status_ok)
         response_change_json = json.loads(response.json())
         self.assertTrue(response_change_json["success"])
         # TODO CHeck that we got, by id.

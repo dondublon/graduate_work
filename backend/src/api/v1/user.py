@@ -8,7 +8,7 @@ from starlette.requests import Request
 from core.config import logger
 from services.user import UserService
 from .common import check_auth
-from models.models import UserRegisterModel, UserUpdateModel, ChangeEmailModel
+from models.models import UserRegisterModel, UserBasic, ChangeEmailModel
 
 router_user = APIRouter(prefix=f"/user")
 
@@ -42,7 +42,7 @@ async def register(user: UserRegisterModel, request: Request):
 
 
 @router_user.post('/update-profile')
-async def update_profile(user: UserUpdateModel, request: Request, authorize: AuthJWT = Depends()):
+async def update_profile(user: UserBasic, request: Request, authorize: AuthJWT = Depends()):
     """No email"""
     # NOT TESTED YET!
     user_id = (await check_auth(request, authorize)).user_uuid
@@ -54,9 +54,9 @@ async def update_profile(user: UserUpdateModel, request: Request, authorize: Aut
 
         success = True
         logger.info("Successfully updated user %s", user)
-        return orjson.dumps({"success": success, "updated_id": str(result.id_)})
+        return orjson.dumps({"success": success})
     except Exception as e:
-        logger.error("Error adding %s, error=%s", user, e)
+        logger.error("Error updating %s, error=%s", user, e)
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
 
 

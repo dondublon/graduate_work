@@ -69,10 +69,14 @@ class UserService(ProfilesService):
         """Without email"""
         with grpc.insecure_channel(settings.profiles_host_port) as channel:
             stub = profiles_pb2_grpc.ProfilesStub(channel)
-            all_attrs = {'user_id': user_id, 'first_name': first_name,
-                         'family_name': family_name, 'father_name': father_name,
-                         'phone': phone}
-            response = stub.UpdateProfile(profiles_pb2.UpdateProfileRequest(**all_attrs))  # TODO make async
+
+            request = profiles_pb2.UpdateProfileRequest(user_id=user_id,
+                                                        first_name=first_name,
+                                                        family_name=family_name,
+                                                        father_name=father_name,
+                                                        phone=phone)
+
+            response = stub.UpdateProfile(request)  # TODO make async
 
             print(f"Client received: {response.success}")
 

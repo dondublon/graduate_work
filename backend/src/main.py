@@ -20,9 +20,11 @@ from fastapi import FastAPI
 
 app = FastAPI()
 
+
 @AuthJWT.load_config
 def get_config():
     return jwt_settings
+
 
 @app.exception_handler(AuthJWTException)
 def authjwt_exception_handler(request: Request, exc: AuthJWTException):
@@ -30,22 +32,6 @@ def authjwt_exception_handler(request: Request, exc: AuthJWTException):
         status_code=exc.status_code,
         content={"detail": exc.message}
     )
-
-
-#  For tests authorize
-@app.get('/check_access_token')
-def check_at(Authorize: AuthJWT = Depends()):
-    Authorize.jwt_required()
-    current_user = Authorize.get_jwt_subject()
-    return {"user": current_user}
-
-
-@app.get('/check_refresh_token')
-def check_rt(Authorize: AuthJWT = Depends()):
-    Authorize.jwt_refresh_token_required()
-    current_user = Authorize.get_jwt_subject()
-    return {"user": current_user}
-
 
 
 @app.get("/")

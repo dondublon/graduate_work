@@ -7,8 +7,10 @@ from typing import NamedTuple
 
 import jwt
 import requests
+from fastapi_jwt_auth import AuthJWT
+
 from core.config import settings
-from fastapi import HTTPException
+from fastapi import HTTPException, Depends
 from starlette.requests import Request
 
 
@@ -65,32 +67,26 @@ def check_jwt(token: str) -> CheckJWTResult:
         return CheckJWTResult.UNDECODABLE
 
 
-async def check_auth(request: Request) -> AuthResult:
+async def check_auth(request: Request, authorize: AuthJWT) -> AuthResult:
     data_obj = await request.json()
+    current_user_in_token = authorize.get_jwt_subject()
+    if current_user_in_token:
+        authorize.jwt_required()
+        return current_user_in_token
+    email = data_obj.get("email")
+    password = data_obj.get("password")
     login_url = f"{settings.auth_protocol_host_port}{settings.auth_login_url}"
-    if 'authorization' in request.headers:
-        bearer, token = request.headers['authorization'].split(' ')
-        if bearer != 'Bearer':
-            raise HTTPException(HTTPStatus.BAD_REQUEST, 'Wrong authorization format')
-        check_result = check_jwt(token)
-        if check_result != CheckJWTResult.VALID is None:
-            raise HTTPException(HTTPStatus.UNAUTHORIZED)
-        # TODO Make refresh if needed
-        result = AuthResult(token)
-    else:
-        login = data_obj.get("login")
-        password = data_obj.get("password")
-
-        auth_response = requests.post(
-            login_url,
-            data=json.dumps({"login": login, "password": password}),
-            headers={"Content-Type": "application/json"},  # "Authorization": authorization,
-        )
-        json_obj = auth_response.json()
-        a_token = json_obj.get("access_token")
-        if not a_token:
-            raise HTTPException(HTTPStatus.UNAUTHORIZED)
-        result = AuthResult(a_token)
-        if not result.user_uuid:
-            raise HTTPException(HTTPStatus.UNAUTHORIZED)
-    return result
+    auth_response = requests.post(
+        login_url,
+        data=json.dumps({"email": email, "password": password}),
+        headers={"Content-Type": "application/json"},  # "Authorization": authorization,
+    )
+    json_obj = auth_response.json()
+    a_token = json_obj.get("access_token")
+    if not a_token:
+        raise HTTPException(HTTPStatus.UNAUTHORIZED)
+    decoded = jwt.decode(a_token, settings.auth_secret_key, algorithms=["HS256"])
+    user_uuid = decoded.get("sub")
+    if not user_uuid:
+        raise HTTPException(HTTPStatus.UNAUTHORIZED)
+    return user_uuid

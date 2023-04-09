@@ -2,7 +2,8 @@ import logging
 from http import HTTPStatus
 
 import orjson
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+from fastapi_jwt_auth import AuthJWT
 
 from core.config import logger
 from models.models import Like, Movie
@@ -16,7 +17,7 @@ router_likes = APIRouter(prefix=f"/{COLLECTION_NAME}")
 
 
 @router_likes.post("/add")
-async def add_like(like: Like, request: Request):
+async def add_like(like: Like, request: Request, authorize: AuthJWT = Depends()):
     """
     An example request JSON:
     {
@@ -32,7 +33,7 @@ async def add_like(like: Like, request: Request):
     """
     if not (0 <= like.value <= 10):
         raise HTTPException(HTTPStatus.BAD_REQUEST, "Value must be from 0 to 10.s")
-    user_uuid = (await check_auth(request)).user_uuid
+    user_uuid = (await check_auth(request, authorize)).user_uuid
     try:
         result = await Likes.add(user_uuid, like)
 
@@ -46,7 +47,7 @@ async def add_like(like: Like, request: Request):
 
 
 @router_likes.post("/remove")
-async def remove_like(movie: Movie, request: Request):
+async def remove_like(movie: Movie, request: Request, authorize: AuthJWT = Depends()):
     """
     An example request JSON:
     {
@@ -58,7 +59,7 @@ async def remove_like(movie: Movie, request: Request):
         user_uuid: d16b19e7-e116-43b1-a95d-cd5a11e8f1b4
         ...
     """
-    user_uuid = (await check_auth(request)).user_uuid
+    user_uuid = (await check_auth(request, authorize)).user_uuid
     try:
         result = await Likes.remove(user_uuid, movie)
         success = True
@@ -71,7 +72,7 @@ async def remove_like(movie: Movie, request: Request):
 
 
 @router_likes.get("/count")
-async def count_likes(movie: Movie, request: Request):
+async def count_likes(movie: Movie, request: Request, authorize: AuthJWT = Depends()):
     """
     An example request JSON:
     {
@@ -83,7 +84,7 @@ async def count_likes(movie: Movie, request: Request):
         user_uuid: d16b19e7-e116-43b1-a95d-cd5a11e8f1b4
         ...
     """
-    user_uuid = (await check_auth(request)).user_uuid
+    user_uuid = (await check_auth(request, authorize)).user_uuid
     try:
         count, average = await Likes.count(movie)
         success = True

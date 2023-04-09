@@ -1,3 +1,4 @@
+from enum import Enum
 import json
 from functools import wraps
 from http import HTTPStatus
@@ -47,12 +48,21 @@ class AuthResult(NamedTuple):
         return user_uuid
 
 
-def check_jwt(token: str) -> dict:
+class CheckJWTResult(Enum):
+    VALID = 0
+    UNDECODABLE = 1
+    EXPIRED = 2
+
+
+def check_jwt(token: str) -> CheckJWTResult:
     try:
         decoded_token = jwt.decode(token, settings.auth_secret_key, algorithms=["HS256"])
-        return decoded_token if decoded_token["exp"] >= time.time() else None
+        if decoded_token["exp"] >= time.time():
+            return CheckJWTResult.VALID
+        else:
+            return CheckJWTResult.EXPIRED
     except:
-        return {}
+        return CheckJWTResult.UNDECODABLE
 
 
 async def check_auth(request: Request) -> AuthResult:
@@ -62,8 +72,8 @@ async def check_auth(request: Request) -> AuthResult:
         bearer, token = request.headers['authorization'].split(' ')
         if bearer != 'Bearer':
             raise HTTPException(HTTPStatus.BAD_REQUEST, 'Wrong authorization format')
-        decoded = check_jwt(token)
-        if decoded is None:
+        check_result = check_jwt(token)
+        if check_result != CheckJWTResult.VALID is None:
             raise HTTPException(HTTPStatus.UNAUTHORIZED)
         # TODO Make refresh if needed
         result = AuthResult(token)

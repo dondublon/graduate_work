@@ -34,14 +34,14 @@ def authjwt_exception_handler(request: Request, exc: AuthJWTException):
 
 #  For tests authorize
 @app.get('/check_access_token')
-def user(Authorize: AuthJWT = Depends()):
+def check_at(Authorize: AuthJWT = Depends()):
     Authorize.jwt_required()
     current_user = Authorize.get_jwt_subject()
     return {"user": current_user}
 
 
 @app.get('/check_refresh_token')
-def user(Authorize: AuthJWT = Depends()):
+def check_rt(Authorize: AuthJWT = Depends()):
     Authorize.jwt_refresh_token_required()
     current_user = Authorize.get_jwt_subject()
     return {"user": current_user}

@@ -19,10 +19,12 @@ class ChangeEmailRequest(_message.Message):
     def __init__(self, user_id: _Optional[str] = ..., email: _Optional[str] = ...) -> None: ...
 
 class ErrorReply(_message.Message):
-    __slots__ = ["details"]
+    __slots__ = ["details", "status"]
     DETAILS_FIELD_NUMBER: _ClassVar[int]
+    STATUS_FIELD_NUMBER: _ClassVar[int]
     details: str
-    def __init__(self, details: _Optional[str] = ...) -> None: ...
+    status: int
+    def __init__(self, details: _Optional[str] = ..., status: _Optional[int] = ...) -> None: ...
 
 class GettingRequest(_message.Message):
     __slots__ = ["id"]

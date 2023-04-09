@@ -1,4 +1,4 @@
-from sqlalchemy import select, update
+from sqlalchemy import select
 
 from db_profiles import get_session
 from models_profiles.user import User
@@ -29,12 +29,13 @@ class UserService:
 
     @classmethod
     def update(cls, user_id, first_name, family_name, father_name, phone):
+        # noinspection PyTypeChecker
+        user_q = select(User).where(User.id == user_id)
         with get_session() as session:
-            user = User.get(user_id)
+            user = session.scalar(user_q)
             user.first_name = first_name
             user.family_name = family_name
             user.father_name = father_name
             user.phone = phone
 
-            user.save()
             session.commit()

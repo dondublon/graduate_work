@@ -34,7 +34,10 @@ class Profiles(profiles_pb2_grpc.ProfilesServicer):
         else:
             context.set_code(grpc.StatusCode.NOT_FOUND)
             context.set_details(f'User with {request.id} not found.')
-            return profiles_pb2.ErrorReply(details=f'User with {request.id} not found.')
+            logger.info('Error response')
+            reply = profiles_pb2.UserReply()
+            logger.info('Error response 2')
+            return reply
 
     def UpdateProfile(self, request, context):
         try:
@@ -47,6 +50,8 @@ class Profiles(profiles_pb2_grpc.ProfilesServicer):
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(f'Error updating user {request.id}: {e}')
             return profiles_pb2.ErrorReply(details=f'Error updating user {request.id}: {e}')
+
+
 def serve():
     port = str(settings.service_port)
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))

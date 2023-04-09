@@ -26,7 +26,7 @@ class TestBackend(TestCase):
         headers = {'Content-Type': 'application/json'}
         password = random_string(6, 8, ascii_letters)
         obj = {"password": password, "password_confirmation": password,
-               "first_name": names.get_first_name(), "last_name": names.get_last_name(), "father_name": None,
+               "first_name": names.get_first_name(), "family_name": names.get_last_name(), "father_name": None,
                "email": random_email(), "phone": None}
         response = requests.post(full_url, headers=headers, json=obj)
         return response, obj
@@ -51,7 +51,7 @@ class TestBackend(TestCase):
         response_reg, user_obj = self._register()
         assert 200 <= response_reg.status_code < 300  # this is not a test assert
         url = os.environ['BACKEND_UPDATE_PROFILE_URL']
-        full_url = f'{self.full_host}{url}'
+        change_url = f'{self.full_host}{url}'
 
         new_first_name = names.get_first_name()
         new_family_name = names.get_last_name()
@@ -60,15 +60,26 @@ class TestBackend(TestCase):
         response_reg_json = json.loads(response_reg.json())
         # We don't need id here because we take it from authorization token.
         obj = {"first_name": new_first_name,
-               "last_name": new_family_name, 'father_name':names.get_first_name(),
+               "family_name": new_family_name, 'father_name':names.get_first_name(),
                "phone": new_phone}
         headers = {'Content-Type': 'application/json', "Authorization": f'Bearer {response_reg_json["access_token"]}'}
-        response = requests.post(full_url, headers=headers, json=obj)
-        status = response.status_code
+        response_change = requests.post(change_url, headers=headers, json=obj)
+        status = response_change.status_code
         status_ok = 200 <= status < 300
         if not status_ok:
-            print(response.text)
+            print(response_change.text)
         self.assertTrue(status_ok)
-        response_change_json = json.loads(response.json())
+        response_change_json = json.loads(response_change.json())
         self.assertTrue(response_change_json["success"])
-        # TODO CHeck that we got, by id.
+        # Get and check updated user:
+        url = os.environ['BACKEND_GET_PROFILE_URL']
+        get_url = f'{self.full_host}{url}'
+        # No id, we take it from authorization.
+        response_get = requests.get(get_url, headers=headers)
+        changed_user = json.loads(response_get.json())
+        status_get = response_get.status_code
+        status_change_ok = 200 <= status_get < 300
+        self.assertTrue(status_change_ok)
+        del changed_user['id']
+        del changed_user['email']
+        self.assertDictEqual(changed_user, obj)

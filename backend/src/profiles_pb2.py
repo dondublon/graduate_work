@@ -13,7 +13,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0eprofiles.proto\x12\x08profiles\"}\n\x13RegisterCredentials\x12\n\n\x02id\x18\x01 \x01(\t\x12\x12\n\nfirst_name\x18\x02 \x01(\t\x12\x13\n\x0b\x66\x61mily_name\x18\x03 \x01(\t\x12\x13\n\x0b\x66\x61ther_name\x18\x04 \x01(\t\x12\r\n\x05phone\x18\x05 \x01(\t\x12\r\n\x05\x65mail\x18\x06 \x01(\t\"\x1f\n\x0c\x42ooleanReply\x12\x0f\n\x07success\x18\x01 \x01(\x08\"\x1c\n\x0eGettingRequest\x12\n\n\x02id\x18\x01 \x01(\t\"s\n\tUserReply\x12\n\n\x02id\x18\x01 \x01(\t\x12\x12\n\nfirst_name\x18\x02 \x01(\t\x12\x13\n\x0b\x66\x61mily_name\x18\x03 \x01(\t\x12\x13\n\x0b\x66\x61ther_name\x18\x04 \x01(\t\x12\r\n\x05phone\x18\x05 \x01(\t\x12\r\n\x05\x65mail\x18\x06 \x01(\t\"t\n\x14UpdateProfileRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x12\n\nfirst_name\x18\x02 \x01(\t\x12\x13\n\x0b\x66\x61mily_name\x18\x03 \x01(\t\x12\x13\n\x0b\x66\x61ther_name\x18\x04 \x01(\t\x12\r\n\x05phone\x18\x05 \x01(\t\"\x1d\n\nErrorReply\x12\x0f\n\x07\x64\x65tails\x18\x01 \x01(\t\"4\n\x12\x43hangeEmailRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\r\n\x05\x65mail\x18\x02 \x01(\t2\x99\x02\n\x08Profiles\x12\x43\n\x08Register\x12\x1d.profiles.RegisterCredentials\x1a\x16.profiles.BooleanReply\"\x00\x12\x36\n\x03Get\x12\x18.profiles.GettingRequest\x1a\x13.profiles.UserReply\"\x00\x12\x45\n\x0b\x43hangeEMail\x12\x1c.profiles.ChangeEmailRequest\x1a\x16.profiles.BooleanReply\"\x00\x12I\n\rUpdateProfile\x12\x1e.profiles.UpdateProfileRequest\x1a\x16.profiles.BooleanReply\"\x00\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0eprofiles.proto\x12\x08profiles\"}\n\x13RegisterCredentials\x12\n\n\x02id\x18\x01 \x01(\t\x12\x12\n\nfirst_name\x18\x02 \x01(\t\x12\x13\n\x0b\x66\x61mily_name\x18\x03 \x01(\t\x12\x13\n\x0b\x66\x61ther_name\x18\x04 \x01(\t\x12\r\n\x05phone\x18\x05 \x01(\t\x12\r\n\x05\x65mail\x18\x06 \x01(\t\"\x1f\n\x0c\x42ooleanReply\x12\x0f\n\x07success\x18\x01 \x01(\x08\"\x1c\n\x0eGettingRequest\x12\n\n\x02id\x18\x01 \x01(\t\"s\n\tUserReply\x12\n\n\x02id\x18\x01 \x01(\t\x12\x12\n\nfirst_name\x18\x02 \x01(\t\x12\x13\n\x0b\x66\x61mily_name\x18\x03 \x01(\t\x12\x13\n\x0b\x66\x61ther_name\x18\x04 \x01(\t\x12\r\n\x05phone\x18\x05 \x01(\t\x12\r\n\x05\x65mail\x18\x06 \x01(\t\"t\n\x14UpdateProfileRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x12\n\nfirst_name\x18\x02 \x01(\t\x12\x13\n\x0b\x66\x61mily_name\x18\x03 \x01(\t\x12\x13\n\x0b\x66\x61ther_name\x18\x04 \x01(\t\x12\r\n\x05phone\x18\x05 \x01(\t\"-\n\nErrorReply\x12\x0f\n\x07\x64\x65tails\x18\x01 \x01(\t\x12\x0e\n\x06status\x18\x02 \x01(\x05\"4\n\x12\x43hangeEmailRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\r\n\x05\x65mail\x18\x02 \x01(\t2\x99\x02\n\x08Profiles\x12\x43\n\x08Register\x12\x1d.profiles.RegisterCredentials\x1a\x16.profiles.BooleanReply\"\x00\x12\x36\n\x03Get\x12\x18.profiles.GettingRequest\x1a\x13.profiles.UserReply\"\x00\x12\x45\n\x0b\x43hangeEMail\x12\x1c.profiles.ChangeEmailRequest\x1a\x16.profiles.BooleanReply\"\x00\x12I\n\rUpdateProfile\x12\x1e.profiles.UpdateProfileRequest\x1a\x16.profiles.BooleanReply\"\x00\x62\x06proto3')
 
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, globals())
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'profiles_pb2', globals())
@@ -31,9 +31,9 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   _UPDATEPROFILEREQUEST._serialized_start=335
   _UPDATEPROFILEREQUEST._serialized_end=451
   _ERRORREPLY._serialized_start=453
-  _ERRORREPLY._serialized_end=482
-  _CHANGEEMAILREQUEST._serialized_start=484
-  _CHANGEEMAILREQUEST._serialized_end=536
-  _PROFILES._serialized_start=539
-  _PROFILES._serialized_end=820
+  _ERRORREPLY._serialized_end=498
+  _CHANGEEMAILREQUEST._serialized_start=500
+  _CHANGEEMAILREQUEST._serialized_end=552
+  _PROFILES._serialized_start=555
+  _PROFILES._serialized_end=836
 # @@protoc_insertion_point(module_scope)

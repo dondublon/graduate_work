@@ -41,7 +41,7 @@ class Bookmark(BaseOrjsonModel):
 
 class UserBasic(BaseOrjsonModel):
     first_name: str
-    last_name: str  # == family_name
+    family_name: str
     father_name: Optional[str]
     phone: Optional[str]
 
@@ -58,4 +58,8 @@ class ChangeEmailModel(BaseOrjsonModel):
 
 
 class UserUpdateModel(UserBasic):
+    id: uuid.UUID
+
+
+class UserIdModel(BaseOrjsonModel):
     id: uuid.UUID

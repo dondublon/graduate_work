@@ -1,5 +1,5 @@
 import random
-# import phonenumbers
+import phonenumbers
 
 
 def random_string(min_len, max_len, charset):
@@ -18,9 +18,9 @@ def random_email():
     return result
 
 
-# def random_phone():
-#     country_code = random.choice(list(phonenumbers.supported_calling_codes()))
-#     region_code = random.choice(phonenumbers.COUNTRY_CODE_TO_REGION_CODE[country_code])
-#     number_obj = phonenumbers.example_number(region_code)
-#     result = f'+{number_obj.country_code}{number_obj.national_number}'
-#     return result
+def random_phone():
+    country_code = random.choice(list(phonenumbers.supported_calling_codes()))
+    region_code = random.choice(phonenumbers.COUNTRY_CODE_TO_REGION_CODE[country_code])
+    number_obj = phonenumbers.example_number(region_code)
+    result = f'+{number_obj.country_code}{number_obj.national_number}'
+    return result

@@ -42,7 +42,7 @@ async def register(user: UserRegisterModel, request: Request):
 
 
 @router_user.post('/update')
-async def update_profile(user: UserUpdateModel, request: Request, authorize: AuthJWT):
+async def update_profile(user: UserUpdateModel, request: Request, authorize: AuthJWT = Depends()):
     """No email"""
     # NOT TESTED YET!
     at = (await check_auth(request, authorize)).access_token

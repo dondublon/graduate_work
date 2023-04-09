@@ -32,7 +32,8 @@ async def register(user: UserRegisterModel, request: Request):
 
         success = True
         logger.info("Successfully added user %s", user)
-        return orjson.dumps({"success": success, "inserted_id": str(result.id_)})
+        return orjson.dumps({"success": success, "inserted_id": str(result.id_),
+                             "access_token": result.access_token, "refresh_token": result.refresh_token})
     except Exception as e:
         logger.error("Error adding %s, error=%s", user, e)
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
@@ -55,8 +56,9 @@ async def update_profile(user: UserUpdateModel, request: Request):
         logger.error("Error adding %s, error=%s", user, e)
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
 
+
 @router_user.post('/change-email')
-async def update_profile(user: ChangeEmailModel, request: Request):
+async def change_email(user: ChangeEmailModel, request: Request):
     """No email"""
     auth_result = await check_auth(request)
 
@@ -66,7 +68,7 @@ async def update_profile(user: ChangeEmailModel, request: Request):
 
         success = True
         logger.info("Successfully updated email for user %s to %s", auth_result.user_uuid, user.email)
-        return orjson.dumps({"success": success, "updated_id": str(result.id_)})
+        return orjson.dumps({"success": success, "new email": user.email})
     except Exception as e:
         logger.error("Error changing email %s, error=%s", user, e)
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))

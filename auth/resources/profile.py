@@ -28,7 +28,7 @@ class ChangePassword(Resource):
 @ns.route("/change-email")
 @ns.expect(access_token_required, email)
 class ChangeEmail(Resource):
-    @jwt_required(refresh=True)
+    @jwt_required()
     @check_if_token_in_blacklist()
     def post(self):
         """Change login"""

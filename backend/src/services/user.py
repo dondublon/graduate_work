@@ -50,14 +50,14 @@ class UserService(ProfilesService):
         """
         Yes, access token and user id togeher is redundant, but for the convenience.
         """
-        await AuthClient.change_email(access_token, email)
+        await AuthClient.change_email(access_token, user_id, email)
         await cls._change_profiles_email(user_id, email)
 
     @classmethod
     async def _change_profiles_email(cls, id_, email):
         with grpc.insecure_channel(settings.profiles_host_port) as channel:
             stub = profiles_pb2_grpc.ProfilesStub(channel)
-            all_attrs = {'id': id_, 'email': email}
+            all_attrs = {'user_id': id_, 'email': email}
             response = stub.Register(profiles_pb2.ChangeEmailRequest(**all_attrs))  # TODO make async
 
             print(f"Client received: {response.success}")

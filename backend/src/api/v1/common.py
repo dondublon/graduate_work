@@ -1,6 +1,7 @@
 import json
 from functools import wraps
 from http import HTTPStatus
+import time
 from typing import NamedTuple
 
 import jwt
@@ -46,21 +47,40 @@ class AuthResult(NamedTuple):
         return user_uuid
 
 
+def check_jwt(token: str) -> dict:
+    try:
+        decoded_token = jwt.decode(token, settings.auth_secret_key, algorithms=["HS256"])
+        return decoded_token if decoded_token["exp"] >= time.time() else None
+    except:
+        return {}
+
+
 async def check_auth(request: Request) -> AuthResult:
     data_obj = await request.json()
-    login = data_obj.get("login")
-    password = data_obj.get("password")
     login_url = f"{settings.auth_protocol_host_port}{settings.auth_login_url}"
-    auth_response = requests.post(
-        login_url,
-        data=json.dumps({"login": login, "password": password}),
-        headers={"Content-Type": "application/json"},  # "Authorization": authorization,
-    )
-    json_obj = auth_response.json()
-    a_token = json_obj.get("access_token")
-    if not a_token:
-        raise HTTPException(HTTPStatus.UNAUTHORIZED)
-    result = AuthResult(a_token)
-    if not result.user_uuid:
-        raise HTTPException(HTTPStatus.UNAUTHORIZED)
+    if 'authorization' in request.headers:
+        bearer, token = request.headers['authorization'].split(' ')
+        if bearer != 'Bearer':
+            raise HTTPException(HTTPStatus.BAD_REQUEST, 'Wrong authorization format')
+        decoded = check_jwt(token)
+        if decoded is None:
+            raise HTTPException(HTTPStatus.UNAUTHORIZED)
+        # TODO Make refresh if needed
+        result = AuthResult(token)
+    else:
+        login = data_obj.get("login")
+        password = data_obj.get("password")
+
+        auth_response = requests.post(
+            login_url,
+            data=json.dumps({"login": login, "password": password}),
+            headers={"Content-Type": "application/json"},  # "Authorization": authorization,
+        )
+        json_obj = auth_response.json()
+        a_token = json_obj.get("access_token")
+        if not a_token:
+            raise HTTPException(HTTPStatus.UNAUTHORIZED)
+        result = AuthResult(a_token)
+        if not result.user_uuid:
+            raise HTTPException(HTTPStatus.UNAUTHORIZED)
     return result

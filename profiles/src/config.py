@@ -13,6 +13,15 @@ class Settings(BaseSettings):
     debug: bool = Field(False, env="PROFILES_DEBUG")
     pg_password: str = Field("", env="PROFILES_PG_PASSWORD")
     service_port: int = Field(50051, env="PROFILES_SERVICE_PORT")
+    # region Logging
+    sentry_dsn: str = Field(
+        "https://1976fd7fecf84863ad877101deebe352@o4504758500720640.ingest.sentry.io/4504758503735296",
+        env="SENTRY_DSN",
+    )
+    logstash_host: str = Field("logstash", env="LOGSTASH_HOST")
+    logstash_port: int = Field(5044, env="LOGSTASH_PORT")
+    logstash_traces_sample_rate: float = Field(1.0, env="LOGSTASH_TRACES_SAMPLE_RATE")
+    # endregion
 
     class Config:
         case_sensitive = False

@@ -46,3 +46,9 @@ class TestBackend(TestCase):
         self.assertTrue(200 <= status < 300)
         response_change_json = json.loads(response.json())
         self.assertTrue(response_change_json["success"])
+
+    def test_profile_update(self):
+        response_reg, user_obj = self._register()
+        assert 200 <= response_reg.status_code < 300  # this is not a test assert
+        url = os.environ['BACKEND_CHANGE_PROFILE_URL']
+        full_url = f'{self.full_host}{url}'

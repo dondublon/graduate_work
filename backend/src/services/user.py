@@ -1,13 +1,9 @@
 """
 A service for backed that send requests to Profiles service.
 """
-import json
-import uuid
-from typing import NamedTuple
 
 import grpc
-import jwt
-import requests
+from grpc import Call
 
 from .profiles import ProfilesService
 from core.config import settings, logger
@@ -65,9 +61,36 @@ class UserService(ProfilesService):
 
 
     @classmethod
-    async def update_profile(cls, at, first_name, family_name, father_name, phone):
+    async def update_profile(cls, user_id, first_name, family_name, father_name, phone):
         """Without email"""
-        pass
+        with grpc.insecure_channel(settings.profiles_host_port) as channel:
+            stub = profiles_pb2_grpc.ProfilesStub(channel)
 
+            request = profiles_pb2.UpdateProfileRequest(user_id=user_id,
+                                                        first_name=first_name,
+                                                        family_name=family_name,
+                                                        father_name=father_name,
+                                                        phone=phone)
+
+            response = stub.UpdateProfile(request)  # TODO make async
+
+            print(f"Client received: {response.success}")
+
+
+    @classmethod
+    async def get_profile(cls, user_id):
+        """Without email
+        """
+        with grpc.insecure_channel(settings.profiles_host_port) as channel:
+            stub = profiles_pb2_grpc.ProfilesStub(channel)
+
+            request = profiles_pb2.GettingRequest(id=user_id)
+
+            response = stub.Get(request)  # TODO make async
+            print(f"Client received: {response}")
+            if isinstance(response, profiles_pb2.UserReply):
+                return response
+            elif isinstance(response, profiles_pb2.ErrorReply):  # Doesn works yet
+                return None
 
 

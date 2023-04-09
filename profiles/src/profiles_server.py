@@ -1,12 +1,13 @@
 from concurrent import futures
-import logging
 
 import grpc
+import sentry_sdk
 
 import profiles_pb2
 import profiles_pb2_grpc
 
 from config import settings
+from logger import logger
 from services_profiles.user_service import UserService
 
 
@@ -17,15 +18,14 @@ class Profiles(profiles_pb2_grpc.ProfilesServicer):
                                  father_name=request.father_name, family_name=request.family_name,
                                  phone=request.phone,
                                  email=request.email)
-            return profiles_pb2.RegisterReply(success=True)
+            # noinspection PyUnresolvedReferences
+            return profiles_pb2.BooleanReply(success=True)
         except Exception as e:
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(str(e))
             return profiles_pb2.ErrorReply(details=str(e))
 
     def Get(self, request, context):
-        # noinspection PyTypeChecker
-
         user = UserService.get_by_id(request.id)
         if user:
             reply = profiles_pb2.UserReply(**user)
@@ -34,7 +34,22 @@ class Profiles(profiles_pb2_grpc.ProfilesServicer):
         else:
             context.set_code(grpc.StatusCode.NOT_FOUND)
             context.set_details(f'User with {request.id} not found.')
-            return profiles_pb2.ErrorReply(details=f'User with {request.id} not found.')
+            logger.info('Error response')
+            reply = profiles_pb2.UserReply()
+            logger.info('Error response 2')
+            return reply
+
+    def UpdateProfile(self, request, context):
+        try:
+            logger.info("Before update")
+            UserService.update(user_id=request.user_id, first_name=request.first_name,
+                               family_name=request.family_name, father_name=request.father_name,
+                               phone=request.phone)
+            return profiles_pb2.BooleanReply(success=True)
+        except Exception as e:
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details(f'Error updating user {request.id}: {e}')
+            return profiles_pb2.ErrorReply(details=f'Error updating user {request.id}: {e}')
 
 
 def serve():
@@ -43,13 +58,22 @@ def serve():
     profiles_pb2_grpc.add_ProfilesServicer_to_server(Profiles(), server)
     server.add_insecure_port('[::]:' + port)
     server.start()
-    print("Server started, listening on " + port)
-    print("Postgres host and schema: ", settings.pg_host, settings.pg_port, settings.pg_schema)
-    print("Postgres dsn: ", settings.profiles_pg_dsn)  # Insecure
+    logger.info("Server started, listening on %s", port)
+    logger.info("Postgres host %s, port %s, and schema: %s", settings.pg_host, settings.pg_port, settings.pg_schema)
+    logger.info("Postgres dsn: %s", settings.profiles_pg_dsn)  # Insecure
 
     server.wait_for_termination()
 
 
+def init_logging():
+    sentry_sdk.init(
+        dsn=settings.sentry_dsn,
+        # Set traces_sample_rate to 1.0 to capture 100%
+        # of transactions for performance monitoring.
+        # We recommend adjusting this value in production.
+        traces_sample_rate=settings.logstash_traces_sample_rate,
+    )
+
+
 if __name__ == '__main__':
-    logging.basicConfig()
     serve()

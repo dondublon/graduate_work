@@ -19,10 +19,12 @@ class ChangeEmailRequest(_message.Message):
     def __init__(self, user_id: _Optional[str] = ..., email: _Optional[str] = ...) -> None: ...
 
 class ErrorReply(_message.Message):
-    __slots__ = ["details"]
+    __slots__ = ["details", "status"]
     DETAILS_FIELD_NUMBER: _ClassVar[int]
+    STATUS_FIELD_NUMBER: _ClassVar[int]
     details: str
-    def __init__(self, details: _Optional[str] = ...) -> None: ...
+    status: int
+    def __init__(self, details: _Optional[str] = ..., status: _Optional[int] = ...) -> None: ...
 
 class GettingRequest(_message.Message):
     __slots__ = ["id"]
@@ -45,6 +47,20 @@ class RegisterCredentials(_message.Message):
     id: str
     phone: str
     def __init__(self, id: _Optional[str] = ..., first_name: _Optional[str] = ..., family_name: _Optional[str] = ..., father_name: _Optional[str] = ..., phone: _Optional[str] = ..., email: _Optional[str] = ...) -> None: ...
+
+class UpdateProfileRequest(_message.Message):
+    __slots__ = ["family_name", "father_name", "first_name", "phone", "user_id"]
+    FAMILY_NAME_FIELD_NUMBER: _ClassVar[int]
+    FATHER_NAME_FIELD_NUMBER: _ClassVar[int]
+    FIRST_NAME_FIELD_NUMBER: _ClassVar[int]
+    PHONE_FIELD_NUMBER: _ClassVar[int]
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    family_name: str
+    father_name: str
+    first_name: str
+    phone: str
+    user_id: str
+    def __init__(self, user_id: _Optional[str] = ..., first_name: _Optional[str] = ..., family_name: _Optional[str] = ..., father_name: _Optional[str] = ..., phone: _Optional[str] = ...) -> None: ...
 
 class UserReply(_message.Message):
     __slots__ = ["email", "family_name", "father_name", "first_name", "id", "phone"]

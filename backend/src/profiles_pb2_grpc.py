@@ -30,6 +30,11 @@ class ProfilesStub(object):
                 request_serializer=profiles__pb2.ChangeEmailRequest.SerializeToString,
                 response_deserializer=profiles__pb2.BooleanReply.FromString,
                 )
+        self.UpdateProfile = channel.unary_unary(
+                '/profiles.Profiles/UpdateProfile',
+                request_serializer=profiles__pb2.UpdateProfileRequest.SerializeToString,
+                response_deserializer=profiles__pb2.BooleanReply.FromString,
+                )
 
 
 class ProfilesServicer(object):
@@ -55,6 +60,12 @@ class ProfilesServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def UpdateProfile(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_ProfilesServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -71,6 +82,11 @@ def add_ProfilesServicer_to_server(servicer, server):
             'ChangeEMail': grpc.unary_unary_rpc_method_handler(
                     servicer.ChangeEMail,
                     request_deserializer=profiles__pb2.ChangeEmailRequest.FromString,
+                    response_serializer=profiles__pb2.BooleanReply.SerializeToString,
+            ),
+            'UpdateProfile': grpc.unary_unary_rpc_method_handler(
+                    servicer.UpdateProfile,
+                    request_deserializer=profiles__pb2.UpdateProfileRequest.FromString,
                     response_serializer=profiles__pb2.BooleanReply.SerializeToString,
             ),
     }
@@ -131,6 +147,23 @@ class Profiles(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/profiles.Profiles/ChangeEMail',
             profiles__pb2.ChangeEmailRequest.SerializeToString,
+            profiles__pb2.BooleanReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def UpdateProfile(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/profiles.Profiles/UpdateProfile',
+            profiles__pb2.UpdateProfileRequest.SerializeToString,
             profiles__pb2.BooleanReply.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

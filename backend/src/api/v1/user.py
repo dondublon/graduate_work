@@ -7,8 +7,9 @@ from starlette.requests import Request
 
 from core.config import logger
 from services.user import UserService
+from utils.reply import reply_to_dict
 from .common import check_auth
-from models.models import UserRegisterModel, UserUpdateModel, ChangeEmailModel
+from models.models import UserRegisterModel, UserBasic, ChangeEmailModel
 
 router_user = APIRouter(prefix=f"/user")
 
@@ -29,7 +30,7 @@ async def register(user: UserRegisterModel, request: Request):
     """
     try:
         result = await UserService.register(user.password, user.password_confirmation, user.first_name,
-                                            user.last_name, user.father_name,
+                                            user.family_name, user.father_name,
                                             user.email, user.phone)
 
         success = True
@@ -41,22 +42,22 @@ async def register(user: UserRegisterModel, request: Request):
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
 
 
-@router_user.post('/update')
-async def update_profile(user: UserUpdateModel, request: Request, authorize: AuthJWT = Depends()):
+@router_user.post('/update-profile')
+async def update_profile(user: UserBasic, request: Request, authorize: AuthJWT = Depends()):
     """No email"""
     # NOT TESTED YET!
-    at = (await check_auth(request, authorize)).access_token
+    user_id = (await check_auth(request, authorize)).user_uuid
 
     try:
-        result = await UserService.update_profile(at, user.first_name,
-                                            user.last_name, user.father_name,
+        result = await UserService.update_profile(user_id, user.first_name,
+                                            user.family_name, user.father_name,
                                             user.phone)
 
         success = True
         logger.info("Successfully updated user %s", user)
-        return orjson.dumps({"success": success, "updated_id": str(result.id_)})
+        return orjson.dumps({"success": success})
     except Exception as e:
-        logger.error("Error adding %s, error=%s", user, e)
+        logger.error("Error updating %s, error=%s", user, e)
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
 
 
@@ -77,3 +78,17 @@ async def change_email(user: ChangeEmailModel, request: Request, authorize: Auth
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
 
 
+@router_user.get('/get-profile')
+async def get_profile(request: Request, authorize: AuthJWT = Depends()):
+    """No email"""
+    auth_result = await check_auth(request, authorize)
+
+    try:
+        result = await UserService.get_profile(auth_result.user_uuid)
+
+        success = True
+        logger.info("Successfully got profile for user %s", auth_result.user_uuid)
+        return orjson.dumps(reply_to_dict(result))
+    except Exception as e:
+        logger.error("Error getting id %s, error=%s", auth_result.user_uuid, e)
+        raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))

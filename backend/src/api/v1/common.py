@@ -64,12 +64,12 @@ def check_jwt(token: str) -> CheckJWTResult:
 
 
 async def check_auth(request: Request, authorize: AuthJWT) -> AuthResult:
-    data_obj = await request.json()
     current_user_in_token = authorize.get_jwt_subject()
     if current_user_in_token:
         authorize.jwt_required()
         result = AuthResult(authorize._token, current_user_in_token)  # :( private field is bad, I know
         return result
+    data_obj = await request.json()
     email = data_obj.get("email")
     password = data_obj.get("password")
     login_url = f"{settings.auth_protocol_host_port}{settings.auth_login_url}"

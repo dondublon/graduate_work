@@ -1,4 +1,5 @@
 from concurrent import futures
+import os
 
 import grpc
 import sentry_sdk
@@ -56,6 +57,38 @@ class Profiles(profiles_pb2_grpc.ProfilesServicer):
             context.set_code(grpc.StatusCode.NOT_FOUND)
             context.set_details(f'Users with {request.users_id} not found.')
             return profiles_pb2.UserReply()
+
+    @classmethod
+    def get_avatar_path(cls, user_id, extension):
+        return f'{settings.avatar_path}/{user_id}.{extension}'
+
+    def UploadFile(self, request, context):
+        filepath = self.get_filepath(request.metadata.user_id, request.metadata.file_extension)
+        # TODO Make only one file allowed.
+        try:
+            with open(filepath, 'wb') as f:
+                f.write(request.chunk_data)
+            return profiles_pb2.BooleanReply(success=True)
+        except Exception as e:
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details(f'Error uploading : {e}')
+            return profiles_pb2.BooleanReply(success=True)
+
+    def DownloadAvatar(self, request, context):
+        chunk_size = 5 * 1024 * 1024
+
+        filepath = self.get_avatar_path(request.id, 'jpeg')
+        if not os.path.exists(filepath):
+            filepath = self.get_avatar_path('default', 'jpeg')
+        logger.info(f'Current directory {os.path.abspath(".")}')
+        with open(filepath, mode="rb") as f:
+            logger.info(f'Retrieving the file {filepath}')
+            chunk = f.read(chunk_size)
+            if chunk:
+                entry_response = profiles_pb2.FileResponse(chunk_data=chunk)
+                return entry_response
+            else:
+                return
 
 
 def serve():

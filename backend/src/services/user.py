@@ -103,3 +103,15 @@ class UserService(ProfilesService):
             responses = stub.GetProfiles(profiles_pb2.GettingProfilesRequest(users_id=users_id))
             cash = [MessageToDict(response) for response in responses]
             return cash
+
+    @classmethod
+    async def upload_avatar(cls):
+        pass
+
+    @classmethod
+    async def get_avatar(cls, user_id) -> bytearray:
+        with grpc.insecure_channel(settings.profiles_host_port) as channel:
+            stub = profiles_pb2_grpc.ProfilesStub(channel)
+            response = stub.DownloadAvatar(profiles_pb2.GettingRequest(id=user_id))
+            logger.info('get_avatar response %s', response)
+            return response

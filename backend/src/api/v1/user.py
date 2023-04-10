@@ -1,6 +1,7 @@
 from http import HTTPStatus
 
 from fastapi import APIRouter, HTTPException, Depends
+from fastapi.responses import Response
 from fastapi_jwt_auth import AuthJWT
 import orjson
 from starlette.requests import Request
@@ -108,3 +109,13 @@ async def get_profiles(users: UserProfilesModel, request: Request, authorize: Au
     except Exception as e:
         logger.error("Error get profiles %s, error=%s", users.users_id, e)
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
+
+
+@router_user.get('/avatar',
+                 responses={200: {"content": {"image/png": {}, "image/jpeg": {}}}},
+                 response_class=Response
+                 )
+async def get_avatar(request: Request, authorize: AuthJWT = Depends()):
+    # auth_result = await check_auth(request, authorize)  # Temporary
+    result = await UserService.get_avatar('auth_result.user_uuid')
+    return Response(content=result.chunk_data, media_type="image/jpeg")

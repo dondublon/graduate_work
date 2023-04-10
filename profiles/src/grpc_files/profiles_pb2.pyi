@@ -1,7 +1,7 @@
 from google.protobuf.internal import containers as _containers
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
-from typing import ClassVar as _ClassVar, Iterable as _Iterable, Optional as _Optional
+from typing import ClassVar as _ClassVar, Iterable as _Iterable, Mapping as _Mapping, Optional as _Optional, Union as _Union
 
 DESCRIPTOR: _descriptor.FileDescriptor
 
@@ -26,6 +26,22 @@ class ErrorReply(_message.Message):
     details: str
     status: int
     def __init__(self, details: _Optional[str] = ..., status: _Optional[int] = ...) -> None: ...
+
+class FileMetadata(_message.Message):
+    __slots__ = ["file_extension", "user_id"]
+    FILE_EXTENSION_FIELD_NUMBER: _ClassVar[int]
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    file_extension: str
+    user_id: str
+    def __init__(self, user_id: _Optional[str] = ..., file_extension: _Optional[str] = ...) -> None: ...
+
+class FileResponse(_message.Message):
+    __slots__ = ["chunk_data", "file_extension"]
+    CHUNK_DATA_FIELD_NUMBER: _ClassVar[int]
+    FILE_EXTENSION_FIELD_NUMBER: _ClassVar[int]
+    chunk_data: bytes
+    file_extension: str
+    def __init__(self, chunk_data: _Optional[bytes] = ..., file_extension: _Optional[str] = ...) -> None: ...
 
 class GettingProfilesRequest(_message.Message):
     __slots__ = ["users_id"]
@@ -68,6 +84,14 @@ class UpdateProfileRequest(_message.Message):
     phone: str
     user_id: str
     def __init__(self, user_id: _Optional[str] = ..., first_name: _Optional[str] = ..., family_name: _Optional[str] = ..., father_name: _Optional[str] = ..., phone: _Optional[str] = ...) -> None: ...
+
+class UploadFileRequest(_message.Message):
+    __slots__ = ["chunk_data", "metadata"]
+    CHUNK_DATA_FIELD_NUMBER: _ClassVar[int]
+    METADATA_FIELD_NUMBER: _ClassVar[int]
+    chunk_data: bytes
+    metadata: FileMetadata
+    def __init__(self, metadata: _Optional[_Union[FileMetadata, _Mapping]] = ..., chunk_data: _Optional[bytes] = ...) -> None: ...
 
 class UserReply(_message.Message):
     __slots__ = ["email", "family_name", "father_name", "first_name", "id", "phone"]

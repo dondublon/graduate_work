@@ -9,6 +9,7 @@ from flask_jwt_extended import (
 )
 from flask import abort, current_app
 from pydantic import BaseModel
+from sqlalchemy import delete
 from sqlalchemy.exc import DataError
 
 from models.user import User
@@ -138,3 +139,9 @@ class UserService:
     def get_user_profile(cls, user_id: UUID) -> User:
         user = get_user_or_error(user_id)
         return user
+
+    @classmethod
+    def unregister(cls, user_id: UUID) -> bool:
+        result = delete(User).where(User.id==user_id)
+        logger.info('User %s deleted, result: %s', user_id, result)
+        return bool(result)

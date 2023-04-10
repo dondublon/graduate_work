@@ -34,6 +34,7 @@ swagger.add_namespace(auth.registration.ns, "/register")
 swagger.add_namespace(auth.login.ns, "/login")
 swagger.add_namespace(auth.logout.ns, "/logout")
 swagger.add_namespace(auth.refresh.ns, "/token-refresh")
+swagger.add_namespace(auth.unregistering.ns, "/unregister")
 
 swagger.add_namespace(profile.ns, "/profile")
 swagger.add_namespace(login_history.ns, "/login-histories")

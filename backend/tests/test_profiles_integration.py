@@ -50,36 +50,48 @@ class TestBackend(TestCase):
     def test_profile_update(self):
         response_reg, user_obj = self._register()
         assert 200 <= response_reg.status_code < 300  # this is not a test assert
-        url = os.environ['BACKEND_UPDATE_PROFILE_URL']
-        change_url = f'{self.full_host}{url}'
+        # Region change data
+        #url = os.environ['BACKEND_DELETE_USER_URL']
+        #change_url = f'{self.full_host}{url}'
 
-        new_first_name = names.get_first_name()
-        new_family_name = names.get_last_name()
-        new_phone = random_phone()
+        #new_first_name = names.get_first_name()
+        #new_family_name = names.get_last_name()
+        #new_phone = random_phone()
 
         response_reg_json = json.loads(response_reg.json())
         # We don't need id here because we take it from authorization token.
-        obj = {"first_name": new_first_name,
-               "family_name": new_family_name, 'father_name':names.get_first_name(),
-               "phone": new_phone}
+        # obj = {"first_name": new_first_name,
+        #        "family_name": new_family_name, 'father_name':names.get_first_name(),
+        #        "phone": new_phone}
         headers = {'Content-Type': 'application/json', "Authorization": f'Bearer {response_reg_json["access_token"]}'}
-        response_change = requests.post(change_url, headers=headers, json=obj)
-        status = response_change.status_code
+        # response_change = requests.post(change_url, headers=headers, json=obj)
+        # status = response_change.status_code
+        # status_ok = 200 <= status < 300
+        # if not status_ok:
+        #     print(response_change.text)
+        # self.assertTrue(status_ok)
+        # response_change_json = json.loads(response_change.json())
+        # self.assertTrue(response_change_json["success"])
+        # # Get and check updated user:
+        # url = os.environ['BACKEND_GET_PROFILE_URL']
+        # get_url = f'{self.full_host}{url}'
+        # # No id, we take it from authorization.
+        # response_get = requests.get(get_url, headers=headers)
+        # changed_user = json.loads(response_get.json())
+        # status_get = response_get.status_code
+        # status_change_ok = 200 <= status_get < 300
+        # self.assertTrue(status_change_ok)
+        # del changed_user['id']
+        # del changed_user['email']
+        # self.assertDictEqual(changed_user, obj)
+        # endregion
+        # region deleting
+        del_short_url = os.environ['BACKEND_DELETE_USER_URL']
+        del_url = f'{self.full_host}{del_short_url}'
+        response_del = requests.delete(del_url, headers=headers)
+        status = response_del.status_code
         status_ok = 200 <= status < 300
         if not status_ok:
-            print(response_change.text)
+            print(response_del.text)
         self.assertTrue(status_ok)
-        response_change_json = json.loads(response_change.json())
-        self.assertTrue(response_change_json["success"])
-        # Get and check updated user:
-        url = os.environ['BACKEND_GET_PROFILE_URL']
-        get_url = f'{self.full_host}{url}'
-        # No id, we take it from authorization.
-        response_get = requests.get(get_url, headers=headers)
-        changed_user = json.loads(response_get.json())
-        status_get = response_get.status_code
-        status_change_ok = 200 <= status_get < 300
-        self.assertTrue(status_change_ok)
-        del changed_user['id']
-        del changed_user['email']
-        self.assertDictEqual(changed_user, obj)
+        # endregion

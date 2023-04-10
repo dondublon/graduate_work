@@ -40,6 +40,11 @@ class ProfilesStub(object):
                 request_serializer=profiles__pb2.GettingProfilesRequest.SerializeToString,
                 response_deserializer=profiles__pb2.UserReply.FromString,
                 )
+        self.DeleteProfile = channel.unary_unary(
+                '/profiles.Profiles/DeleteProfile',
+                request_serializer=profiles__pb2.GettingRequest.SerializeToString,
+                response_deserializer=profiles__pb2.BooleanReply.FromString,
+                )
 
 
 class ProfilesServicer(object):
@@ -77,6 +82,12 @@ class ProfilesServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def DeleteProfile(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_ProfilesServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -104,6 +115,11 @@ def add_ProfilesServicer_to_server(servicer, server):
                     servicer.GetProfiles,
                     request_deserializer=profiles__pb2.GettingProfilesRequest.FromString,
                     response_serializer=profiles__pb2.UserReply.SerializeToString,
+            ),
+            'DeleteProfile': grpc.unary_unary_rpc_method_handler(
+                    servicer.DeleteProfile,
+                    request_deserializer=profiles__pb2.GettingRequest.FromString,
+                    response_serializer=profiles__pb2.BooleanReply.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -198,5 +214,22 @@ class Profiles(object):
         return grpc.experimental.unary_stream(request, target, '/profiles.Profiles/GetProfiles',
             profiles__pb2.GettingProfilesRequest.SerializeToString,
             profiles__pb2.UserReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def DeleteProfile(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/profiles.Profiles/DeleteProfile',
+            profiles__pb2.GettingRequest.SerializeToString,
+            profiles__pb2.BooleanReply.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

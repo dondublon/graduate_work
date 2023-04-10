@@ -1,7 +1,8 @@
-from sqlalchemy import select
+from sqlalchemy import select, delete
 
 from db_profiles import get_session
 from models_profiles.user import User
+from logger import logger
 
 
 class UserService:
@@ -53,3 +54,11 @@ class UserService:
                 return as_dict
             else:
                 return []
+
+    @classmethod
+    def delete_profile(cls, user_id: str):
+        user_q = delete(User).where(User.id == user_id)
+        with get_session() as session:
+            result = session.execute(user_q)
+            logger.info("Deleting result %s", result)
+            session.commit()

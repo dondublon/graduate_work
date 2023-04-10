@@ -284,6 +284,8 @@ services:
         ./profiles
     env_file:
       - ./.env
+    environment:
+      - RUN_MODE=GRPC
     expose:
       - "50051" # ${PROFILES_SERVICE_PORT}"
     depends_on:

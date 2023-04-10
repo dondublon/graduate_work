@@ -114,7 +114,7 @@ async def get_profiles(users: UserProfilesModel, request: Request, authorize: Au
 async def delete_user(request: Request, authorize: AuthJWT = Depends()):
     auth_result = await check_auth(request, authorize)
     try:
-        await UserService.delete_user(auth_result.user_uuid)
+        await UserService.delete_user(auth_result.access_token, auth_result.user_uuid)
     except Exception as e:
         logger.error("Error deleting user %s, error=%s", auth_result.user_uuid, e)
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))

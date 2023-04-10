@@ -105,9 +105,9 @@ class UserService(ProfilesService):
             return cash
 
     @classmethod
-    async def delete_user(cls, user_id):
+    async def delete_user(cls, access_token, user_id):
         await cls._delete_from_profiles(user_id)
-        result = await AuthClient.unregister(user_id)
+        result = await AuthClient.unregister(access_token, user_id)
         return result
 
     @classmethod

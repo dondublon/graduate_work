@@ -2,11 +2,9 @@
 A service for backed that send requests to Profiles service.
 """
 import grpc
-from grpc import Call
-from google.protobuf.json_format import MessageToJson, MessageToDict
+from google.protobuf.json_format import MessageToDict
 
 from grpc_files import profiles_pb2_grpc, profiles_pb2
-from models.models import UserUpdateModel
 from .profiles import ProfilesService
 from core.config import settings, logger
 

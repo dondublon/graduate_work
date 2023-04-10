@@ -106,7 +106,7 @@ async def get_profiles(users: UserProfilesModel, request: Request, authorize: Au
     try:
         result = await UserService.get_profiles(users.users_id)
         logger.info("Successfully get profiles for users %s", users.users_id)
-        return paginate(result)  # TODO Add pagination
+        return paginate(result)
     except Exception as e:
         logger.error("Error get profiles %s, error=%s", users.users_id, e)
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))

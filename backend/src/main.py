@@ -5,6 +5,7 @@ import uvicorn
 from fastapi_jwt_auth import AuthJWT
 from fastapi_jwt_auth.exceptions import AuthJWTException
 from fastapi import Request
+from fastapi_pagination import add_pagination
 from starlette.responses import JSONResponse
 
 from api.v1.bookmarks import router_bookmarks
@@ -19,6 +20,7 @@ from db import mongo
 from fastapi import FastAPI
 
 app = FastAPI()
+add_pagination(app)
 
 
 @AuthJWT.load_config

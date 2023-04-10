@@ -4,7 +4,7 @@ import sentry_sdk
 import uvicorn
 from fastapi_jwt_auth import AuthJWT
 from fastapi_jwt_auth.exceptions import AuthJWTException
-from fastapi import Request, Depends
+from fastapi import Request
 from starlette.responses import JSONResponse
 
 from api.v1.bookmarks import router_bookmarks

@@ -63,3 +63,6 @@ class UserUpdateModel(UserBasic):
 
 class UserIdModel(BaseOrjsonModel):
     id: uuid.UUID
+
+class UserProfilesModel(BaseOrjsonModel):
+    users_id: list[Optional[str]]

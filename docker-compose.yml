@@ -82,7 +82,7 @@ services:
   # region UGC
   mongo:
     container_name: mongosingle
-    image: mongo
+    image: mongo:6.0
     expose:
       - "27017"
     volumes:

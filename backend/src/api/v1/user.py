@@ -7,8 +7,9 @@ from starlette.requests import Request
 
 from core.config import logger
 from services.user import UserService
+from .common import check_auth, check_role
+from models.models import UserRegisterModel, UserUpdateModel, ChangeEmailModel, UserProfilesModel
 from utils.reply import reply_to_dict
-from .common import check_auth
 from models.models import UserRegisterModel, UserBasic, ChangeEmailModel
 
 router_user = APIRouter(prefix=f"/user")
@@ -91,4 +92,18 @@ async def get_profile(request: Request, authorize: AuthJWT = Depends()):
         return orjson.dumps(reply_to_dict(result))
     except Exception as e:
         logger.error("Error getting id %s, error=%s", auth_result.user_uuid, e)
+        raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
+
+
+@router_user.get('/profiles')
+async def get_profiles(users: UserProfilesModel, request: Request, authorize: AuthJWT = Depends()):
+    """Request to Profiles service"""
+    auth_result = await check_auth(request, authorize)
+    roles_list = await check_role(auth_result.user_uuid, auth_result.access_token)
+    try:
+        result = await UserService.get_profiles(users.users_id)
+        logger.info("Successfully get profiles for users %s", users.users_id)
+        return orjson.dumps({"profiles": result})  # TODO Add pagination
+    except Exception as e:
+        logger.error("Error get profiles %s, error=%s", users.users_id, e)
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))

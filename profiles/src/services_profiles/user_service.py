@@ -39,3 +39,17 @@ class UserService:
             user.phone = phone
 
             session.commit()
+
+    @classmethod
+    def get_users_profiles(cls, users_id: list) -> list:
+        if users_id[0] == '*':
+            profiles_q = select(User)
+        else:
+            profiles_q = select(User).filter(User.id.in_(users_id))
+        with get_session() as session:
+            profiles = session.scalars(profiles_q).all()
+            if profiles:
+                as_dict = [profile.as_dict(to_str=True) for profile in profiles]
+                return as_dict
+            else:
+                return []

@@ -3,11 +3,9 @@ from concurrent import futures
 import grpc
 import sentry_sdk
 
-import profiles_pb2
-import profiles_pb2_grpc
-
 from config import settings
 from logger import logger
+from grpc_files import profiles_pb2, profiles_pb2_grpc
 from services_profiles.user_service import UserService
 
 
@@ -50,6 +48,17 @@ class Profiles(profiles_pb2_grpc.ProfilesServicer):
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(f'Error updating user {request.id}: {e}')
             return profiles_pb2.ErrorReply(details=f'Error updating user {request.id}: {e}')
+            return profiles_pb2.ErrorReply(details=f'User with {request.id} not found.')
+
+    def GetProfiles(self, request, context):
+        profiles = UserService.get_users_profiles(request.users_id)
+        if profiles:
+            for profile in profiles:
+                yield profiles_pb2.UserReply(**profile)
+        else:
+            context.set_code(grpc.StatusCode.NOT_FOUND)
+            context.set_details(f'Users with {request.users_id} not found.')
+            return profiles_pb2.ErrorReply(details=f'User with {request.id} not found.')
 
 
 def serve():

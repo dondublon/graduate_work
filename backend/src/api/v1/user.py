@@ -6,7 +6,7 @@ import orjson
 from starlette.requests import Request
 
 from core.config import logger
-from services.user import UserService
+from services.user import UserService, NotFoundError
 from .common import check_auth, check_role
 from models.models import UserRegisterModel, ChangeEmailModel, UserProfilesModel, UserBasic
 from helpers.reply import reply_to_dict
@@ -83,13 +83,14 @@ async def change_email(user: ChangeEmailModel, request: Request, authorize: Auth
 async def get_profile(request: Request, authorize: AuthJWT = Depends()):
     """No email"""
     auth_result = await check_auth(request, authorize)
-
     try:
         result = await UserService.get_profile(auth_result.user_uuid)
-
-        success = True
+        if result is None:
+            raise NotFoundError(f"User {auth_result.user_uuid} not found.")
         logger.info("Successfully got profile for user %s", auth_result.user_uuid)
         return orjson.dumps(reply_to_dict(result))
+    except NotFoundError as e:
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail=str(e))
     except Exception as e:
         logger.error("Error getting id %s, error=%s", auth_result.user_uuid, e)
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))

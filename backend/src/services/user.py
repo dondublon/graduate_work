@@ -12,6 +12,10 @@ from .service_types import RegisterAuthResult
 from .auth import AuthClient
 
 
+class NotFoundError(Exception):
+    pass
+
+
 class UserService(ProfilesService):
     @classmethod
     async def register(cls, password, password_confirmation, first_name, family_name, father_name, email, phone) -> RegisterAuthResult:
@@ -73,8 +77,6 @@ class UserService(ProfilesService):
 
             response = stub.UpdateProfile(request)  # TODO make async
 
-            print(f"Client received: {response.success}")
-
 
     @classmethod
     async def get_profile(cls, user_id):
@@ -84,13 +86,15 @@ class UserService(ProfilesService):
             stub = profiles_pb2_grpc.ProfilesStub(channel)
 
             request = profiles_pb2.GettingRequest(id=user_id)
-
-            response = stub.Get(request)  # TODO make async
-            print(f"Client received: {response}")
-            if isinstance(response, profiles_pb2.UserReply):
+            try:
+                response = stub.Get(request)  # TODO make async
                 return response
-            elif isinstance(response, profiles_pb2.ErrorReply):  # Doesn works yet
-                return None
+            except grpc.RpcError as e:
+                # noinspection PyUnresolvedReferences
+                if e.code() == grpc.StatusCode.NOT_FOUND:
+                    return None
+                else:
+                    raise e
 
     @classmethod
     async def get_profiles(cls, users_id):

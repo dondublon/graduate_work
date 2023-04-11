@@ -1,4 +1,5 @@
 from concurrent import futures
+import glob
 import os
 
 import grpc
@@ -85,6 +86,11 @@ class Profiles(profiles_pb2_grpc.ProfilesServicer):
     def get_avatar_path(cls, user_id, extension):
         return f'{settings.avatar_path}/{user_id}.{extension}'
 
+    @classmethod
+    def get_existing_avatar_path(cls, user_id):
+        files = os.listdir()
+        return f'{settings.avatar_path}/{user_id}.{extension}'
+
     def UploadFile(self, request, context):
         filepath = self.get_filepath(request.metadata.user_id, request.metadata.file_extension)
         # TODO Make only one file allowed.
@@ -98,6 +104,9 @@ class Profiles(profiles_pb2_grpc.ProfilesServicer):
             return profiles_pb2.BooleanReply(success=True)
 
     def DownloadAvatar(self, request, context):
+        """From request:
+        id
+        """
         chunk_size = 5 * 1024 * 1024
 
         filepath = self.get_avatar_path(request.id, 'jpeg')

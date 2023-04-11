@@ -1,7 +1,6 @@
 import json
 import os
 from unittest import TestCase
-import jwt
 
 import requests
 import names
@@ -114,16 +113,15 @@ class TestBackend(TestCase):
 
         with open('some_file.jpeg', 'rb') as f:
             files = {'file': f}
-            requests.post(upload_url, files=files, headers=headers)
+            response = requests.post(upload_url, files=files, headers=headers)
         with open('some_file.jpeg', 'rb') as f:
             content_to_check = f.read()
+        upload_response_json = json.loads(response.json())
+        user_id = upload_response_json["user_id"]
         # endregion
 
         # region download and check
         url = os.environ['BACKEND_GET_AVATAR']
-        secret_key = 'foo'
-        decoded=jwt.decode(response_reg_json["access_token"], secret_key, algorithms=["HS256"])
-        user_id = decoded["sub"]
         download_url = f'{self.full_host}{url}/{user_id}'
 
         response = requests.get(download_url, headers=headers)

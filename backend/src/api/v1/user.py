@@ -129,8 +129,6 @@ async def delete_user(request: Request, authorize: AuthJWT = Depends()):
                  response_class=Response
                  )
 async def get_avatar(user_id: str, request: Request): # authorize: AuthJWT = Depends()
-    # auth_result = await check_auth(request, authorize)
-    # auth_result = await check_auth(request, authorize)  # Temporary
     result = await UserService.get_avatar(user_id)
     # noinspection PyUnresolvedReferences
     return Response(content=result.chunk_data, media_type=f"image/{result.file_extension}")
@@ -144,4 +142,4 @@ async def create_upload_file(file: UploadFile, request: Request, authorize: Auth
     if ext not in ['.jpg', '.jpeg', '.png', '.gif']:
         return orjson.dumps({"success": False, "details": "Only 'jpg', 'jpeg', 'png', 'gif' allowed."})
     result = await UserService.upload_avatar(file.filename, auth_result.user_uuid, data)
-    return orjson.dumps({"success": True})
+    return orjson.dumps({"success": True, "user_id": auth_result.user_uuid})

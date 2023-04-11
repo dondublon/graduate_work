@@ -25,7 +25,7 @@ class UserService(ProfilesService):
         result = await AuthClient.register_on_auth(password, password_confirmation, email)
         # noinspection PyUnusedLocal
         try:
-            await cls.register_on_profiles(result.id_, first_name, family_name, father_name, email, phone)
+            cls.register_on_profiles(result.id_, first_name, family_name, father_name, email, phone)
             return result
         except Exception as e:
             logger.error("Error on registration %s, %s", (result.id_, first_name, family_name, father_name, email, phone), e)

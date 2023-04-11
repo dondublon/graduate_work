@@ -285,7 +285,7 @@ services:
     env_file:
       - ./.env
     environment:
-      - RUN_MODE=GRPC
+      - RUN_MODE=ASYNC
     expose:
       - "50051" # ${PROFILES_SERVICE_PORT}"
     depends_on:

@@ -138,7 +138,7 @@ async def get_avatar(user_id: str, request: Request): # authorize: AuthJWT = Dep
 async def create_upload_file(file: UploadFile, request: Request, authorize: AuthJWT = Depends()):
     auth_result = await check_auth(request, authorize)
     data = await file.read()
-    short_name, ext = os.path.splitext(file.filename)
+    short_name, ext = os.path.splitext(str(file.filename))
     if ext not in ['.jpg', '.jpeg', '.png', '.gif']:
         return orjson.dumps({"success": False, "details": "Only 'jpg', 'jpeg', 'png', 'gif' allowed."})
     result = await UserService.upload_avatar(file.filename, auth_result.user_uuid, data)

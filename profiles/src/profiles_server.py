@@ -13,7 +13,7 @@ app = FastAPI()
 
 
 class Profiles(profiles_pb2_grpc.ProfilesServicer):
-    async def Register(self, request, context):
+    def Register(self, request, context):
         try:
             UserService.register(id_=request.id, first_name=request.first_name,
                                  father_name=request.father_name, family_name=request.family_name,
@@ -26,7 +26,7 @@ class Profiles(profiles_pb2_grpc.ProfilesServicer):
             context.set_details(str(e))
             return profiles_pb2.BooleanReply(success=False)
 
-    async def Get(self, request, context):
+    def Get(self, request, context):
         user = UserService.get_by_id(request.id)
         if user:
             reply = profiles_pb2.UserReply(**user)
@@ -38,7 +38,7 @@ class Profiles(profiles_pb2_grpc.ProfilesServicer):
             reply = profiles_pb2.UserReply()
             return reply
 
-    async def ChangeEMail(self, request, context):
+    def ChangeEMail(self, request, context):
         try:
             logger.info("Before profile update")
             UserService.change_email(user_id=request.user_id, email=request.email)
@@ -49,7 +49,7 @@ class Profiles(profiles_pb2_grpc.ProfilesServicer):
             return profiles_pb2.BooleanReply()
 
 
-    async def UpdateProfile(self, request, context):
+    def UpdateProfile(self, request, context):
         try:
             logger.info("Before profile update")
             UserService.update(user_id=request.user_id, first_name=request.first_name,

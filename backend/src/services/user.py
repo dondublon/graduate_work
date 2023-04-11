@@ -51,6 +51,7 @@ class UserService(ProfilesService):
         """
         await AuthClient.change_email(access_token, user_id, email)
         await cls._change_profiles_email(user_id, email)
+        pass
 
     @classmethod
     async def _change_profiles_email(cls, id_, email):

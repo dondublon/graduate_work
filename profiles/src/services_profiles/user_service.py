@@ -29,6 +29,16 @@ class UserService:
                 return None
 
     @classmethod
+    def change_email(cls, user_id, email):
+        # noinspection PyTypeChecker
+        user_q = select(User).where(User.id == user_id)
+        with get_session() as session:
+            user = session.scalar(user_q)
+            user.email = email
+
+            session.commit()
+
+    @classmethod
     def update(cls, user_id, first_name, family_name, father_name, phone):
         # noinspection PyTypeChecker
         user_q = select(User).where(User.id == user_id)

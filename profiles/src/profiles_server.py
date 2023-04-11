@@ -38,9 +38,20 @@ class Profiles(profiles_pb2_grpc.ProfilesServicer):
             reply = profiles_pb2.UserReply()
             return reply
 
+    async def ChangeEMail(self, request, context):
+        try:
+            logger.info("Before profile update")
+            UserService.change_email(user_id=request.user_id, email=request.email)
+            return profiles_pb2.BooleanReply(success=True)
+        except Exception as e:
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details(f'Error updating user email {request.user_id}: {e}')
+            return profiles_pb2.BooleanReply()
+
+
     async def UpdateProfile(self, request, context):
         try:
-            logger.info("Before update")
+            logger.info("Before profile update")
             UserService.update(user_id=request.user_id, first_name=request.first_name,
                                family_name=request.family_name, father_name=request.father_name,
                                phone=request.phone)

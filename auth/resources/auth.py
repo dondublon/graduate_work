@@ -80,6 +80,9 @@ class Unregistering(Resource):
     def delete(self):
         """Unregister user (delete them)"""
         user_id = get_jwt_identity()
-        result = UserService.unregister(user_id)
-        status = HTTPStatus.OK if result else HTTPStatus.INTERNAL_SERVER_ERROR
+        try:
+            result = UserService.unregister(user_id)
+            status = HTTPStatus.OK if result else HTTPStatus.NOT_FOUND
+        except:
+            status = HTTPStatus.INTERNAL_SERVER_ERROR
         return {'user_id': user_id}, status

@@ -97,10 +97,8 @@ class User(db.Model, ModelMixin):
         user = cls.query.filter_by(id=user_id).first()
         if user is None:
             return False
-        result = db.session.delete(user)
-        logger.info('deleting result: %s', result)
+        db.session.delete(user)
         db.session.commit()
-        logger.info('User deleted: %s', user_id)
         return True
 
     @property

@@ -47,13 +47,10 @@ class AuthClient:
     @classmethod
     async def unregister(cls, access_token, user_id) -> bool:
         # TODO Make async
-        # obj = {"id": user_id}
 
         full_url = f'{settings.auth_protocol_host_port}{settings.auth_unregister_url}'
         response = requests.delete(full_url, headers={"Content-Type": "application/json", "Authorization": f'Bearer {access_token}'})
 
-
-        # json_obj = response.json()
         if 200 <= response.status_code < 300:
             return True
         else:

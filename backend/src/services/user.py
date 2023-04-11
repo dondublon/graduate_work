@@ -31,7 +31,6 @@ class UserService(ProfilesService):
             return result
         except Exception as e:
             logger.error("Error on registration %s, %s", (result.id_, first_name, family_name, father_name, email, phone), e)
-            # TODO Delete the record on auth.
             raise e
 
     @classmethod

@@ -49,7 +49,7 @@ class UserService(ProfilesService):
         """
         Yes, access token and user id togeher is redundant, but for the convenience.
         """
-        await AuthClient.change_email(access_token, user_id, email)
+        await AuthClient.change_email(access_token, email)
         await cls._change_profiles_email(user_id, email)
         logger.info("Email changed to %s in both places.", email)
 
@@ -110,7 +110,7 @@ class UserService(ProfilesService):
     async def delete_user(cls, access_token, user_id):
         await cls._delete_from_profiles(user_id)
         logger.info('Delete from profiles - ok')
-        result = await AuthClient.unregister(access_token, user_id)
+        result = await AuthClient.unregister(access_token)
         logger.info('Delete from auth - ok')
         return result
 

@@ -30,7 +30,7 @@ class AuthClient:
             raise Exception(response.text)
 
     @classmethod
-    async def change_email(cls, access_token, id_, email):
+    async def change_email(cls, access_token, email):
         """Request from backend to auth. """
         obj = {"email": email}
         full_url = f'{settings.auth_protocol_host_port}{settings.auth_change_email}'
@@ -45,7 +45,7 @@ class AuthClient:
             raise Exception(response.text)
 
     @classmethod
-    async def unregister(cls, access_token, user_id) -> bool:
+    async def unregister(cls, access_token) -> bool:
         # TODO Make async
 
         full_url = f'{settings.auth_protocol_host_port}{settings.auth_unregister_url}'

@@ -57,7 +57,7 @@ class UserService(ProfilesService):
         with grpc.insecure_channel(settings.profiles_host_port) as channel:
             stub = profiles_pb2_grpc.ProfilesStub(channel)
             all_attrs = {'user_id': id_, 'email': email}
-            response = stub.Register(profiles_pb2.ChangeEmailRequest(**all_attrs))  # TODO make async
+            response = stub.ChangeEMail(profiles_pb2.ChangeEmailRequest(**all_attrs))  # TODO make async
 
             print(f"Client received: {response.success}")
             return all_attrs

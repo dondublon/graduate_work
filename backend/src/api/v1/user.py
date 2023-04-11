@@ -1,6 +1,7 @@
+import os.path
 from http import HTTPStatus
 
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, File, UploadFile
 from fastapi.responses import Response
 from fastapi_jwt_auth import AuthJWT
 import orjson
@@ -118,6 +119,7 @@ async def delete_user(request: Request, authorize: AuthJWT = Depends()):
     auth_result = await check_auth(request, authorize)
     try:
         await UserService.delete_user(auth_result.access_token, auth_result.user_uuid)
+        return orjson.dumps({"success": True})
     except Exception as e:
         logger.error("Error deleting user %s, error=%s", auth_result.user_uuid, e)
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
@@ -130,3 +132,14 @@ async def get_avatar(request: Request, authorize: AuthJWT = Depends()):
     # auth_result = await check_auth(request, authorize)  # Temporary
     result = await UserService.get_avatar('auth_result.user_uuid')
     return Response(content=result.chunk_data, media_type="image/jpeg")
+
+
+@router_user.post('/upload-avatar')
+async def create_upload_file(file: UploadFile, request: Request, authorize: AuthJWT = Depends()):
+    auth_result = await check_auth(request, authorize)
+    data = await file.read()
+    short_name, ext = os.path.splitext(file.filename)
+    if ext not in ['.jpg', '.jpeg', '.png', '.gif']:
+        return orjson.dumps({"success": False, "details": "Only 'jpg', 'jpeg', 'png', 'gif' allowed."})
+    result = await UserService.upload_avatar(file.filename, auth_result.user_uuid, data)
+    return orjson.dumps({"success": True})

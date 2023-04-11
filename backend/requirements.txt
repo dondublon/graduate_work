@@ -16,3 +16,4 @@ fastapi-pagination==0.12.1
 grpcio==1.53.0
 pydantic[email]==1.10.7
 protobuf==4.22.1
+python-multipart==0.0.6

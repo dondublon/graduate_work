@@ -98,3 +98,19 @@ class TestBackend(TestCase):
             print(response_del.text)
         self.assertTrue(status_ok)
         # endregion
+
+    def test_upload_avatar(self):
+        # regionregister
+        response_reg, user_obj = self._register()
+        assert 200 <= response_reg.status_code < 300  # this is not a test assert
+        response_reg_json = json.loads(response_reg.json())
+        # endregion
+
+        # region upload
+        url = os.environ['BACKEND_UPLOAD_AVATAR']
+        upload_url = f'{self.full_host}{url}'
+        headers = {"Authorization": f'Bearer {response_reg_json["access_token"]}'}
+
+        files = {'file': open('some_file.jpeg', 'rb')}
+        requests.post(upload_url, files=files, headers=headers)
+        # endregion

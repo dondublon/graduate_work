@@ -1,3 +1,4 @@
+import subprocess
 from concurrent import futures
 import glob
 import os
@@ -84,15 +85,22 @@ class Profiles(profiles_pb2_grpc.ProfilesServicer):
 
     @classmethod
     def get_avatar_path(cls, user_id, extension):
-        return f'{settings.avatar_path}/{user_id}.{extension}'
+        """file extension with dot"""
+        return f'{settings.avatar_path}/{user_id}{extension}'
 
     @classmethod
     def get_existing_avatar_path(cls, user_id):
-        files = os.listdir()
-        return f'{settings.avatar_path}/{user_id}.{extension}'
+        p = subprocess.Popen(f'ls {settings.avatar_path}/{user_id}.*', shell=True, stdout=subprocess.PIPE)
+        files = [s.strip() for s in p.stdout.readlines()]
+        if len(files) == 0:
+            return f'{settings.avatar_path}/default.jpeg'
+        elif len(files) > 1:
+            logger.warn('More than one avatar for %s', user_id)
+        return files[0]
 
-    def UploadFile(self, request, context):
-        filepath = self.get_filepath(request.metadata.user_id, request.metadata.file_extension)
+    def UploadAvatar(self, request, context):
+        """file extension with dot"""
+        filepath = self.get_avatar_path(request.metadata.user_id, request.metadata.file_extension)
         # TODO Make only one file allowed.
         try:
             with open(filepath, 'wb') as f:
@@ -101,7 +109,7 @@ class Profiles(profiles_pb2_grpc.ProfilesServicer):
         except Exception as e:
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(f'Error uploading : {e}')
-            return profiles_pb2.BooleanReply(success=True)
+            return profiles_pb2.BooleanReply(success=False)
 
     def DownloadAvatar(self, request, context):
         """From request:
@@ -109,9 +117,7 @@ class Profiles(profiles_pb2_grpc.ProfilesServicer):
         """
         chunk_size = 5 * 1024 * 1024
 
-        filepath = self.get_avatar_path(request.id, 'jpeg')
-        if not os.path.exists(filepath):
-            filepath = self.get_avatar_path('default', 'jpeg')
+        filepath = self.get_existing_avatar_path(request.id)
         logger.info(f'Current directory {os.path.abspath(".")}')
         with open(filepath, mode="rb") as f:
             logger.info(f'Retrieving the file {filepath}')

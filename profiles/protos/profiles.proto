@@ -70,10 +70,8 @@ message FileMetadata {
 }
 
 message UploadFileRequest {
-  oneof request {
-    FileMetadata metadata = 1;
-    bytes chunk_data = 2;
-  }
+  FileMetadata metadata = 1;
+  bytes chunk_data = 2;
 }
 
 message FileResponse {

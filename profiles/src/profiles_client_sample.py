@@ -39,7 +39,7 @@ async def run_register():
 
 
 if __name__ == "__main__":
-    config = uvicorn.run(  # ok
+    config = uvicorn.run(  # type: ignore
         "profiles_client_sample:app",
         host="localhost",
         port=8085,

@@ -111,6 +111,16 @@ class TestBackend(TestCase):
         upload_url = f'{self.full_host}{url}'
         headers = {"Authorization": f'Bearer {response_reg_json["access_token"]}'}
 
-        files = {'file': open('some_file.jpeg', 'rb')}
-        requests.post(upload_url, files=files, headers=headers)
+        with open('some_file.jpeg', 'rb') as f:
+            files = {'file': f}
+            content_to_check = f.read()
+            requests.post(upload_url, files=files, headers=headers)
+        # endregion
+
+        # region download and check
+        url = os.environ['BACKEND_GET_AVATAR']
+        download_url = f'{self.full_host}{url}'
+        response = requests.get(download_url, headers=headers)
+        print(response)
+        self.assertEqual(content_to_check, response.content)
         # endregion

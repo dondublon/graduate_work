@@ -118,12 +118,13 @@ class Profiles(profiles_pb2_grpc.ProfilesServicer):
         chunk_size = 5 * 1024 * 1024
 
         filepath = self.get_existing_avatar_path(request.id)
+        name, ext = os.path.splitext(filepath)
         logger.info(f'Current directory {os.path.abspath(".")}')
         with open(filepath, mode="rb") as f:
             logger.info(f'Retrieving the file {filepath}')
             chunk = f.read(chunk_size)
             if chunk:
-                entry_response = profiles_pb2.FileResponse(chunk_data=chunk)
+                entry_response = profiles_pb2.FileResponse(chunk_data=chunk, file_extension=ext)
                 return entry_response
             else:
                 return

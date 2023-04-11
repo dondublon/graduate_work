@@ -131,7 +131,7 @@ async def delete_user(request: Request, authorize: AuthJWT = Depends()):
 async def get_avatar(request: Request, authorize: AuthJWT = Depends()):
     # auth_result = await check_auth(request, authorize)  # Temporary
     result = await UserService.get_avatar('auth_result.user_uuid')
-    return Response(content=result.chunk_data, media_type="image/jpeg")
+    return Response(content=result.chunk_data, media_type=f"image/{result.file_extension}")
 
 
 @router_user.post('/upload-avatar')

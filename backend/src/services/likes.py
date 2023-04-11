@@ -1,6 +1,6 @@
 from typing import Tuple
 
-from models.models import Like, Movie
+from models_backend.models import Like, Movie
 
 from .mongo import ServiceMongo
 

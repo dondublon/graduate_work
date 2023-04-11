@@ -10,6 +10,7 @@ service Profiles {
   rpc ChangeEMail(ChangeEmailRequest) returns (BooleanReply) {}
   rpc UpdateProfile(UpdateProfileRequest) returns (BooleanReply) {}
   rpc GetProfiles(GettingProfilesRequest) returns (stream UserReply) {}
+  rpc DeleteProfile(GettingRequest) returns (BooleanReply) {}
 
   rpc UploadAvatar(UploadFileRequest) returns (BooleanReply) {}
   rpc DownloadAvatar(GettingRequest) returns (FileResponse) {}

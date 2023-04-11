@@ -10,7 +10,7 @@ from flask_restful import Resource
 
 from resources.parsers.auth import register_parser, auth_parser
 from services.user_service import UserService, JWTs
-from utils.namespaces import registration, login, refresh, logout
+from utils.namespaces import registration, login, refresh, logout, unregistering
 from utils.namespaces.login import tokens
 from utils.parsers.auth import access_token_required, refresh_token_required
 from utils.parsers.login import credentials
@@ -70,3 +70,19 @@ class Logout(Resource):
         payload = get_jwt()
         payload, status = UserService.logout(user_id, payload)
         return payload, status
+
+
+@unregistering.ns.route("")
+@unregistering.ns.expect(access_token_required)
+class Unregistering(Resource):
+    # @registration.ns.marshal_with(tokens, code=HTTPStatus.OK)
+    @jwt_required(verify_type=False)
+    def delete(self):
+        """Unregister user (delete them)"""
+        user_id = get_jwt_identity()
+        try:
+            result = UserService.unregister(user_id)
+            status = HTTPStatus.OK if result else HTTPStatus.NOT_FOUND
+        except:
+            status = HTTPStatus.INTERNAL_SERVER_ERROR
+        return {'user_id': user_id}, status

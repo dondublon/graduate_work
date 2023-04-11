@@ -4,12 +4,14 @@ from fastapi import APIRouter, HTTPException, Depends
 from fastapi.responses import Response
 from fastapi_jwt_auth import AuthJWT
 import orjson
+from fastapi_pagination import Page, paginate
 from starlette.requests import Request
 
 from core.config import logger
+from paginate_model.paginate_models import ProfilesOut
 from services.user import UserService, NotFoundError
 from .common import check_auth, check_role
-from models.models import UserRegisterModel, ChangeEmailModel, UserProfilesModel, UserBasic
+from models_backend.models import UserRegisterModel, ChangeEmailModel, UserProfilesModel, UserBasic
 from helpers.reply import reply_to_dict
 
 
@@ -97,7 +99,7 @@ async def get_profile(request: Request, authorize: AuthJWT = Depends()):
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
 
 
-@router_user.get('/profiles')
+@router_user.get('/profiles', response_model=Page[ProfilesOut])
 async def get_profiles(users: UserProfilesModel, request: Request, authorize: AuthJWT = Depends()):
     """Request to Profiles service"""
     auth_result = await check_auth(request, authorize)
@@ -105,11 +107,20 @@ async def get_profiles(users: UserProfilesModel, request: Request, authorize: Au
     try:
         result = await UserService.get_profiles(users.users_id)
         logger.info("Successfully get profiles for users %s", users.users_id)
-        return orjson.dumps({"profiles": result})  # TODO Add pagination
+        return paginate(result)
     except Exception as e:
         logger.error("Error get profiles %s, error=%s", users.users_id, e)
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
 
+
+@router_user.delete('/delete-user')
+async def delete_user(request: Request, authorize: AuthJWT = Depends()):
+    auth_result = await check_auth(request, authorize)
+    try:
+        await UserService.delete_user(auth_result.access_token, auth_result.user_uuid)
+    except Exception as e:
+        logger.error("Error deleting user %s, error=%s", auth_result.user_uuid, e)
+        raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
 
 @router_user.get('/avatar',
                  responses={200: {"content": {"image/png": {}, "image/jpeg": {}}}},

@@ -1,11 +1,14 @@
 create table if not exists users
 (
-    id          uuid         not null,
+    id          uuid  not null
+        primary key,
     first_name  varchar(100) not null,
     family_name varchar(100) not null,
     father_name varchar(100),
     phone       varchar(20),
-    email       varchar(100)
+    email       varchar(30)
+        constraint users_pk
+            unique
 );
 
 comment on table users is 'email is in auth-db';

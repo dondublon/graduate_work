@@ -1,7 +1,8 @@
-from sqlalchemy import select
+from sqlalchemy import select, delete
 
 from db_profiles import get_session
 from models_profiles.user import User
+from logger import logger
 
 
 class UserService:
@@ -26,6 +27,16 @@ class UserService:
                 return as_dict
             else:
                 return None
+
+    @classmethod
+    def change_email(cls, user_id, email):
+        # noinspection PyTypeChecker
+        user_q = select(User).where(User.id == user_id)
+        with get_session() as session:
+            user = session.scalar(user_q)
+            user.email = email
+
+            session.commit()
 
     @classmethod
     def update(cls, user_id, first_name, family_name, father_name, phone):
@@ -53,3 +64,11 @@ class UserService:
                 return as_dict
             else:
                 return []
+
+    @classmethod
+    def delete_profile(cls, user_id: str):
+        user_q = delete(User).where(User.id == user_id)
+        with get_session() as session:
+            result = session.execute(user_q)
+            logger.info("Deleting result %s", result)
+            session.commit()

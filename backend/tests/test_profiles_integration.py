@@ -35,13 +35,15 @@ class TestBackend(TestCase):
         response_reg, user_obj = self._register()
         assert 200 <= response_reg.status_code < 300  # this is not a test assert
         url = os.environ['BACKEND_CHANGE_EMAIL_URL']
-        full_url = f'{self.full_host}{url}'
+        print("old email: ", user_obj["email"])
+        change_full_url = f'{self.full_host}{url}'
 
         response_reg_json = json.loads(response_reg.json())
         new_email = random_email()
+        print("new email: ", new_email)
         obj = {"id": response_reg_json["inserted_id"], "email": new_email}
         headers = {'Content-Type': 'application/json', "Authorization": f'Bearer {response_reg_json["access_token"]}'}
-        response = requests.post(full_url, headers=headers, json=obj)
+        response = requests.post(change_full_url, headers=headers, json=obj)
         status = response.status_code
         self.assertTrue(200 <= status < 300)
         response_change_json = json.loads(response.json())
@@ -50,6 +52,7 @@ class TestBackend(TestCase):
     def test_profile_update(self):
         response_reg, user_obj = self._register()
         assert 200 <= response_reg.status_code < 300  # this is not a test assert
+        # Region change data
         url = os.environ['BACKEND_UPDATE_PROFILE_URL']
         change_url = f'{self.full_host}{url}'
 
@@ -83,3 +86,15 @@ class TestBackend(TestCase):
         del changed_user['id']
         del changed_user['email']
         self.assertDictEqual(changed_user, obj)
+        # endregion
+
+        # region deleting
+        del_short_url = os.environ['BACKEND_DELETE_USER_URL']
+        del_url = f'{self.full_host}{del_short_url}'
+        response_del = requests.delete(del_url, headers=headers)
+        status = response_del.status_code
+        status_ok = 200 <= status < 300
+        if not status_ok:
+            print(response_del.text)
+        self.assertTrue(status_ok)
+        # endregion

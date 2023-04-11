@@ -3,11 +3,14 @@ import os
 
 import grpc
 import sentry_sdk
+from fastapi import FastAPI
 
 from config import settings
 from logger import logger
 from grpc_files import profiles_pb2, profiles_pb2_grpc
 from services_profiles.user_service import UserService
+
+app = FastAPI()
 
 
 class Profiles(profiles_pb2_grpc.ProfilesServicer):
@@ -22,7 +25,7 @@ class Profiles(profiles_pb2_grpc.ProfilesServicer):
         except Exception as e:
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(str(e))
-            return profiles_pb2.BooleanReply()
+            return profiles_pb2.BooleanReply(success=False)
 
     def Get(self, request, context):
         user = UserService.get_by_id(request.id)
@@ -36,9 +39,20 @@ class Profiles(profiles_pb2_grpc.ProfilesServicer):
             reply = profiles_pb2.UserReply()
             return reply
 
+    def ChangeEMail(self, request, context):
+        try:
+            logger.info("Before profile update")
+            UserService.change_email(user_id=request.user_id, email=request.email)
+            return profiles_pb2.BooleanReply(success=True)
+        except Exception as e:
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details(f'Error updating user email {request.user_id}: {e}')
+            return profiles_pb2.BooleanReply()
+
+
     def UpdateProfile(self, request, context):
         try:
-            logger.info("Before update")
+            logger.info("Before profile update")
             UserService.update(user_id=request.user_id, first_name=request.first_name,
                                family_name=request.family_name, father_name=request.father_name,
                                phone=request.phone)
@@ -46,7 +60,7 @@ class Profiles(profiles_pb2_grpc.ProfilesServicer):
         except Exception as e:
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(f'Error updating user {request.id}: {e}')
-            return profiles_pb2.BooleanReply()
+            return profiles_pb2.BooleanReply(success=False)
 
     def GetProfiles(self, request, context):
         profiles = UserService.get_users_profiles(request.users_id)
@@ -57,6 +71,15 @@ class Profiles(profiles_pb2_grpc.ProfilesServicer):
             context.set_code(grpc.StatusCode.NOT_FOUND)
             context.set_details(f'Users with {request.users_id} not found.')
             return profiles_pb2.UserReply()
+
+    def DeleteProfile(self, request, context):
+        try:
+            result = UserService.delete_profile(request.id)
+            return profiles_pb2.BooleanReply(success=True)
+        except Exception as e:
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details(f'Error updating user {request.id}: {e}')
+            return profiles_pb2.BooleanReply(success=False)
 
     @classmethod
     def get_avatar_path(cls, user_id, extension):

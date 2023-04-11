@@ -138,3 +138,10 @@ class UserService:
     def get_user_profile(cls, user_id: UUID) -> User:
         user = get_user_or_error(user_id)
         return user
+
+    @classmethod
+    def unregister(cls, user_id: UUID) -> bool:
+        """Returns True - ok, false - something happened."""
+        result = User.delete(user_id)
+        logger.info('User %s deleted, result: %s', user_id, result)
+        return result

@@ -24,7 +24,7 @@ class Profiles(profiles_pb2_grpc.ProfilesServicer):
         except Exception as e:
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(str(e))
-            return profiles_pb2.BooleanReply()
+            return profiles_pb2.BooleanReply(success=False)
 
     async def Get(self, request, context):
         user = UserService.get_by_id(request.id)
@@ -48,7 +48,7 @@ class Profiles(profiles_pb2_grpc.ProfilesServicer):
         except Exception as e:
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(f'Error updating user {request.id}: {e}')
-            return profiles_pb2.BooleanReply()
+            return profiles_pb2.BooleanReply(success=False)
 
     def GetProfiles(self, request, context):
         profiles = UserService.get_users_profiles(request.users_id)
@@ -59,6 +59,15 @@ class Profiles(profiles_pb2_grpc.ProfilesServicer):
             context.set_code(grpc.StatusCode.NOT_FOUND)
             context.set_details(f'Users with {request.users_id} not found.')
             return profiles_pb2.UserReply()
+
+    def DeleteProfile(self, request, context):
+        try:
+            result = UserService.delete_profile(request.id)
+            return profiles_pb2.BooleanReply(success=True)
+        except Exception as e:
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details(f'Error updating user {request.id}: {e}')
+            return profiles_pb2.BooleanReply(success=False)
 
 
 def serve():

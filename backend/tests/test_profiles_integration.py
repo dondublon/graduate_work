@@ -50,6 +50,7 @@ class TestBackend(TestCase):
     def test_profile_update(self):
         response_reg, user_obj = self._register()
         assert 200 <= response_reg.status_code < 300  # this is not a test assert
+        # Region change data
         url = os.environ['BACKEND_UPDATE_PROFILE_URL']
         change_url = f'{self.full_host}{url}'
 
@@ -83,3 +84,15 @@ class TestBackend(TestCase):
         del changed_user['id']
         del changed_user['email']
         self.assertDictEqual(changed_user, obj)
+        # endregion
+
+        # region deleting
+        del_short_url = os.environ['BACKEND_DELETE_USER_URL']
+        del_url = f'{self.full_host}{del_short_url}'
+        response_del = requests.delete(del_url, headers=headers)
+        status = response_del.status_code
+        status_ok = 200 <= status < 300
+        if not status_ok:
+            print(response_del.text)
+        self.assertTrue(status_ok)
+        # endregion

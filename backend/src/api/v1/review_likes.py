@@ -6,7 +6,7 @@ from fastapi_jwt_auth import AuthJWT
 from brokers.rabbitmq_publish import rabbitmq_publish
 from core.config import settings, logger
 from fastapi import APIRouter, HTTPException, Depends
-from models.models import ReviewId, ReviewLike
+from models_backend.models import ReviewId, ReviewLike
 from services.review_likes import ReviewLikes
 from starlette.requests import Request
 

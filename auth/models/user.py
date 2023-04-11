@@ -1,3 +1,4 @@
+import logging
 import uuid
 from http import HTTPStatus
 
@@ -9,6 +10,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from db import db
 from models.mixins import ModelMixin
+
+logger = logging.getLogger(__name__)
 
 
 class User(db.Model, ModelMixin):
@@ -88,6 +91,15 @@ class User(db.Model, ModelMixin):
         if users_id[0] == "*":
             return cls.query.all()
         return cls.query.filter(User.id.in_(users_id)).all()
+
+    @classmethod
+    def delete(cls, user_id: UUID) -> bool:
+        user = cls.query.filter_by(id=user_id).first()
+        if user is None:
+            return False
+        db.session.delete(user)
+        db.session.commit()
+        return True
 
     @property
     def as_dict(self):

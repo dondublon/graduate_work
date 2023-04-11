@@ -10,7 +10,7 @@ from core.config import logger
 from paginate_model.paginate_models import ProfilesOut
 from services.user import UserService, NotFoundError
 from .common import check_auth, check_role
-from models.models import UserRegisterModel, ChangeEmailModel, UserProfilesModel, UserBasic
+from models_backend.models import UserRegisterModel, ChangeEmailModel, UserProfilesModel, UserBasic
 from helpers.reply import reply_to_dict
 
 
@@ -109,4 +109,14 @@ async def get_profiles(users: UserProfilesModel, request: Request, authorize: Au
         return paginate(result)
     except Exception as e:
         logger.error("Error get profiles %s, error=%s", users.users_id, e)
+        raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
+
+
+@router_user.delete('/delete-user')
+async def delete_user(request: Request, authorize: AuthJWT = Depends()):
+    auth_result = await check_auth(request, authorize)
+    try:
+        await UserService.delete_user(auth_result.access_token, auth_result.user_uuid)
+    except Exception as e:
+        logger.error("Error deleting user %s, error=%s", auth_result.user_uuid, e)
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))

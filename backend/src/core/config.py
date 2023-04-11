@@ -26,6 +26,7 @@ class Settings(BaseSettings):
     auth_login_url: str = Field("/api/v1/user/login", env="AUTH_LOGIN_URL")
     auth_role_url: str = Field("/api/v1/user/user-role", env="AUTH_ROLE_URL")
     auth_register_url: str = Field("/api/v1/user/register", env="AUTH_REGISTER_URL")
+    auth_unregister_url: str = Field("/api/v1/user/unregister", env="AUTH_UNREGISTER_URL")
     auth_change_email: str = Field("/api/v1/user/profile/change-email", env="AUTH_CHANGE_EMAIL")
     rabbitmq_host: str = Field("rabbitmq", env="BROKER_HOST")
     rabbitmq_host_dlq: str = Field("rabbitmq_dlq", env="BROKER_HOST_DLQ")

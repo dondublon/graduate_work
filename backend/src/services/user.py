@@ -92,6 +92,7 @@ class UserService(ProfilesService):
             except grpc.RpcError as e:
                 # noinspection PyUnresolvedReferences
                 if e.code() == grpc.StatusCode.NOT_FOUND:
+                    # noinspection PyUnresolvedReferences
                     raise NotFoundError(e.details())
                 else:
                     raise e
@@ -107,7 +108,9 @@ class UserService(ProfilesService):
     @classmethod
     async def delete_user(cls, access_token, user_id):
         await cls._delete_from_profiles(user_id)
+        logger.info('Delete from profiles - ok')
         result = await AuthClient.unregister(access_token, user_id)
+        logger.info('Delete from auth - ok')
         return result
 
     @classmethod

@@ -1,6 +1,6 @@
 import datetime
 
-from models.models import Bookmark
+from models_backend.models import Bookmark
 
 from .mongo import ServiceMongo
 

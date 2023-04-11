@@ -8,7 +8,7 @@ from starlette.requests import Request
 from core.config import logger
 from services.user import UserService, NotFoundError
 from .common import check_auth, check_role
-from models.models import UserRegisterModel, ChangeEmailModel, UserProfilesModel, UserBasic
+from models_backend.models import UserRegisterModel, ChangeEmailModel, UserProfilesModel, UserBasic
 from helpers.reply import reply_to_dict
 
 

@@ -1,7 +1,7 @@
 import datetime
 from typing import Literal, Optional
 
-from models.models import Movie, Review
+from models_backend.models import Movie, Review
 from .mongo import ServiceMongo
 
 

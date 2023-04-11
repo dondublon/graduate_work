@@ -1,6 +1,6 @@
 from typing import Tuple
 
-from models.models import ReviewLike
+from models_backend.models import ReviewLike
 
 from .mongo import ServiceMongo
 

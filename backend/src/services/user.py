@@ -25,7 +25,7 @@ class UserService(ProfilesService):
         result = await AuthClient.register_on_auth(password, password_confirmation, email)
         # noinspection PyUnusedLocal
         try:
-            cls.register_on_profiles(result.id_, first_name, family_name, father_name, email, phone)
+            await cls.register_on_profiles(result.id_, first_name, family_name, father_name, email, phone)
             return result
         except Exception as e:
             logger.error("Error on registration %s, %s", (result.id_, first_name, family_name, father_name, email, phone), e)
@@ -39,9 +39,9 @@ class UserService(ProfilesService):
             all_attrs = {'id': id_,
                          'first_name': first_name, 'family_name': family_name, 'father_name': father_name,
                          'email': email, 'phone': phone}
-            response = await stub.Register(profiles_pb2.RegisterCredentials(**all_attrs))  # TODO make async
+            response = await stub.Register(profiles_pb2.RegisterCredentials(**all_attrs))
 
-            logger.info(f"Client received: {response.success}")
+            logger.info(f"Client id: {id_} received")
             return all_attrs
 
     @classmethod
@@ -57,7 +57,7 @@ class UserService(ProfilesService):
         async with grpc.aio.insecure_channel(settings.profiles_host_port) as channel:
             stub = profiles_pb2_grpc.ProfilesStub(channel)
             all_attrs = {'user_id': id_, 'email': email}
-            response = stub.ChangeEMail(profiles_pb2.ChangeEmailRequest(**all_attrs))  # TODO make async
+            response = stub.ChangeEMail(profiles_pb2.ChangeEmailRequest(**all_attrs))
             logger.info(f"Email changed")
             return all_attrs
 
@@ -74,7 +74,7 @@ class UserService(ProfilesService):
                                                         father_name=father_name,
                                                         phone=phone)
 
-            response = await stub.UpdateProfile(request)  # TODO make async
+            response = await stub.UpdateProfile(request)
             return
 
 
@@ -87,7 +87,7 @@ class UserService(ProfilesService):
 
             request = profiles_pb2.GettingRequest(id=user_id)
             try:
-                response = await stub.Get(request)  # TODO make async
+                response = await stub.Get(request)
                 return response
             except grpc.RpcError as e:
                 # noinspection PyUnresolvedReferences

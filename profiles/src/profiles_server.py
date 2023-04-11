@@ -20,7 +20,7 @@ class Profiles(profiles_pb2_grpc.ProfilesServicer):
                                  phone=request.phone,
                                  email=request.email)
             # noinspection PyUnresolvedReferences
-            await profiles_pb2.BooleanReply(success=True)
+            return profiles_pb2.BooleanReply(success=True)
         except Exception as e:
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(str(e))

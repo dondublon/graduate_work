@@ -12,6 +12,6 @@ RUN pip install --upgrade pip \
 
 COPY src .
 
-ENTRYPOINT ["python", "profiles_server.py"]
+CMD sh entrypoint.sh
 # ENTRYPOINT ["tail", "-F", "anything"]
 # ENTRYPOINT ["python"]

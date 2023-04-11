@@ -4,12 +4,14 @@ from fastapi import APIRouter, HTTPException, Depends
 from fastapi_jwt_auth import AuthJWT
 import orjson
 from fastapi_pagination import Page, paginate
+from grpc.aio import AioRpcError
 from starlette.requests import Request
 
 from core.config import logger
 from paginate_model.paginate_models import ProfilesOut
+from services.auth import AuthClient
 from services.user import UserService, NotFoundError
-from .common import check_auth, check_role
+from .common import check_auth, check_role, get_email
 from models_backend.models import UserRegisterModel, ChangeEmailModel, UserProfilesModel, UserBasic
 from helpers.reply import reply_to_dict
 
@@ -35,13 +37,18 @@ async def register(user: UserRegisterModel, request: Request):
         result = await UserService.register(user.password, user.password_confirmation, user.first_name,
                                             user.family_name, user.father_name,
                                             user.email, user.phone)
-
         success = True
         logger.info("Successfully added user %s", user)
         return orjson.dumps({"success": success, "inserted_id": str(result.id_),
                              "access_token": result.access_token, "refresh_token": result.refresh_token})
+    except AioRpcError as e:
+        auth_result = await check_auth(request)
+        await AuthClient.unregister(auth_result.access_token)
+        logger.error("Error connection with Profiles service, error=%s. New user %s deleted", e, user)
+        raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
     except Exception as e:
         logger.error("Error adding %s, error=%s", user, e)
+
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
 
 
@@ -68,6 +75,7 @@ async def update_profile(user: UserBasic, request: Request, authorize: AuthJWT =
 async def change_email(user: ChangeEmailModel, request: Request, authorize: AuthJWT = Depends()):
     """No email"""
     auth_result = await check_auth(request, authorize)
+    old_email = await get_email(auth_result.user_uuid, auth_result.access_token)
 
     try:
         result = await UserService.change_email(auth_result.access_token, auth_result.user_uuid,
@@ -76,6 +84,10 @@ async def change_email(user: ChangeEmailModel, request: Request, authorize: Auth
         success = True
         logger.info("Successfully updated email for user %s to %s", auth_result.user_uuid, user.email)
         return orjson.dumps({"success": success, "new email": user.email})
+    except AioRpcError as e:
+        await AuthClient.change_email(auth_result.access_token, old_email)
+        logger.error("Error connection with Profiles service, error=%s. Old email %s returned", e, old_email)
+        raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
     except Exception as e:
         logger.error("Error changing email %s, error=%s", user, e)
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))

@@ -63,12 +63,13 @@ def check_jwt(token: str) -> CheckJWTResult:
         return CheckJWTResult.UNDECODABLE
 
 
-async def check_auth(request: Request, authorize: AuthJWT) -> AuthResult:
-    current_user_in_token = authorize.get_jwt_subject()
-    if current_user_in_token:
-        authorize.jwt_required()
-        result = AuthResult(authorize._token, current_user_in_token)  # :( private field is bad, I know
-        return result
+async def check_auth(request: Request, authorize: AuthJWT = None) -> AuthResult:
+    if authorize:
+        current_user_in_token = authorize.get_jwt_subject()
+        if current_user_in_token:
+            authorize.jwt_required()
+            result = AuthResult(authorize._token, current_user_in_token)  # :( private field is bad, I know
+            return result
     data_obj = await request.json()
     email = data_obj.get("email")
     password = data_obj.get("password")
@@ -97,3 +98,12 @@ async def check_role(user_uuid: str, access_token: str) -> list:
     if settings.admin_roles.lower() not in roles_list:
         raise HTTPException(HTTPStatus.UNAUTHORIZED)
     return roles_list
+
+
+async def get_email(user_uuid: str, access_token: str) -> list:
+    login_url = f"{settings.auth_protocol_host_port}{settings.auth_profile_url}?user_id={user_uuid}"
+    response = requests.get(login_url, headers={"Authorization": f"Bearer {access_token}"})
+    email = response.json().get("email")
+    if not email:
+        raise HTTPException(HTTPStatus.NO_CONTENT)
+    return email

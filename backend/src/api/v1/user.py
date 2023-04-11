@@ -3,9 +3,11 @@ from http import HTTPStatus
 from fastapi import APIRouter, HTTPException, Depends
 from fastapi_jwt_auth import AuthJWT
 import orjson
+from fastapi_pagination import Page, paginate
 from starlette.requests import Request
 
 from core.config import logger
+from paginate_model.paginate_models import ProfilesOut
 from services.user import UserService, NotFoundError
 from .common import check_auth, check_role
 from models.models import UserRegisterModel, ChangeEmailModel, UserProfilesModel, UserBasic
@@ -96,7 +98,7 @@ async def get_profile(request: Request, authorize: AuthJWT = Depends()):
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
 
 
-@router_user.get('/profiles')
+@router_user.get('/profiles', response_model=Page[ProfilesOut])
 async def get_profiles(users: UserProfilesModel, request: Request, authorize: AuthJWT = Depends()):
     """Request to Profiles service"""
     auth_result = await check_auth(request, authorize)
@@ -104,7 +106,7 @@ async def get_profiles(users: UserProfilesModel, request: Request, authorize: Au
     try:
         result = await UserService.get_profiles(users.users_id)
         logger.info("Successfully get profiles for users %s", users.users_id)
-        return orjson.dumps({"profiles": result})  # TODO Add pagination
+        return paginate(result)
     except Exception as e:
         logger.error("Error get profiles %s, error=%s", users.users_id, e)
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))

@@ -11,6 +11,9 @@ service Profiles {
   rpc UpdateProfile(UpdateProfileRequest) returns (BooleanReply) {}
   rpc GetProfiles(GettingProfilesRequest) returns (stream UserReply) {}
   rpc DeleteProfile(GettingRequest) returns (BooleanReply) {}
+
+  rpc UploadAvatar(UploadFileRequest) returns (BooleanReply) {}
+  rpc DownloadAvatar(GettingRequest) returns (FileResponse) {}
 }
 
 message RegisterCredentials {
@@ -59,4 +62,19 @@ message ChangeEmailRequest {
 
 message GettingProfilesRequest {
   repeated string users_id = 1;
+}
+
+message FileMetadata {
+  string user_id = 1;
+  string file_extension = 2;
+}
+
+message UploadFileRequest {
+  FileMetadata metadata = 1;
+  bytes chunk_data = 2;
+}
+
+message FileResponse {
+  bytes chunk_data = 1;
+  string file_extension = 2;
 }

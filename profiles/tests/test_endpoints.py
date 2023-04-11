@@ -57,3 +57,6 @@ class TestEndpoints(TestCase):
         self.assertDictEqual(inserted, got_dict)
         # TODO Add deleting the user.
 
+    def get_default_avatar(self):
+        id_ = str(uuid.uuid4())
+        inserted = self._register(id_)

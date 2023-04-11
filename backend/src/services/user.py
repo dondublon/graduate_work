@@ -1,6 +1,8 @@
 """
 A service for backed that send requests to Profiles service.
 """
+import os.path
+
 import grpc
 from google.protobuf.json_format import MessageToDict
 
@@ -129,3 +131,22 @@ class UserService(ProfilesService):
                 else:
                     raise e
 
+
+    @classmethod
+    async def upload_avatar(cls, filename, user_id, file_data: bytearray):
+        with grpc.insecure_channel(settings.profiles_host_port) as channel:
+            stub = profiles_pb2_grpc.ProfilesStub(channel)
+            short_filename, extension = os.path.splitext(filename)
+            response = stub.UploadAvatar(profiles_pb2.UploadFileRequest(
+                metadata=profiles_pb2.FileMetadata(user_id=user_id, file_extension=extension),
+                chunk_data=file_data))
+            logger.info('upload_avatar response %s', response)
+            return response
+
+    @classmethod
+    async def get_avatar(cls, user_id) -> bytearray:
+        with grpc.insecure_channel(settings.profiles_host_port) as channel:
+            stub = profiles_pb2_grpc.ProfilesStub(channel)
+            response = stub.DownloadAvatar(profiles_pb2.GettingRequest(id=user_id))
+            logger.info('get_avatar response %s', response)
+            return response

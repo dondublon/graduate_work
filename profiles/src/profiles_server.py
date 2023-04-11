@@ -1,4 +1,7 @@
+import subprocess
 from concurrent import futures
+import glob
+import os
 
 import grpc
 import sentry_sdk
@@ -79,6 +82,52 @@ class Profiles(profiles_pb2_grpc.ProfilesServicer):
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(f'Error updating user {request.id}: {e}')
             return profiles_pb2.BooleanReply(success=False)
+
+    @classmethod
+    def get_avatar_path(cls, user_id, extension):
+        """file extension with dot"""
+        return f'{settings.avatar_path}/{user_id}{extension}'
+
+    @classmethod
+    def get_existing_avatar_path(cls, user_id):
+        p = subprocess.Popen(f'ls {settings.avatar_path}/{user_id}.*', shell=True, stdout=subprocess.PIPE)
+        files = [s.strip() for s in p.stdout.readlines()]
+        if len(files) == 0:
+            return f'{settings.avatar_path}/default.jpeg'
+        elif len(files) > 1:
+            logger.warn('More than one avatar for %s', user_id)
+        return files[0]
+
+    def UploadAvatar(self, request, context):
+        """file extension with dot"""
+        filepath = self.get_avatar_path(request.metadata.user_id, request.metadata.file_extension)
+        # TODO Make only one file allowed.
+        try:
+            with open(filepath, 'wb') as f:
+                f.write(request.chunk_data)
+            return profiles_pb2.BooleanReply(success=True)
+        except Exception as e:
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details(f'Error uploading : {e}')
+            return profiles_pb2.BooleanReply(success=False)
+
+    def DownloadAvatar(self, request, context):
+        """From request:
+        id
+        """
+        chunk_size = 5 * 1024 * 1024
+
+        filepath = self.get_existing_avatar_path(request.id)
+        name, ext = os.path.splitext(filepath)
+        logger.info(f'Current directory {os.path.abspath(".")}')
+        with open(filepath, mode="rb") as f:
+            logger.info(f'Retrieving the file {filepath}')
+            chunk = f.read(chunk_size)
+            if chunk:
+                entry_response = profiles_pb2.FileResponse(chunk_data=chunk, file_extension=ext)
+                return entry_response
+            else:
+                return
 
 
 def serve():

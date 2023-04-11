@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     logstash_host: str = Field("logstash", env="LOGSTASH_HOST")
     logstash_port: int = Field(5044, env="LOGSTASH_PORT")
     logstash_traces_sample_rate: float = Field(1.0, env="LOGSTASH_TRACES_SAMPLE_RATE")
+    avatar_path: str = Field('/avatars', env="PROFILES_AVATARS_PATH")
     # endregion
 
     class Config:

@@ -124,13 +124,15 @@ async def delete_user(request: Request, authorize: AuthJWT = Depends()):
         logger.error("Error deleting user %s, error=%s", auth_result.user_uuid, e)
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
 
-@router_user.get('/avatar',
+@router_user.get('/avatar/{user_id}',
                  responses={200: {"content": {"image/png": {}, "image/jpeg": {}}}},
                  response_class=Response
                  )
-async def get_avatar(request: Request, authorize: AuthJWT = Depends()):
+async def get_avatar(user_id: str, request: Request): # authorize: AuthJWT = Depends()
+    # auth_result = await check_auth(request, authorize)
     # auth_result = await check_auth(request, authorize)  # Temporary
-    result = await UserService.get_avatar('auth_result.user_uuid')
+    result = await UserService.get_avatar(user_id)
+    # noinspection PyUnresolvedReferences
     return Response(content=result.chunk_data, media_type=f"image/{result.file_extension}")
 
 

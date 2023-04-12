@@ -1,0 +1,797 @@
+{
+	"info": {
+		"_postman_id": "ce535972-4b96-444b-9b15-2e60c0eae5b8",
+		"name": "backend",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "bookmarks/list",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "user_uuid",
+						"value": "d16b19e7-e116-43b1-a95d-cd5a11e8f1b7",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"803c794c-ddf0-482d-b2c2-6fa92da4c5e2\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/v1/bookmarks/list",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"v1",
+						"bookmarks",
+						"list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "register",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "user_uuid",
+						"value": "d16b19e7-e116-43b1-a95d-cd5a11e8f1b7",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"lucky1@email.com\",\n    \"password\": \"user000\",\n    \"password_confirmation\": \"user000\",\n    \"first_name\": \"Олег\",\n    \"family_name\": \"Иванов\",\n    \"father_name\": \"Борисович\",\n    \"phone\": \"+79104470000\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/v1/user/register",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"v1",
+						"user",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "reviews/list?sort=likes_count",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "user_uuid",
+						"value": "d16b19e7-e116-43b1-a95d-cd5a11e8f1b4",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"803c794c-ddf0-482d-b2c2-6fa92da4c5e2\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/v1/reviews/list?sort=likes_count",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"v1",
+						"reviews",
+						"list"
+					],
+					"query": [
+						{
+							"key": "sort",
+							"value": "likes_count"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "bookmarks/add",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "user_uuid",
+						"value": "d16b19e7-e116-43b1-a95d-cd5a11e8f1b4",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"movie\": \"803c794c-ddf0-482d-b2c2-6fa92da4c5e2\",\n    \"email\": \"admin@email.com\", \"password\": \"admin123\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/v1/bookmarks/add",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"v1",
+						"bookmarks",
+						"add"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "reviews/list",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "user_uuid",
+						"value": "d16b19e7-e116-43b1-a95d-cd5a11e8f1b4",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"803c794c-ddf0-482d-b2c2-6fa92da4c5e2\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/v1/reviews/list",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"v1",
+						"reviews",
+						"list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "reviews/remove",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "user_uuid",
+						"value": "d16b19e7-e116-43b1-a95d-cd5a11e8f1b4",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"803c794c-ddf0-482d-b2c2-6fa92da4c5e2\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/v1/reviews/remove",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"v1",
+						"reviews",
+						"remove"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "reviews/add",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "user_uuid",
+						"value": "d16b19e7-e116-43b1-a95d-cd5a11e8f1b4",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"movie\": \"803c794c-ddf0-482d-b2c2-6fa92da4c5e2\",\n    \"text\" : \"Text mnogo text\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/v1/reviews/add",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"v1",
+						"reviews",
+						"add"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "reviews/get",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "user000",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "user000",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "user_uuid",
+						"value": "d16b19e7-e116-43b1-a95d-cd5a11e8f1b4",
+						"type": "default"
+					},
+					{
+						"key": "access_token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY3Nzg1NjE3NSwianRpIjoiNzZkYTkwMGUtYzVkMC00MDBlLTk1Y2EtMGNlM2NhMDg5MDgxIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjE2NDFiMjE0LWMxMDktNDZjZS1iYzFkLWI1ZThhZDFkZjhlZCIsIm5iZiI6MTY3Nzg1NjE3NSwiZXhwIjoxNjc3ODYyMTc1fQ.nXg-mmb6G0nohByvnCZkWgCAlIvgW2njs295diKhj9c",
+						"type": "default"
+					},
+					{
+						"key": "refresh_token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY3Nzg1NjE3NSwianRpIjoiZWY2ODk1ZWUtY2QwMy00YzdiLTljMDctYTRhZTNhNmIzZmNlIiwidHlwZSI6InJlZnJlc2giLCJzdWIiOiIxNjQxYjIxNC1jMTA5LTQ2Y2UtYmMxZC1iNWU4YWQxZGY4ZWQiLCJuYmYiOjE2Nzc4NTYxNzUsImV4cCI6MTY3Nzk0MjU3NX0.DlYU2IS8yJgFGQCIOfDyczMSYqnpf45i5UWMM66kHvQ",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"803c794c-ddf0-482d-b2c2-6fa92da4c5e2\",\n    \"login\": \"user001\", \n    \"password\": \"user001\",\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/v1/reviews/get",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"v1",
+						"reviews",
+						"get"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "bookmarks/add",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "user_uuid",
+						"value": "d16b19e7-e116-43b1-a95d-cd5a11e8f1b7",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"movie\": \"803c794c-ddf0-482d-b2c2-6fa92da4c5e2\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/v1/bookmarks/add",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"v1",
+						"bookmarks",
+						"add"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "likes/count",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "user_uuid",
+						"value": "d16b19e7-e116-43b1-a95d-cd5a11e8f1b4",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"803c794c-ddf0-482d-b2c2-6fa92da4c5e2\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/v1/likes/count",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"v1",
+						"likes",
+						"count"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "review_likes/add",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "user001",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "user001",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "user_uuid",
+						"value": "d16b19e7-e116-43b1-a95d-cd5a11e8f1b4",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"review\": \"63ff480aa96c3ea499bc01242\",\n    \"movie\":  \"803c794c-ddf0-482d-b2c2-6fa92da4c5e2\",\n    \"review_author_id\": \"d96f4d59-12d4-419c-967d-fd62c41cc6b0\",\n    \"value\": 5,\n    \"login\": \"user001\",\n    \"password\": \"user001\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "0.0.0.0:8000/v1/review_likes/add",
+					"host": [
+						"0",
+						"0",
+						"0",
+						"0"
+					],
+					"port": "8000",
+					"path": [
+						"v1",
+						"review_likes",
+						"add"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "likes/add",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "user_uuid",
+						"value": "d16b19e7-e116-43b1-a95d-cd5a11e8f1b4",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"movie\": \"803c794c-ddf0-482d-b2c2-6fa92da4c566\",\n    \"author_id\": \"d16b19e7-e116-43b1-a95d-cd5a11e8f1b4\",\n    \"value\": 5,\n    \"login\": \"user001\",\n    \"password\": \"user001\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/v1/likes/add",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"v1",
+						"likes",
+						"add"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "manual_sender",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\"destination\": [\"yp.group10@yandex.ru\", \"kaysaki@yandex.ru\"],\n\"subject\": \"Привет1!\",\n\"html_template\": \"mail.html\",\n\"title\": \"Новое письмо!\",\n\"text\": \"Произошло что-то интересное! :)\",\n\"image\": \"https://upload.wikimedia.org/wikipedia/ru/4/4d/Wojak.png\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://0.0.0.0:5000/v1/manual_sender",
+					"protocol": "http",
+					"host": [
+						"0",
+						"0",
+						"0",
+						"0"
+					],
+					"port": "5000",
+					"path": [
+						"v1",
+						"manual_sender"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "profiles",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{   \n    \"email\": \"user555@email.com\",\n    \"password\": \"user000\",\n    \"users_id\": [\"*\"]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/v1/user/profiles?page=1&size=4",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"v1",
+						"user",
+						"profiles"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "size",
+							"value": "4"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get profile",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY4MTE5NzQ0NSwianRpIjoiMGNmNWZjOTctMzk2My00ZWQ3LWEyYWItZWMxZjMxYjU1MGRkIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6ImE1ZDg3NDJjLWNjZDEtNGY2Yy04NTUxLWY1MjJlMGU5YTE0NyIsIm5iZiI6MTY4MTE5NzQ0NSwiZXhwIjoxNjgxMjAzNDQ1fQ.2FL_Css5YtnaXVPH_EqOozH0nxdFbMKY0G_Kev0X4Vk",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/v1/user/get-profile",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"v1",
+						"user",
+						"get-profile"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update-profile",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY4MTIxMTAzNSwianRpIjoiNWI3M2ZjZTEtYjJmYy00MzNmLWI3NGItNjcwMDY1NzcyMGY3IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6Ijc4MzZkNDRiLTBiYjYtNDhjZi1hNGVmLWQ2ZWQxOGM4OTQzOCIsIm5iZiI6MTY4MTIxMTAzNSwiZXhwIjoxNjgxMjE3MDM1fQ.B5x_QFov3mEpeYWMrNty8so-CbF8yEKJX8XXvbmRNtA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{   \n    \"first_name\": \"Ruslan\",\n    \"family_name\": \"Yankov\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/v1/user/update-profile",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"v1",
+						"user",
+						"update-profile"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "change-email",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY4MTIyMjYyOSwianRpIjoiYWEwMGFkN2YtOTMxMi00ZmY2LWIwM2MtMTUzMjg4NTdkYWFiIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6ImFhMTdhZjAzLWQ4MDUtNDAxMC04Y2RjLTcwNTkwMmZkY2RjYyIsIm5iZiI6MTY4MTIyMjYyOSwiZXhwIjoxNjgxMjI4NjI5fQ.b7-ODMrCY69ch89mKVgJsClcoDEsmWuOGm4sAnsMCx4",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{   \n    \"id\": \"aa17af03-d805-4010-8cdc-705902fdcdcc\",\n    \"email\": \"888888@email.com\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/v1/user/change-email",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"v1",
+						"user",
+						"change-email"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete profile",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY4MTExODM2NiwianRpIjoiMThjMzY1M2UtNDMxYy00NjEyLTg1ZGEtZGU4NmMzNTE4ZDMxIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6ImE1ZDg3NDJjLWNjZDEtNGY2Yy04NTUxLWY1MjJlMGU5YTE0NyIsIm5iZiI6MTY4MTExODM2NiwiZXhwIjoxNjgxMTI0MzY2fQ.zDXqlG4BfKqWQOs10HlL7LXNdhtQ-9VEwxz2dtH8usI",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{   \n    \"users_id\": [\"1f180946-e080-444c-8ec6-9aa4aeb096fc\"]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/v1/user/delete-user",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"v1",
+						"user",
+						"delete-user"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

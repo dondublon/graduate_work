@@ -69,6 +69,13 @@ app.include_router(router_reviewlikes, prefix=V1)
 app.include_router(router_bookmarks, prefix=V1)
 app.include_router(router_user, prefix=V1)
 
+
+# Using FastAPI instance
+def get_all_urls():
+    for route in app.routes:
+        print(route.name, ':', route.path)
+# get_all_urls()  # Uncomment to get routes list
+
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, log_config=LOGGING,
                 log_level=logging.DEBUG)

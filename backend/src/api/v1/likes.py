@@ -22,7 +22,6 @@ async def add_like(like: Like, request: Request, authorize: AuthJWT = Depends())
     An example request JSON:
     {
     "movie": "803c794c-ddf0-482d-b2c2-6fa92da4c5e2",
-    "author_id": "d16b19e7-e116-43b1-a95d-cd5a11e8f1b4",
     "value": 5
     }
     We assume that request headers contain used_uuid, after processing with authentication and middleware.
@@ -46,7 +45,7 @@ async def add_like(like: Like, request: Request, authorize: AuthJWT = Depends())
     return orjson.dumps({"success": success, "upserted_id": str(result.upserted_id)})
 
 
-@router_likes.post("/remove")
+@router_likes.delete("/remove")
 async def remove_like(movie: Movie, request: Request, authorize: AuthJWT = Depends()):
     """
     An example request JSON:

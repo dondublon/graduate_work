@@ -44,7 +44,7 @@ User already exists. Try again with another email
 Коллекция с основными ручками лежит в папке ./backend/backend.postman_collection.json
 
 - Для просмотра всех пользователей под учетной записью администратора необходимо следующее:
-1. Создать суперпользователя в сервис auth
+1. Создать суперпользователя в сервисе auth
 2. Авторизоваться суперпользователем в сервисе auth и сохранить access_token.
 2. Зарегистрировать нового пользователя в backend с помощью запроса, например
 ```commandline
@@ -68,7 +68,7 @@ curl --location --request POST 'http://0.0.0.0:5001/api/v1/user/roles' \
 --header 'Content-Type: application/json' \
 --data-raw '{"name": "Admin"}'
 ```
-4. Авторизоваться зарегистрированны пользователем через сервис Auth и сохранить access_token
+4. Авторизоваться зарегистрированным пользователем через сервис Auth и сохранить access_token
 ```commandline
 curl --location --request POST '0.0.0.0:5001/api/v1/user/login' \
 --header 'Content-Type: application/json' \
@@ -90,7 +90,7 @@ curl --location --request POST 'http://0.0.0.0:5001/api/v1/user/user-role' \
     "role_id": "d2bb61f5-a681-4b25-8961-1a3d1a3ad3e1"
 }'
 ```
-7. Теперь новый пользователь является админом и может просматривать все профили. В метод добавлена пагинация. Для просмотра всех пользователей необходимо передать параметр user_id со значение [""*"]
+7. Теперь новый пользователь является админом и может просматривать все профили. Для просмотра всех пользователей необходимо передать параметр user_id со значением ["*"] В метод добавлена пагинация. 
 ```commandline
 curl --location --request GET '127.0.0.1:8000/v1/user/profiles?page=1&size=4' \
 --header 'Content-Type: application/json' \
@@ -110,7 +110,7 @@ curl --location --request GET '127.0.0.1:8000/v1/user/profiles?page=1&size=4' \
 
 Сервис будет работать асинхронно, если глобальная переменная **RUN_MODE** будет содержать значение **ASYNC**. 
 
-Логику для запуска сервиса можно посмотреть в скрипте ./profiles/src/entrypoint.sh
+Логику для запуска сервиса можно посмотреть в файле ./profiles/src/entrypoint.sh
 
 Для запуска локального тестового клиента можно воспользоваться файлом ./profiles/src/profiles_client_sample.py. 
 

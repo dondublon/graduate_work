@@ -56,7 +56,7 @@ async def add_like(like: ReviewLike, request: Request, authorize: AuthJWT = Depe
     return orjson.dumps({"success": success, "upserted_id": str(result.upserted_id)})
 
 
-@router_reviewlikes.post("/remove")
+@router_reviewlikes.delete("/remove")
 async def remove_like(review: ReviewId, request: Request, authorize: AuthJWT = Depends()):
     """
     An example request JSON:

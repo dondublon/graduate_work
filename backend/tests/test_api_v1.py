@@ -30,7 +30,7 @@ class Likes(TestCase):
         self.assertTrue(obj["success"])
 
     def test_remove_like(self):
-        result = requests.post(
+        result = requests.delete(
             f"http://{self.host_port}/v1/likes/remove",
             headers={"user_uuid": "d99cfebe-0f2c-4098-b5aa-b27229943f2b"},
             json={

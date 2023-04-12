@@ -1,4 +1,6 @@
-# 🥇 Профили пользователей
+# 🥇 Дипломная работа. Профили пользователей
+
+Адрес расположения https://github.com/dondublon/graduate_work .
 
 ## 🔀 1. Схемы
 - Схемы взаимодействия основных сервисов описаны в формате C4 - level2 и level3. Названия компонентов соответствуют названиям в docker-compose.yml. Со схемами можно ознакомиться в папке ./schemes. 
@@ -115,3 +117,132 @@ curl --location --request GET '127.0.0.1:8000/v1/user/profiles?page=1&size=4' \
 Для запуска локального тестового клиента можно воспользоваться файлом ./profiles/src/profiles_client_sample.py. 
 
 Также доступны тесты в папке ./profiles/tests
+
+## 6. Сервис UGC (лайки, рецензии и т. д.)
+Если не указан user id, то он берётся из заголовков авторизации. 
+
+1. Добавить лайк к фильму
+```commandline
+curl --request POST '127.0.0.1:8000/v1/likes/add' \
+--header 'Content-Type: application/json' \
+--data-raw '{   
+    "movie": "803c794c-ddf0-482d-b2c2-6fa92da4c5e2",
+    "value": 5
+}'
+```
+
+2. Удалить лайк к фильму
+```commandline
+curl --request DELETE '127.0.0.1:8000/v1/likes/remove' \
+--header 'Content-Type: application/json' \
+--data-raw '{   
+    "id": "803c794c-ddf0-482d-b2c2-6fa92da4c5e2"
+}'
+```
+id = movie id. 
+
+3. Посчитать лайки к фильму
+```commandline
+curl --request GET '127.0.0.1:8000/v1/likes/count' \
+--header 'Content-Type: application/json' \
+--data-raw '{   
+    "id": "803c794c-ddf0-482d-b2c2-6fa92da4c5e2"
+}'
+```
+
+4. Добавить рецензию к фильму
+```commandline
+curl --request POST '127.0.0.1:8000/v1/likes/count' \
+--header 'Content-Type: application/json' \
+--data-raw '{   
+    "movie": "803c794c-ddf0-482d-b2c2-6fa92da4c5e2",
+    "text" : "......"
+}'
+```
+
+5. Удалить рецензию к фильму
+```commandline
+curl --request DELETE '127.0.0.1:8000/v1/likes/count' \
+--header 'Content-Type: application/json' \
+--data-raw '{   
+    "id": "53954284-caaf-4248-b0e7-fd1265499a91"
+}'
+```
+
+6. Получить рецензию к фильму
+Берётся по user id из авторизации.
+```commandline
+curl --request GET '127.0.0.1:8000/v1/reviews/get' \
+--header 'Content-Type: application/json' \
+--data-raw '{   
+    "id": "803c794c-ddf0-482d-b2c2-6fa92da4c5e2"
+}'
+```
+
+7. Получить все список всех рецензий к фильму
+```commandline
+curl --request GET '127.0.0.1:8000/v1/reviews/list' \
+--header 'Content-Type: application/json' \
+--data-raw '{   
+    "id": "803c794c-ddf0-482d-b2c2-6fa92da4c5e2"
+}'
+```
+
+8. Добавить лайк к рецензии
+```commandline
+curl --request POST '127.0.0.1:8000/v1/review_likes/add' \
+--header 'Content-Type: application/json' \
+--data-raw '{   
+    "review": "63ff480aa96c3ea499bc01242",
+    "movie":  "803c794c-ddf0-482d-b2c2-6fa92da4c5e2",
+    "review_author_id": "d96f4d59-12d4-419c-967d-fd62c41cc6b0",
+    "value": 5
+}'
+```
+9. Удалить лайк к рецензии
+```commandline
+curl --request DELETE '127.0.0.1:8000/v1/review_likes/remove' \
+--header 'Content-Type: application/json' \
+--data-raw '{   
+    "id": "620934552b431a95fdcd7c7ca"
+}'
+```
+
+10. Получить количество лайков к рецензии
+```commandline
+curl --request GET '127.0.0.1:8000/v1/review_likes/count' \
+--header 'Content-Type: application/json' \
+--data-raw '{   
+    "id": "63ff480aa96c3ea499bc01242"
+}'
+```
+
+11. Добавить закладку
+```commandline
+curl --request POST '127.0.0.1:8000/v1/bookmarks/add' \
+--header 'Content-Type: application/json' \
+--data-raw '{   
+    "movie": "803c794c-ddf0-482d-b2c2-6fa92da4c5e2"
+}'
+```
+
+12. Удалить закладку
+```commandline
+curl --request DELETE '127.0.0.1:8000/v1/bookmarks/remove' \
+--header 'Content-Type: application/json' \
+--data-raw '{   
+    "movie": "803c794c-ddf0-482d-b2c2-6fa92da4c5e2"
+}'
+```
+
+13. Получить список закладок
+```commandline
+curl --request POST '127.0.0.1:8000/v1/bookmarks/list' \
+--header 'Content-Type: application/json' \
+--data-raw '{   
+    "movie": "803c794c-ddf0-482d-b2c2-6fa92da4c5e2"
+}'
+```
+
+
+

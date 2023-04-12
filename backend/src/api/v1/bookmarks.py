@@ -47,7 +47,7 @@ async def add_bookmark(bookmark: Bookmark, request: Request, authorize: AuthJWT 
     return orjson.dumps({"success": success, "inserted_id": str(result.inserted_id)})
 
 
-@router_bookmarks.post("/remove")
+@router_bookmarks.delete("/remove")
 async def remove_bookmark(bookmark: Bookmark, request: Request, authorize: AuthJWT = Depends()):
     """
     An example request JSON:

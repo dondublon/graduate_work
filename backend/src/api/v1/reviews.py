@@ -43,7 +43,7 @@ async def add_review(review: Review, request: Request):
     return orjson.dumps({"success": success, "inserted_id": str(result.inserted_id)})
 
 
-@router_reviews.post("/remove")
+@router_reviews.delete("/remove")
 async def remove_review(movie: Movie, request: Request, authorize: AuthJWT = Depends()):
     """
     An example request JSON:

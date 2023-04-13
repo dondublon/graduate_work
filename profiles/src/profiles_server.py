@@ -15,7 +15,6 @@ from services_profiles.user_service import UserService
 class Profiles(profiles_pb2_grpc.ProfilesServicer):
     async def Register(self, request, context):
         try:
-            logger.info("!!!!!!!!!!!!!!!!!TEST")
             await UserService.register(id_=request.id, first_name=request.first_name,
                                        father_name=request.father_name, family_name=request.family_name,
                                        phone=request.phone,

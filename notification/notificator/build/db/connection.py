@@ -11,7 +11,7 @@ def get_connection():
                                  port=settings.postgres_port,
                                  user=settings.postgres_user,
                                  password=settings.postgres_password,
-                                 dbname="notification",
+                                 dbname=settings.postgres_db_name,
                                  row_factory=dict_row)
     yield connection
     connection.close()

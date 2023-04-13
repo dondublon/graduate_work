@@ -1,18 +1,14 @@
 import subprocess
 from concurrent import futures
-import glob
 import os
 
 import grpc
 import sentry_sdk
-from fastapi import FastAPI
 
 from config import settings
 from logger import logger
 from grpc_files import profiles_pb2, profiles_pb2_grpc
 from services_profiles.user_service import UserService
-
-app = FastAPI()
 
 
 class Profiles(profiles_pb2_grpc.ProfilesServicer):
@@ -51,7 +47,6 @@ class Profiles(profiles_pb2_grpc.ProfilesServicer):
             context.set_details(f'Error updating user email {request.user_id}: {e}')
             return profiles_pb2.BooleanReply()
 
-
     def UpdateProfile(self, request, context):
         try:
             logger.info("Before profile update")
@@ -76,7 +71,7 @@ class Profiles(profiles_pb2_grpc.ProfilesServicer):
 
     def DeleteProfile(self, request, context):
         try:
-            result = UserService.delete_profile(request.id)
+            UserService.delete_profile(request.id)
             return profiles_pb2.BooleanReply(success=True)
         except Exception as e:
             context.set_code(grpc.StatusCode.INTERNAL)

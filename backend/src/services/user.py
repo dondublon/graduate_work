@@ -100,10 +100,10 @@ class UserService(ProfilesService):
                     raise e
 
     @classmethod
-    async def get_profiles(cls, users_id):
+    async def get_profiles(cls, users_id) -> list[dict]:
         with grpc.insecure_channel(settings.profiles_host_port) as channel:
             stub = profiles_pb2_grpc.ProfilesStub(channel)
-            responses = await stub.GetProfiles(profiles_pb2.GettingProfilesRequest(users_id=users_id))
+            responses = stub.GetProfiles(profiles_pb2.GettingProfilesRequest(users_id=users_id))
             cash = [MessageToDict(response) for response in responses]
             return cash
 

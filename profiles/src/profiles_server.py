@@ -1,3 +1,4 @@
+import logging
 import subprocess
 from concurrent import futures
 import os
@@ -14,6 +15,7 @@ from services_profiles.user_service import UserService
 class Profiles(profiles_pb2_grpc.ProfilesServicer):
     async def Register(self, request, context):
         try:
+            logger.info("!!!!!!!!!!!!!!!!!TEST")
             await UserService.register(id_=request.id, first_name=request.first_name,
                                        father_name=request.father_name, family_name=request.family_name,
                                        phone=request.phone,
@@ -58,15 +60,15 @@ class Profiles(profiles_pb2_grpc.ProfilesServicer):
             context.set_details(f'Error updating user {request.id}: {e}')
             return profiles_pb2.BooleanReply(success=False)
 
-    async def GetProfiles(self, request, context):
-        profiles = await UserService.get_users_profiles(request.users_id)
+    def GetProfiles(self, request, context):
+        profiles = UserService.get_users_profiles(request.users_id)
         if profiles:
             for profile in profiles:
                 yield profiles_pb2.UserReply(**profile)
         else:
             context.set_code(grpc.StatusCode.NOT_FOUND)
             context.set_details(f'Users with {request.users_id} not found.')
-            yield profiles_pb2.UserReply()
+            return profiles_pb2.UserReply()
 
     async def DeleteProfile(self, request, context):
         try:
@@ -131,6 +133,7 @@ def serve():
     server.add_insecure_port('[::]:' + port)
     init_logging()
     server.start()
+    logger = logging.getLogger(__name__)
     logger.info("Server started, listening on %s", port)
     logger.info("Postgres host %s, port %s, and schema: %s", settings.pg_host, settings.pg_port, settings.pg_schema)
 

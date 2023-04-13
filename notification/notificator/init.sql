@@ -45,3 +45,6 @@ alter table notification_event
 INSERT INTO types (name) VALUES ('by event');
 INSERT INTO types (name) VALUES ('by time');
 INSERT INTO types (name) VALUES ('manual');
+
+insert into notification_pattern (type_, pattern_file, actual_time, settings_)
+values (1, 'mail.html', 600, '{"event_type": "review_like"}');

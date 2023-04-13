@@ -1,11 +1,13 @@
-import pika
-from pika import BlockingConnection
+# import pika
+# from pika import BlockingConnection
+from aio_pika import connect_robust, RobustConnection
 
 
 class RabbitmqConnection:
     def __init__(self, host):
         self.host = host
+        self.conn_sting = f'amqp://guest:guest@{self.host}/'
 
-    def init_rabbitmq_connection(self) -> BlockingConnection:
-        connection = pika.BlockingConnection(pika.ConnectionParameters(self.host))
+    async def init_rabbitmq_connection(self):
+        connection = await connect_robust(self.conn_sting)
         return connection

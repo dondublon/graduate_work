@@ -4,7 +4,7 @@ create table if not exists notification_pattern
     type_         smallint     not null,
     pattern_file varchar(100) not null,
     actual_time  integer,
-    settings     json
+    settings_     json
 );
 
 comment on column notification_pattern.type_ is 'by event / by time / manual';

@@ -1,7 +1,7 @@
 import json
 import logging
 
-import pika
+from aio_pika import Message, DeliveryMode
 
 from brokers.rabbitmq import RabbitmqConnection
 from helpers.uuid_generate import generate_uuid
@@ -11,11 +11,11 @@ logger = logging.getLogger(__name__)
 
 async def rabbitmq_publish(rabbitmq_host: str, queue: str, payload: dict):
     rabbitmq = RabbitmqConnection(rabbitmq_host)
-    rabbitmq_conn = rabbitmq.init_rabbitmq_connection()
+    rabbitmq_conn = await rabbitmq.init_rabbitmq_connection()
     async with rabbitmq_conn:
         rabbitmq_channel = await rabbitmq_conn.channel()
 
-        await rabbitmq_channel.queue_declare(queue=queue, durable=True)
+        await rabbitmq_channel.declare_queue(name=queue, durable=True)
 
         body = {
             "message_id": generate_uuid(),
@@ -24,12 +24,8 @@ async def rabbitmq_publish(rabbitmq_host: str, queue: str, payload: dict):
 
         logger.info(f"RABBITMQ body: {body}")
         await rabbitmq_channel.basic_publish(
-            exchange="",
-            routing_key=queue,
-            body=json.dumps(body).encode(),
-            properties=pika.BasicProperties(
-                delivery_mode=2,  # make message persistent
-            ),
+            Message(body=json.dumps(body).encode(), delivery_mode=DeliveryMode.PERSISTENT),
+            routing_key=queue
         )
         await rabbitmq_conn.close()
 

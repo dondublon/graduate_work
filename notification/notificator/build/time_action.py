@@ -25,7 +25,7 @@ connection_notif = psycopg.connect(
 
 
 def on_time():
-    if True:
+    # if SomeCheck():
         # Place check here, is we really need to send something
         # We need to scan notification_patterns, read condition there
         # then scan our UGC database and check for condition is True.

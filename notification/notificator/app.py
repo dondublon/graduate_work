@@ -1,8 +1,7 @@
 from build.config import settings, mail_server
 from build.utils.app_factory import create_app
 from build.scheduler import start_scheduler  # <- Shedule starts here
-from gevent import monkey
-monkey.patch_all()
+
 app = create_app(settings)
 smtp_server = mail_server
 

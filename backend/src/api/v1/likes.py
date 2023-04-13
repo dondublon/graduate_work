@@ -35,14 +35,11 @@ async def add_like(like: Like, request: Request, authorize: AuthJWT = Depends())
     user_uuid = (await check_auth(request, authorize)).user_uuid
     try:
         result = await Likes.add(user_uuid, like)
-
-        success = True
         logger.info("Successfully added %s, user=%s, %s=%s", COLLECTION_NAME, user_uuid, COLLECTION_NAME, like)
+        return orjson.dumps({"success": True, "upserted_id": str(result.upserted_id)})
     except Exception as e:
         logger.error("Error adding %s, user=%s, %s=%s, error=%s", COLLECTION_NAME, user_uuid, COLLECTION_NAME, like, e)
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
-
-    return orjson.dumps({"success": success, "upserted_id": str(result.upserted_id)})
 
 
 @router_likes.delete("/remove")
@@ -61,13 +58,11 @@ async def remove_like(movie: Movie, request: Request, authorize: AuthJWT = Depen
     user_uuid = (await check_auth(request, authorize)).user_uuid
     try:
         result = await Likes.remove(user_uuid, movie)
-        success = True
         logger.info("Successfully deleted %s, user=%s, movie=%s", COLLECTION_NAME, user_uuid, movie)
+        return orjson.dumps({"success": True, "deleted_count": str(result.deleted_count)})
     except Exception as e:
         logger.error("Error removing %s, user=%s, movie=%s, error=%s", COLLECTION_NAME, user_uuid, movie, e)
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
-
-    return orjson.dumps({"success": success, "deleted_count": str(result.deleted_count)})
 
 
 @router_likes.get("/count")
@@ -86,10 +81,8 @@ async def count_likes(movie: Movie, request: Request, authorize: AuthJWT = Depen
     user_uuid = (await check_auth(request, authorize)).user_uuid
     try:
         count, average = await Likes.count(movie)
-        success = True
         logger.info("Successfully counted %s, user=%s, movie=%s", COLLECTION_NAME, user_uuid, movie)
+        return orjson.dumps({"success": True, "count": count, "average": average})
     except Exception as e:
         logger.error("Error getting %s, user=%s, movie=%s, error=%s", COLLECTION_NAME, user_uuid, movie, e)
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
-
-    return orjson.dumps({"success": success, "count": count, "average": average})

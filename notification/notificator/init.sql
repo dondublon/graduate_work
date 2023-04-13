@@ -47,4 +47,4 @@ INSERT INTO types (name) VALUES ('by time');
 INSERT INTO types (name) VALUES ('manual');
 
 insert into notification_pattern (type_, pattern_file, actual_time, settings_)
-values (1, 'mail.html', 600, '{"event_type": "review_like"}');
+values (1, 'mail.html', 600, '{"event_type": "review_like", "subject": "Something interesting happened", "title": "This is a letter", "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/Gnome-document-save.svg/100px-Gnome-document-save.svg.png", "text": "This is a beautiful text"}');

@@ -103,7 +103,7 @@ class UserService(ProfilesService):
     async def get_profiles(cls, users_id):
         with grpc.insecure_channel(settings.profiles_host_port) as channel:
             stub = profiles_pb2_grpc.ProfilesStub(channel)
-            responses = stub.GetProfiles(profiles_pb2.GettingProfilesRequest(users_id=users_id))
+            responses = await stub.GetProfiles(profiles_pb2.GettingProfilesRequest(users_id=users_id))
             cash = [MessageToDict(response) for response in responses]
             return cash
 
@@ -111,7 +111,7 @@ class UserService(ProfilesService):
     async def delete_user(cls, access_token, user_id):
         await cls._delete_from_profiles(user_id)
         logger.info('Delete from profiles - ok')
-        result = await AuthClient.unregister(access_token)
+        result = AuthClient.unregister(access_token)
         logger.info('Delete from auth - ok')
         return result
 
@@ -120,7 +120,7 @@ class UserService(ProfilesService):
         with grpc.insecure_channel(settings.profiles_host_port) as channel:
             try:
                 stub = profiles_pb2_grpc.ProfilesStub(channel)
-                response = stub.DeleteProfile(profiles_pb2.GettingRequest(id=user_id))
+                response = await stub.DeleteProfile(profiles_pb2.GettingRequest(id=user_id))
                 return response.success
             except grpc.RpcError as e:
                 # noinspection PyUnresolvedReferences

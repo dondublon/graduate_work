@@ -1,27 +1,23 @@
 import subprocess
 from concurrent import futures
-import glob
 import os
 
 import grpc
 import sentry_sdk
-from fastapi import FastAPI
 
 from config import settings
 from logger import logger
 from grpc_files import profiles_pb2, profiles_pb2_grpc
 from services_profiles.user_service import UserService
 
-app = FastAPI()
-
 
 class Profiles(profiles_pb2_grpc.ProfilesServicer):
-    def Register(self, request, context):
+    async def Register(self, request, context):
         try:
-            UserService.register(id_=request.id, first_name=request.first_name,
-                                 father_name=request.father_name, family_name=request.family_name,
-                                 phone=request.phone,
-                                 email=request.email)
+            await UserService.register(id_=request.id, first_name=request.first_name,
+                                       father_name=request.father_name, family_name=request.family_name,
+                                       phone=request.phone,
+                                       email=request.email)
             # noinspection PyUnresolvedReferences
             return profiles_pb2.BooleanReply(success=True)
         except Exception as e:
@@ -29,8 +25,8 @@ class Profiles(profiles_pb2_grpc.ProfilesServicer):
             context.set_details(str(e))
             return profiles_pb2.BooleanReply(success=False)
 
-    def Get(self, request, context):
-        user = UserService.get_by_id(request.id)
+    async def Get(self, request, context):
+        user = await UserService.get_by_id(request.id)
         if user:
             reply = profiles_pb2.UserReply(**user)
             print("Got user ok")
@@ -41,10 +37,9 @@ class Profiles(profiles_pb2_grpc.ProfilesServicer):
             reply = profiles_pb2.UserReply()
             return reply
 
-    def ChangeEMail(self, request, context):
+    async def ChangeEMail(self, request, context):
         try:
-            logger.info("Before profile update")
-            UserService.change_email(user_id=request.user_id, email=request.email)
+            await UserService.change_email(user_id=request.user_id, email=request.email)
             return profiles_pb2.BooleanReply(success=True)
         except Exception as e:
             context.set_code(grpc.StatusCode.INTERNAL)
@@ -52,31 +47,30 @@ class Profiles(profiles_pb2_grpc.ProfilesServicer):
             return profiles_pb2.BooleanReply()
 
 
-    def UpdateProfile(self, request, context):
+    async def UpdateProfile(self, request, context):
         try:
-            logger.info("Before profile update")
-            UserService.update(user_id=request.user_id, first_name=request.first_name,
-                               family_name=request.family_name, father_name=request.father_name,
-                               phone=request.phone)
+            await UserService.update(user_id=request.user_id, first_name=request.first_name,
+                                     family_name=request.family_name, father_name=request.father_name,
+                                     phone=request.phone)
             return profiles_pb2.BooleanReply(success=True)
         except Exception as e:
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(f'Error updating user {request.id}: {e}')
             return profiles_pb2.BooleanReply(success=False)
 
-    def GetProfiles(self, request, context):
-        profiles = UserService.get_users_profiles(request.users_id)
+    async def GetProfiles(self, request, context):
+        profiles = await UserService.get_users_profiles(request.users_id)
         if profiles:
             for profile in profiles:
                 yield profiles_pb2.UserReply(**profile)
         else:
             context.set_code(grpc.StatusCode.NOT_FOUND)
             context.set_details(f'Users with {request.users_id} not found.')
-            return profiles_pb2.UserReply()
+            yield profiles_pb2.UserReply()
 
-    def DeleteProfile(self, request, context):
+    async def DeleteProfile(self, request, context):
         try:
-            result = UserService.delete_profile(request.id)
+            result = await UserService.delete_profile(request.id)
             return profiles_pb2.BooleanReply(success=True)
         except Exception as e:
             context.set_code(grpc.StatusCode.INTERNAL)

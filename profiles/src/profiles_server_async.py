@@ -4,13 +4,9 @@ import logging
 import grpc
 
 
-from fastapi import FastAPI, Depends
-
 from config import settings
 from grpc_files import profiles_pb2_grpc
 from profiles_server import Profiles
-
-app = FastAPI(dependencies=[Depends(Profiles)])
 
 
 async def serve() -> None:

@@ -2,4 +2,4 @@
 
 set -e
 
-uwsgi --strict --ini /app/uwsgi.ini
+uwsgi --strict --ini ./uwsgi/uwsgi.ini

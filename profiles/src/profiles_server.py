@@ -135,10 +135,10 @@ def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     profiles_pb2_grpc.add_ProfilesServicer_to_server(Profiles(), server)
     server.add_insecure_port('[::]:' + port)
+    init_logging()
     server.start()
     logger.info("Server started, listening on %s", port)
     logger.info("Postgres host %s, port %s, and schema: %s", settings.pg_host, settings.pg_port, settings.pg_schema)
-    logger.info("Postgres dsn: %s", settings.profiles_pg_dsn)  # Insecure
 
     server.wait_for_termination()
 

@@ -41,17 +41,16 @@ async def add_like(like: ReviewLike, request: Request, authorize: AuthJWT = Depe
         success = True
         logger.info("Successfully added %s, user=%s, %s=%s", COLLECTION_NAME, user_uuid, COLLECTION_NAME, like)
         payload = {"author_id": str(like.review_author_id), "event_type": "review_like"}
-        await rabbitmq_publish(settings.rabbitmq_queue, payload)
 
     except Exception as e:
         logger.error(e)
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
 
     try:
-        await rabbitmq_publish(settings.rabbitmq_host, settings.rabbitmq_queue, str(like.review_author_id))
+        await rabbitmq_publish(settings.rabbitmq_host, settings.rabbitmq_queue, payload)
     except Exception as e:
         logger.error(e)
-        await rabbitmq_publish(settings.rabbitmq_host_dlq, settings.rabbitmq_queue, str(like.review_author_id))
+        await rabbitmq_publish(settings.rabbitmq_host_dlq, settings.rabbitmq_queue, payload)
 
     return orjson.dumps({"success": success, "upserted_id": str(result.upserted_id)})
 

@@ -40,3 +40,17 @@ class Likes(TestCase):
         self.assertEqual(result.status_code, 200)
         obj = json.loads(result.json())
         self.assertTrue(obj["success"])
+
+    def test_add_review_like(self):
+        """To launch this test, manually disable aunthorisation mechahism in
+        backend/src/api/v1/review_likes.py / add."""
+        result = requests.post(
+            f"http://{self.host_port}/v1/review_likes/add",
+            headers={"user_uuid": "d99cfebe-0f2c-4098-b5aa-b27229943f2b"},
+            json={"movie": "391ae61e-5bce-41f8-b01a-9238c7831f21", "value": 3,
+                  "review": "63ff480aa96c3ea499bc01242",
+                  "review_author_id": "d96f4d59-12d4-419c-967d-fd62c41cc6b0"},
+        )
+        self.assertEqual(result.status_code, 200)
+        obj = json.loads(result.json())
+        self.assertTrue(obj["success"])

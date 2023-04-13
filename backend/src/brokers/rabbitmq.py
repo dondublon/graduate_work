@@ -1,6 +1,4 @@
-# import pika
-# from pika import BlockingConnection
-from aio_pika import connect_robust, RobustConnection
+from aio_pika import connect_robust
 
 
 class RabbitmqConnection:

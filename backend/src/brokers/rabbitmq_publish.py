@@ -23,7 +23,7 @@ async def rabbitmq_publish(rabbitmq_host: str, queue: str, payload: dict):
         }
 
         logger.info(f"RABBITMQ body: {body}")
-        await rabbitmq_channel.basic_publish(
+        await rabbitmq_channel.default_exchange.publish(
             Message(body=json.dumps(body).encode(), delivery_mode=DeliveryMode.PERSISTENT),
             routing_key=queue
         )

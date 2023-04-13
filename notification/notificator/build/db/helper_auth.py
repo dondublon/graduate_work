@@ -11,7 +11,7 @@ def get_token(login, password):
     """Token for authorization service"""
     login_url = f"{settings.auth_protocol_host_port}{settings.auth_login_url}"
     result = requests.post(login_url,
-                           data=json.dumps({"login": login, "password": password}),
+                           data=json.dumps({"email": login, "password": password}),
                            headers={"Content-Type": "application/json"})
     return result.json().get("access_token")
 

@@ -1,12 +1,10 @@
-import logging
 from http import HTTPStatus
 
-import orjson
 from fastapi import APIRouter, HTTPException, Depends
 from fastapi_jwt_auth import AuthJWT
 
 from core.config import logger
-from models_backend.models import Like, Movie
+from models_backend.models import Like, Movie, UpsertedSuccessModel, DeletedCountSuccessModel, LikesSetSuccessModel
 from services.likes import Likes
 from starlette.requests import Request
 
@@ -36,7 +34,7 @@ async def add_like(like: Like, request: Request, authorize: AuthJWT = Depends())
     try:
         result = await Likes.add(user_uuid, like)
         logger.info("Successfully added %s, user=%s, %s=%s", COLLECTION_NAME, user_uuid, COLLECTION_NAME, like)
-        return orjson.dumps({"success": True, "upserted_id": str(result.upserted_id)})
+        return UpsertedSuccessModel(success=True, upserted_id=str(result.upserted_id))
     except Exception as e:
         logger.error("Error adding %s, user=%s, %s=%s, error=%s", COLLECTION_NAME, user_uuid, COLLECTION_NAME, like, e)
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
@@ -59,7 +57,8 @@ async def remove_like(movie: Movie, request: Request, authorize: AuthJWT = Depen
     try:
         result = await Likes.remove(user_uuid, movie)
         logger.info("Successfully deleted %s, user=%s, movie=%s", COLLECTION_NAME, user_uuid, movie)
-        return orjson.dumps({"success": True, "deleted_count": str(result.deleted_count)})
+        # return orjson.dumps({"success": True, "deleted_count": str(result.deleted_count)})
+        return DeletedCountSuccessModel(success=True, deleted_count=result.deleted_count)
     except Exception as e:
         logger.error("Error removing %s, user=%s, movie=%s, error=%s", COLLECTION_NAME, user_uuid, movie, e)
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
@@ -82,7 +81,8 @@ async def count_likes(movie: Movie, request: Request, authorize: AuthJWT = Depen
     try:
         count, average = await Likes.count(movie)
         logger.info("Successfully counted %s, user=%s, movie=%s", COLLECTION_NAME, user_uuid, movie)
-        return orjson.dumps({"success": True, "count": count, "average": average})
+        # return orjson.dumps({"success": True, "count": count, "average": average})
+        return LikesSetSuccessModel(success=True, count=count, average=average)
     except Exception as e:
         logger.error("Error getting %s, user=%s, movie=%s, error=%s", COLLECTION_NAME, user_uuid, movie, e)
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))

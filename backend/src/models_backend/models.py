@@ -79,6 +79,10 @@ class InsertedSuccessModel(SuccessModel):
     inserted_id: str  # Str - because Mongo id is not compatible with Python UUID.
 
 
+class UpsertedSuccessModel(SuccessModel):
+    upserted_id: str  # Str - because Mongo id is not compatible with Python UUID.
+
+
 class UpdatedSuccessModel(SuccessModel):
     updated_id: str
 
@@ -90,5 +94,9 @@ class DeletedCountSuccessModel(SuccessModel):
 class ObjectsListSuccessModel(SuccessModel):
     objects_list: list
 
+
+class LikesSetSuccessModel(SuccessModel):
+    count: int
+    average: float
 
 # endregion

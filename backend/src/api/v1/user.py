@@ -1,7 +1,7 @@
 import os.path
 from http import HTTPStatus
 
-from fastapi import APIRouter, HTTPException, Depends, File, UploadFile
+from fastapi import APIRouter, HTTPException, Depends, UploadFile
 from fastapi.responses import Response
 from fastapi_jwt_auth import AuthJWT
 import orjson
@@ -165,5 +165,5 @@ async def create_upload_file(file: UploadFile, request: Request, authorize: Auth
     short_name, ext = os.path.splitext(str(file.filename))
     if ext not in ['.jpg', '.jpeg', '.png', '.gif']:
         return orjson.dumps({"success": False, "details": "Only 'jpg', 'jpeg', 'png', 'gif' allowed."})
-    result = await UserService.upload_avatar(file.filename, auth_result.user_uuid, data)
+    await UserService.upload_avatar(file.filename, auth_result.user_uuid, bytearray(data))
     return orjson.dumps({"success": True, "user_id": auth_result.user_uuid})

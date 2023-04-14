@@ -1,12 +1,11 @@
 from http import HTTPStatus
 
-import orjson
 from fastapi_jwt_auth import AuthJWT
 
 from brokers.rabbitmq_publish import rabbitmq_publish
 from core.config import settings, logger
 from fastapi import APIRouter, HTTPException, Depends
-from models_backend.models import ReviewId, ReviewLike
+from models_backend.models import ReviewId, ReviewLike, UpsertedSuccessModel, DeletedCountSuccessModel, LikesSetSuccessModel
 from services.review_likes import ReviewLikes
 from starlette.requests import Request
 
@@ -42,7 +41,7 @@ async def add_like(like: ReviewLike, request: Request, authorize: AuthJWT = Depe
         success = True
         logger.info("Successfully added %s, user=%s, %s=%s", COLLECTION_NAME, user_uuid, COLLECTION_NAME, like)
         payload = {"author_id": str(like.review_author_id), "event_type": "review_like"}
-        http_result = orjson.dumps({"success": success, "upserted_id": str(result.upserted_id)})
+        http_result = UpsertedSuccessModel(success=success, upserted_id=str(result.upserted_id))
     except Exception as e:
         logger.error(e)
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
@@ -72,7 +71,7 @@ async def remove_like(review: ReviewId, request: Request, authorize: AuthJWT = D
     try:
         result = await ReviewLikes.remove(user_uuid, review)
         logger.info("Successfully deleted %s, user=%s, review=%s", COLLECTION_NAME, user_uuid, review)
-        return orjson.dumps({"success": True, "deleted_count": str(result.deleted_count)})
+        return DeletedCountSuccessModel(success=True, deleted_count=str(result.deleted_count))
     except Exception as e:
         logger.error(
             "Error removing %s, user=%s, %s=%s, error=%s", COLLECTION_NAME, user_uuid, COLLECTION_NAME, review, e
@@ -97,7 +96,7 @@ async def count_likes(review: ReviewId, request: Request, authorize: AuthJWT = D
     try:
         count, average = ReviewLikes.count(review=review)
         logger.info("Succesfully counted %s, user=%s, review=%s", COLLECTION_NAME, user_uuid, review)
-        return orjson.dumps({"success": True, "count": count, "average": average})
+        return LikesSetSuccessModel(success=True, count=count, average=average)
     except Exception as e:
         logger.error("Error counting %s, user=%s, review=%s, error=%s", COLLECTION_NAME, user_uuid, review, e)
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))

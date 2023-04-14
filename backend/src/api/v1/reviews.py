@@ -1,11 +1,11 @@
 from http import HTTPStatus
 
-import orjson
 from fastapi import APIRouter, HTTPException, Depends
 from fastapi_jwt_auth import AuthJWT
 
 from core.config import logger
-from models_backend.models import Movie, Review
+from models_backend.models import Movie, Review, InsertedSuccessModel, DeletedCountSuccessModel, \
+    ReviewSuccessModel, ObjectsListSuccessModel
 from services.reviews import Reviews
 from starlette.requests import Request
 
@@ -33,7 +33,7 @@ async def add_review(review: Review, request: Request):
     try:
         result = await Reviews.add(user_uuid, review)
         logger.info("Successfully added %s, user=%s, %s=%s", COLLECTION_NAME, user_uuid, COLLECTION_NAME, review)
-        return orjson.dumps({"success": True, "inserted_id": str(result.inserted_id)})
+        return InsertedSuccessModel(success=True, inserted_id=str(result.inserted_id))
     except Exception as e:
         logger.error(
             "Error adding %s, user=%s, %s=%s, error=%s", COLLECTION_NAME, user_uuid, COLLECTION_NAME, review, e
@@ -58,7 +58,7 @@ async def remove_review(movie: Movie, request: Request, authorize: AuthJWT = Dep
     try:
         result = await Reviews.remove(user_uuid, movie)
         logger.info("Successfully deleted %s, user=%s, movie=%s", COLLECTION_NAME, user_uuid, movie)
-        return orjson.dumps({"success": True, "deleted_count": str(result.deleted_count)})
+        return DeletedCountSuccessModel(success=True, deleted_count=str(result.deleted_count))
     except Exception as e:
         logger.error("Error removing %s, user=%s, movie=%s, error=%s", COLLECTION_NAME, user_uuid, movie, e)
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
@@ -83,7 +83,7 @@ async def get_review(movie: Movie, request: Request, authorize: AuthJWT = Depend
         if review is None:
             raise HTTPException(status_code=HTTPStatus.NOT_FOUND)
         logger.info("Successfully got %s, user=%s, movie=%s", COLLECTION_NAME, user_uuid, movie)
-        return orjson.dumps({"success": True, "text": review["text"], "time": review["time"]})
+        return ReviewSuccessModel(success=True, text=review["text"], time=review["time"])
     except HTTPException:
         raise
     except Exception as e:
@@ -115,10 +115,11 @@ async def list_reviews(movie: Movie, request: Request, authorize: AuthJWT = Depe
         logger.error(
             "Successfylly listed %s, user=%s, movie=%s, sort_way=%s", COLLECTION_NAME, user_uuid, movie, sort_way
         )
+        return ObjectsListSuccessModel(success=success, objects_list=reviews_list)
     except HTTPException:
         raise
     except Exception as e:
         logger.error("Error listing %s, user=%s, movie=%s, error=%s", COLLECTION_NAME, user_uuid, movie, e)
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
 
-    return orjson.dumps({"success": success, "reviews": reviews_list})
+

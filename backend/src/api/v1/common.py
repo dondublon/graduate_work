@@ -1,13 +1,11 @@
 from enum import Enum
 import json
-from functools import wraps
 from http import HTTPStatus
 import time
 from typing import NamedTuple
 
 import aiohttp
 import jwt
-import requests
 from fastapi_jwt_auth import AuthJWT
 
 from core.config import settings

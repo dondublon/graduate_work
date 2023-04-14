@@ -1,11 +1,11 @@
 from http import HTTPStatus
 
-import orjson
 from fastapi import APIRouter, HTTPException, Depends
 from fastapi_jwt_auth import AuthJWT
 
 from core.config import logger, jwt_settings
-from models_backend.models import Bookmark, Movie
+from models_backend.models import Bookmark, Movie, InsertedSuccessModel, DeletedCountSuccessModel, \
+    ObjectsListSuccessModel
 from services.bookmarks import Bookmarks
 from starlette.requests import Request
 
@@ -37,7 +37,7 @@ async def add_bookmark(bookmark: Bookmark, request: Request, authorize: AuthJWT 
     try:
         result = await Bookmarks.add(user_uuid, bookmark)
         logger.info("Successfully added %s, user=%s, %s=%s", COLLECTION_NAME, user_uuid, COLLECTION_NAME, bookmark)
-        return orjson.dumps({"success": True, "inserted_id": str(result.inserted_id)})
+        return InsertedSuccessModel(success=True, inserted_id=str(result.inserted_id))
     except Exception as e:
         logger.error(
             "Error adding %s, user=%s, %s=%s, error=%s", COLLECTION_NAME, user_uuid, COLLECTION_NAME, bookmark, e
@@ -62,7 +62,7 @@ async def remove_bookmark(bookmark: Bookmark, request: Request, authorize: AuthJ
     try:
         result = await Bookmarks.remove(user_uuid, bookmark)
         logger.info("Successfully removed %s, user=%s, %s=%s", COLLECTION_NAME, user_uuid, COLLECTION_NAME, bookmark)
-        return orjson.dumps({"success": True, "deleted_count": str(result.deleted_count)})
+        return DeletedCountSuccessModel(success=True, deleted_count=result.deleted_count)
     except Exception as e:
         logger.error(
             "Error removing %s, user=%s, %s=%s, error=%s", COLLECTION_NAME, user_uuid, COLLECTION_NAME, bookmark, e
@@ -90,7 +90,7 @@ async def list_bookmarks(movie: Movie, request: Request, authorize: AuthJWT = De
     try:
         objects_list = await Bookmarks.list(movie)
         logger.info("Successfully listed %s, user=%s, movie=%s", COLLECTION_NAME, user_uuid, movie)
-        return orjson.dumps({"success": True, COLLECTION_NAME: objects_list})
+        return ObjectsListSuccessModel(success=True, objects_list=objects_list)
     except HTTPException:
         raise
     except Exception as e:

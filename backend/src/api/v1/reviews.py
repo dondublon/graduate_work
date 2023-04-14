@@ -83,7 +83,6 @@ async def get_review(movie: Movie, request: Request, authorize: AuthJWT = Depend
         if review is None:
             raise HTTPException(status_code=HTTPStatus.NOT_FOUND)
         logger.info("Successfully got %s, user=%s, movie=%s", COLLECTION_NAME, user_uuid, movie)
-        # return orjson.dumps({"success": True, "text": review["text"], "time": review["time"]})
         return ReviewSuccessModel(success=True, text=review["text"], time=review["time"])
     except HTTPException:
         raise

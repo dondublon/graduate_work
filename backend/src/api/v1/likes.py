@@ -57,7 +57,6 @@ async def remove_like(movie: Movie, request: Request, authorize: AuthJWT = Depen
     try:
         result = await Likes.remove(user_uuid, movie)
         logger.info("Successfully deleted %s, user=%s, movie=%s", COLLECTION_NAME, user_uuid, movie)
-        # return orjson.dumps({"success": True, "deleted_count": str(result.deleted_count)})
         return DeletedCountSuccessModel(success=True, deleted_count=result.deleted_count)
     except Exception as e:
         logger.error("Error removing %s, user=%s, movie=%s, error=%s", COLLECTION_NAME, user_uuid, movie, e)
@@ -81,7 +80,6 @@ async def count_likes(movie: Movie, request: Request, authorize: AuthJWT = Depen
     try:
         count, average = await Likes.count(movie)
         logger.info("Successfully counted %s, user=%s, movie=%s", COLLECTION_NAME, user_uuid, movie)
-        # return orjson.dumps({"success": True, "count": count, "average": average})
         return LikesSetSuccessModel(success=True, count=count, average=average)
     except Exception as e:
         logger.error("Error getting %s, user=%s, movie=%s, error=%s", COLLECTION_NAME, user_uuid, movie, e)

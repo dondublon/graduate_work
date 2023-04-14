@@ -37,7 +37,6 @@ async def add_bookmark(bookmark: Bookmark, request: Request, authorize: AuthJWT 
     try:
         result = await Bookmarks.add(user_uuid, bookmark)
         logger.info("Successfully added %s, user=%s, %s=%s", COLLECTION_NAME, user_uuid, COLLECTION_NAME, bookmark)
-        # return orjson.dumps({"success": True, "inserted_id": str(result.inserted_id)})
         return InsertedSuccessModel(success=True, inserted_id=str(result.inserted_id))
     except Exception as e:
         logger.error(

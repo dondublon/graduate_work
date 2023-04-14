@@ -19,9 +19,9 @@ async def rabbitmq_publish(rabbitmq_host: str, queue: str, payload: dict):
             "payload": payload
         }
         try:
-            rabbitmq_channel = rabbitmq_conn.channel()
+            rabbitmq_channel = await rabbitmq_conn.channel()
 
-            rabbitmq_channel.queue_declare(queue=queue, durable=True)
+            await rabbitmq_channel.declare_queue(name=queue, durable=True)
 
             logger.info(f"RABBITMQ body: {body}")
             await rabbitmq_channel.default_exchange.publish(
@@ -33,6 +33,6 @@ async def rabbitmq_publish(rabbitmq_host: str, queue: str, payload: dict):
         except Exception as e:
             logger.error(f"Message for Rabbit failed. Queue={queue}, message_id={body.get('message_id')}. Check error: {e}")
         finally:
-            rabbitmq_conn.close()
+            await rabbitmq_conn.close()
             return
 

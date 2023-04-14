@@ -5,6 +5,7 @@ from http import HTTPStatus
 import time
 from typing import NamedTuple
 
+import aiohttp
 import jwt
 import requests
 from fastapi_jwt_auth import AuthJWT
@@ -47,36 +48,39 @@ async def check_auth(request: Request, authorize: AuthJWT = None) -> AuthResult:
     email = data_obj.get("email")
     password = data_obj.get("password")
     login_url = f"{settings.auth_protocol_host_port}{settings.auth_login_url}"
-    auth_response = requests.post(
-        login_url,
-        data=json.dumps({"email": email, "password": password}),
-        headers={"Content-Type": "application/json"},  # "Authorization": authorization,
-    )
-    json_obj = auth_response.json()
-    a_token = json_obj.get("access_token")
-    if not a_token:
-        raise HTTPException(HTTPStatus.UNAUTHORIZED)
-    decoded = jwt.decode(a_token, settings.auth_secret_key, algorithms=["HS256"])
-    user_uuid = decoded.get("sub")
-    if not user_uuid:
-        raise HTTPException(HTTPStatus.UNAUTHORIZED)
-    return AuthResult(a_token, user_uuid)
+    async with aiohttp.ClientSession() as session:
+        async with session.post(
+                login_url,
+                data=json.dumps({"email": email, "password": password}),
+                headers={"Content-Type": "application/json"},  # "Authorization": authorization,
+        ) as auth_response:
+            json_obj = await auth_response.json()
+            a_token = json_obj.get("access_token")
+            if not a_token:
+                raise HTTPException(HTTPStatus.UNAUTHORIZED)
+            decoded = jwt.decode(a_token, settings.auth_secret_key, algorithms=["HS256"])
+            user_uuid = decoded.get("sub")
+            if not user_uuid:
+                raise HTTPException(HTTPStatus.UNAUTHORIZED)
+            return AuthResult(a_token, user_uuid)
 
 
 async def check_role(user_uuid: str, access_token: str) -> list:
     login_url = f"{settings.auth_protocol_host_port}{settings.auth_role_url}?user_id={user_uuid}"
-    response = requests.get(login_url, headers={"Authorization": f"Bearer {access_token}"})
-    result = response.json()
-    roles_list = [role.get('name').lower() for role in result]
-    if settings.admin_roles.lower() not in roles_list:
-        raise HTTPException(HTTPStatus.UNAUTHORIZED)
-    return roles_list
+    async with aiohttp.ClientSession() as session:
+        async with session.get(login_url, headers={"Authorization": f"Bearer {access_token}"}) as response:
+            result = await response.json()
+            roles_list = [role.get('name').lower() for role in result]
+            if settings.admin_roles.lower() not in roles_list:
+                raise HTTPException(HTTPStatus.UNAUTHORIZED)
+            return roles_list
 
 
 async def get_email(user_uuid: str, access_token: str) -> list:
     login_url = f"{settings.auth_protocol_host_port}{settings.auth_profile_url}?user_id={user_uuid}"
-    response = requests.get(login_url, headers={"Authorization": f"Bearer {access_token}"})
-    email = response.json().get("email")
-    if not email:
-        raise HTTPException(HTTPStatus.NO_CONTENT)
-    return email
+    async with aiohttp.ClientSession() as session:
+        async with session.get(login_url, headers={"Authorization": f"Bearer {access_token}"}) as response:
+            email = await response.json()
+            if not email.get("email"):
+                raise HTTPException(HTTPStatus.NO_CONTENT)
+            return email

@@ -48,9 +48,9 @@ async def check_auth(request: Request, authorize: AuthJWT = None) -> AuthResult:
     login_url = f"{settings.auth_protocol_host_port}{settings.auth_login_url}"
     async with aiohttp.ClientSession() as session:
         async with session.post(
-                login_url,
-                data=json.dumps({"email": email, "password": password}),
-                headers={"Content-Type": "application/json"},  # "Authorization": authorization,
+            login_url,
+            data=json.dumps({"email": email, "password": password}),
+            headers={"Content-Type": "application/json"},  # "Authorization": authorization,
         ) as auth_response:
             json_obj = await auth_response.json()
             a_token = json_obj.get("access_token")
@@ -68,7 +68,7 @@ async def check_role(user_uuid: str, access_token: str) -> list:
     async with aiohttp.ClientSession() as session:
         async with session.get(login_url, headers={"Authorization": f"Bearer {access_token}"}) as response:
             result = await response.json()
-            roles_list = [role.get('name').lower() for role in result]
+            roles_list = [role.get("name").lower() for role in result]
             if settings.admin_roles.lower() not in roles_list:
                 raise HTTPException(HTTPStatus.UNAUTHORIZED)
             return roles_list

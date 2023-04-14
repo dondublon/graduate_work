@@ -12,7 +12,8 @@ def convert_person_for_es(persons: list[Person], index: str) -> list[dict]:
                 "roles_names": person.roles,
                 "films_names": [film.title for film in person.films],
                 "films": [film.dict() for film in person.films],
-            }
-        } for person in persons
+            },
+        }
+        for person in persons
     ]
     return actions

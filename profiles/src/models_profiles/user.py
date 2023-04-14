@@ -1,4 +1,5 @@
 from sqlalchemy.dialects.postgresql import UUID
+
 # from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy_utils import EmailType, PhoneNumberType
 from sqlalchemy.orm import DeclarativeBase
@@ -14,7 +15,7 @@ class Base(DeclarativeBase):
 
             if to_str:
                 if raw is None:
-                    return ''
+                    return ""
                 elif isinstance(raw, PhoneNumber):
                     # noinspection PyUnresolvedReferences
                     return raw.e164
@@ -23,8 +24,7 @@ class Base(DeclarativeBase):
             else:
                 return raw
 
-        return {c.key: getattr_here(c.key)
-                for c in inspect(obj).mapper.column_attrs}
+        return {c.key: getattr_here(c.key) for c in inspect(obj).mapper.column_attrs}
 
 
 class User(Base):  # ModelMixin

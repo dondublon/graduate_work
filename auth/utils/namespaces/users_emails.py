@@ -1,15 +1,15 @@
 from flask_restx import Namespace, fields
 from flask_restx import reqparse
 
-ns = Namespace("Users emails",
-               description="Users emails management. Route is only for Superusers and Admins. "
-                           "If you want to get all users you can send: {user_id: ['*']}")
+ns = Namespace(
+    "Users emails",
+    description="Users emails management. Route is only for Superusers and Admins. "
+    "If you want to get all users you can send: {user_id: ['*']}",
+)
 
 emails = ns.model(
     "Emails",
-    {
-        "emails": fields.List(fields.String(readonly=True, description="Emails list"))
-    },
+    {"emails": fields.List(fields.String(readonly=True, description="Emails list"))},
 )
 
 users_id = reqparse.RequestParser()

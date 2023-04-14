@@ -7,10 +7,10 @@ class Settings(BaseSettings):
     es_dsn: str
     etl_timeout: int
     es_indexes: list[str]
-    time_format: str = '%Y-%m-%d %H:%M:%S.%f'
+    time_format: str = "%Y-%m-%d %H:%M:%S.%f"
     load_chunk: int
 
     class Config:
         case_sensitive = False
-        env_file = '.env'
-        env_file_encoding = 'utf-8'
+        env_file = ".env"
+        env_file_encoding = "utf-8"

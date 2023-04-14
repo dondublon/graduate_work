@@ -143,5 +143,5 @@ class UserService:
     def unregister(cls, user_id: UUID) -> bool:
         """Returns True - ok, false - something happened."""
         result = User.delete(user_id)
-        logger.info('User %s deleted, result: %s', user_id, result)
+        logger.info("User %s deleted, result: %s", user_id, result)
         return result

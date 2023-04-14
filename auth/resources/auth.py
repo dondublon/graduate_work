@@ -36,9 +36,7 @@ class Authorization(Resource):
     def post(self):
         """Authorization by credentials"""
         data = auth_parser.parse_args()
-        payload, status = UserService.login(
-            data["email"], data["password"], data.get("User-Agent"), data.get("Device")
-        )
+        payload, status = UserService.login(data["email"], data["password"], data.get("User-Agent"), data.get("Device"))
         if status == HTTPStatus.OK and isinstance(payload, JWTs):
             current_app.logger.info(f"{data['email']} successful authorization")
             return payload.dict(), status
@@ -85,4 +83,4 @@ class Unregistering(Resource):
             status = HTTPStatus.OK if result else HTTPStatus.NOT_FOUND
         except:
             status = HTTPStatus.INTERNAL_SERVER_ERROR
-        return {'user_id': user_id}, status
+        return {"user_id": user_id}, status

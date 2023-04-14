@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     logstash_host: str = Field("logstash", env="LOGSTASH_HOST")
     logstash_port: int = Field(5044, env="LOGSTASH_PORT")
     logstash_traces_sample_rate: float = Field(1.0, env="LOGSTASH_TRACES_SAMPLE_RATE")
-    avatar_path: str = Field('/avatars', env="PROFILES_AVATARS_PATH")
+    avatar_path: str = Field("/avatars", env="PROFILES_AVATARS_PATH")
     # endregion
 
     class Config:
@@ -30,20 +30,18 @@ class Settings(BaseSettings):
         env_file = ".env"
         env_file_encoding = "utf-8"
 
-    dictConfig({
-        'version': 1,
-        'formatters': {'default': {
-            'format': '[%(asctime)s] %(levelname)s in %(module)s: %(message)s',
-        }},
-        'handlers': {'wsgi': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'default'
-        }},
-        'root': {
-            'level': 'INFO',
-            'handlers': ['wsgi']
+    dictConfig(
+        {
+            "version": 1,
+            "formatters": {
+                "default": {
+                    "format": "[%(asctime)s] %(levelname)s in %(module)s: %(message)s",
+                }
+            },
+            "handlers": {"wsgi": {"class": "logging.StreamHandler", "formatter": "default"}},
+            "root": {"level": "INFO", "handlers": ["wsgi"]},
         }
-    })
+    )
 
 
 settings = Settings()

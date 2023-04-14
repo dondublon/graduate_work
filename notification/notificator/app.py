@@ -5,6 +5,7 @@ from build.scheduler import start_scheduler  # <- Shedule starts here
 app = create_app(settings)
 smtp_server = mail_server
 
+
 @app.route("/")
 def index():
     return "Hello to Flask!"

@@ -4,8 +4,14 @@ from fastapi import APIRouter, HTTPException, Depends
 from fastapi_jwt_auth import AuthJWT
 
 from core.config import logger
-from models_backend.models import Movie, Review, InsertedSuccessModel, DeletedCountSuccessModel, \
-    ReviewSuccessModel, ObjectsListSuccessModel
+from models_backend.models import (
+    Movie,
+    Review,
+    InsertedSuccessModel,
+    DeletedCountSuccessModel,
+    ReviewSuccessModel,
+    ObjectsListSuccessModel,
+)
 from services.reviews import Reviews
 from starlette.requests import Request
 
@@ -121,5 +127,3 @@ async def list_reviews(movie: Movie, request: Request, authorize: AuthJWT = Depe
     except Exception as e:
         logger.error("Error listing %s, user=%s, movie=%s, error=%s", COLLECTION_NAME, user_uuid, movie, e)
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
-
-

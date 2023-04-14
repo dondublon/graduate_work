@@ -1,7 +1,13 @@
 from google.protobuf.internal import containers as _containers
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
-from typing import ClassVar as _ClassVar, Iterable as _Iterable, Mapping as _Mapping, Optional as _Optional, Union as _Union
+from typing import (
+    ClassVar as _ClassVar,
+    Iterable as _Iterable,
+    Mapping as _Mapping,
+    Optional as _Optional,
+    Union as _Union,
+)
 
 DESCRIPTOR: _descriptor.FileDescriptor
 
@@ -69,7 +75,15 @@ class RegisterCredentials(_message.Message):
     first_name: str
     id: str
     phone: str
-    def __init__(self, id: _Optional[str] = ..., first_name: _Optional[str] = ..., family_name: _Optional[str] = ..., father_name: _Optional[str] = ..., phone: _Optional[str] = ..., email: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        id: _Optional[str] = ...,
+        first_name: _Optional[str] = ...,
+        family_name: _Optional[str] = ...,
+        father_name: _Optional[str] = ...,
+        phone: _Optional[str] = ...,
+        email: _Optional[str] = ...,
+    ) -> None: ...
 
 class UpdateProfileRequest(_message.Message):
     __slots__ = ["family_name", "father_name", "first_name", "phone", "user_id"]
@@ -83,7 +97,14 @@ class UpdateProfileRequest(_message.Message):
     first_name: str
     phone: str
     user_id: str
-    def __init__(self, user_id: _Optional[str] = ..., first_name: _Optional[str] = ..., family_name: _Optional[str] = ..., father_name: _Optional[str] = ..., phone: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        user_id: _Optional[str] = ...,
+        first_name: _Optional[str] = ...,
+        family_name: _Optional[str] = ...,
+        father_name: _Optional[str] = ...,
+        phone: _Optional[str] = ...,
+    ) -> None: ...
 
 class UploadFileRequest(_message.Message):
     __slots__ = ["chunk_data", "metadata"]
@@ -91,7 +112,9 @@ class UploadFileRequest(_message.Message):
     METADATA_FIELD_NUMBER: _ClassVar[int]
     chunk_data: bytes
     metadata: FileMetadata
-    def __init__(self, metadata: _Optional[_Union[FileMetadata, _Mapping]] = ..., chunk_data: _Optional[bytes] = ...) -> None: ...
+    def __init__(
+        self, metadata: _Optional[_Union[FileMetadata, _Mapping]] = ..., chunk_data: _Optional[bytes] = ...
+    ) -> None: ...
 
 class UserReply(_message.Message):
     __slots__ = ["email", "family_name", "father_name", "first_name", "id", "phone"]
@@ -107,4 +130,12 @@ class UserReply(_message.Message):
     first_name: str
     id: str
     phone: str
-    def __init__(self, id: _Optional[str] = ..., first_name: _Optional[str] = ..., family_name: _Optional[str] = ..., father_name: _Optional[str] = ..., phone: _Optional[str] = ..., email: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        id: _Optional[str] = ...,
+        first_name: _Optional[str] = ...,
+        family_name: _Optional[str] = ...,
+        father_name: _Optional[str] = ...,
+        phone: _Optional[str] = ...,
+        email: _Optional[str] = ...,
+    ) -> None: ...

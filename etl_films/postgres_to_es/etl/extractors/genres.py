@@ -9,5 +9,5 @@ logger = logging.getLogger(__name__)
 class GenreExtractor(BaseExtractor):
     def extract(self) -> list[Genre]:
         genres = [Genre(**data) for data in self.get_content()]
-        logger.info(f'Finished extracting genres.')
+        logger.info(f"Finished extracting genres.")
         return genres

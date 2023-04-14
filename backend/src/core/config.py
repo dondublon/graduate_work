@@ -8,6 +8,7 @@ from core.logger import LOGGING
 
 logging_config.dictConfig(LOGGING)
 
+
 class Settings(BaseSettings):
     retry_backoff_ms: int = Field(1000, env="RETRY_BACKOFF_MS")
     connections_max_idle_ms: int = Field(5000, env="CONNECTIONS_MAX_IDLE_MS")
@@ -34,7 +35,7 @@ class Settings(BaseSettings):
     rabbitmq_queue: str = Field("ugc_events", env="QUEUE_NAME")
     profiles_host: str = Field("profiles_service", env="PROFILES_SERVICE_HOST")
     profiles_port: int = Field(50051, env="PROFILES_SERVICE_PORT")
-    admin_roles: str = Field('admin', env="ADMIN_ROLES")
+    admin_roles: str = Field("admin", env="ADMIN_ROLES")
 
     # We get environment variables from the docker-compose, reference to .env.
 
@@ -44,7 +45,7 @@ class Settings(BaseSettings):
 
     @property
     def profiles_host_port(self):
-        return f'{self.profiles_host}:{self.profiles_port}'
+        return f"{self.profiles_host}:{self.profiles_port}"
 
 
 class JWTSettings(BaseModel):

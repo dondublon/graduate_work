@@ -9,9 +9,7 @@ from utils.app_factory import create_app
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-logger.addHandler(
-    logstash.LogstashHandler(settings.logstash_host, settings.logstash_port, version=1, tags='auth')
-)
+logger.addHandler(logstash.LogstashHandler(settings.logstash_host, settings.logstash_port, version=1, tags="auth"))
 
 
 app = create_app(settings)

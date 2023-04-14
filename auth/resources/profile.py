@@ -39,6 +39,7 @@ class ChangeEmail(Resource):
 @ns.expect(access_token_required)
 class ChangeProfile(Resource):
     """Change profile without email."""
+
     @ns.marshal_with(user_profile)
     @jwt_required()
     @check_if_token_in_blacklist()

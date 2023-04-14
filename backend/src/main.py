@@ -30,10 +30,7 @@ def get_config():
 
 @app.exception_handler(AuthJWTException)
 def authjwt_exception_handler(request: Request, exc: AuthJWTException):
-    return JSONResponse(
-        status_code=exc.status_code,
-        content={"detail": exc.message}
-    )
+    return JSONResponse(status_code=exc.status_code, content={"detail": exc.message})
 
 
 @app.get("/")
@@ -73,9 +70,10 @@ app.include_router(router_user, prefix=V1)
 # Using FastAPI instance
 def get_all_urls():
     for route in app.routes:
-        print(route.name, ':', route.path)
+        print(route.name, ":", route.path)
+
+
 # get_all_urls()  # Uncomment to get routes list
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, log_config=LOGGING,
-                log_level=logging.DEBUG)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, log_config=LOGGING, log_level=logging.DEBUG)

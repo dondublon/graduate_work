@@ -4,8 +4,13 @@ from fastapi import APIRouter, HTTPException, Depends
 from fastapi_jwt_auth import AuthJWT
 
 from core.config import logger, jwt_settings
-from models_backend.models import Bookmark, Movie, InsertedSuccessModel, DeletedCountSuccessModel, \
-    ObjectsListSuccessModel
+from models_backend.models import (
+    Bookmark,
+    Movie,
+    InsertedSuccessModel,
+    DeletedCountSuccessModel,
+    ObjectsListSuccessModel,
+)
 from services.bookmarks import Bookmarks
 from starlette.requests import Request
 

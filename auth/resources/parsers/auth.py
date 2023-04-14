@@ -2,12 +2,8 @@ from flask_restful import reqparse
 
 register_parser = reqparse.RequestParser()
 register_parser.add_argument("email", help="This field cannot be blank", required=True)
-register_parser.add_argument(
-    "password", help="This field cannot be blank", required=True
-)
-register_parser.add_argument(
-    "password_confirmation", help="This field cannot be blank", required=True
-)
+register_parser.add_argument("password", help="This field cannot be blank", required=True)
+register_parser.add_argument("password_confirmation", help="This field cannot be blank", required=True)
 
 auth_parser = reqparse.RequestParser()
 auth_parser.add_argument("email", help="This field cannot be blank", required=True)

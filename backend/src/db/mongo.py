@@ -18,7 +18,8 @@ async def init_mongo_client():
         conn_str, serverSelectionTimeoutMS=5000, uuidRepresentation="standard"
     )
     # Just to check the connection:
-    logger.info(await mongo_client.server_info())
+    server_info = str(await mongo_client.server_info())
+    logger.info("Mongo server info: %s", server_info)
     await create_indices(mongo_client)
     return mongo_client
 

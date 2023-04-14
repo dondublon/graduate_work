@@ -47,11 +47,11 @@ async def add_like(like: ReviewLike, request: Request, authorize: AuthJWT = Depe
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
 
     try:
-        rabbitmq_publish(settings.rabbitmq_host, settings.rabbitmq_queue, payload)
+        await rabbitmq_publish(settings.rabbitmq_host, settings.rabbitmq_queue, payload)
     except Exception as e:
         logger.error("Error sengins to the %s: %s", settings.rabbitmq_host, e)
         try:
-            rabbitmq_publish(settings.rabbitmq_host_dlq, settings.rabbitmq_queue, payload)
+            await rabbitmq_publish(settings.rabbitmq_host_dlq, settings.rabbitmq_queue, payload)
         except Exception as e2:
             logger.error("Error sengins to the %s: %s", settings.rabbitmq_host_dlq, e2)
     return http_result

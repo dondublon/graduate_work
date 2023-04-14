@@ -36,15 +36,13 @@ async def add_bookmark(bookmark: Bookmark, request: Request, authorize: AuthJWT 
     user_uuid = (await check_auth(request, authorize)).user_uuid
     try:
         result = await Bookmarks.add(user_uuid, bookmark)
-        success = True
         logger.info("Successfully added %s, user=%s, %s=%s", COLLECTION_NAME, user_uuid, COLLECTION_NAME, bookmark)
+        return orjson.dumps({"success": True, "inserted_id": str(result.inserted_id)})
     except Exception as e:
         logger.error(
             "Error adding %s, user=%s, %s=%s, error=%s", COLLECTION_NAME, user_uuid, COLLECTION_NAME, bookmark, e
         )
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
-
-    return orjson.dumps({"success": success, "inserted_id": str(result.inserted_id)})
 
 
 @router_bookmarks.delete("/remove")
@@ -63,15 +61,13 @@ async def remove_bookmark(bookmark: Bookmark, request: Request, authorize: AuthJ
     user_uuid = (await check_auth(request, authorize)).user_uuid
     try:
         result = await Bookmarks.remove(user_uuid, bookmark)
-        success = True
         logger.info("Successfully removed %s, user=%s, %s=%s", COLLECTION_NAME, user_uuid, COLLECTION_NAME, bookmark)
+        return orjson.dumps({"success": True, "deleted_count": str(result.deleted_count)})
     except Exception as e:
         logger.error(
             "Error removing %s, user=%s, %s=%s, error=%s", COLLECTION_NAME, user_uuid, COLLECTION_NAME, bookmark, e
         )
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
-
-    return orjson.dumps({"success": success, "deleted_count": str(result.deleted_count)})
 
 
 @router_bookmarks.get("/list")
@@ -93,13 +89,10 @@ async def list_bookmarks(movie: Movie, request: Request, authorize: AuthJWT = De
     user_uuid = (await check_auth(request, authorize)).user_uuid
     try:
         objects_list = await Bookmarks.list(movie)
-
-        success = True
         logger.info("Successfully listed %s, user=%s, movie=%s", COLLECTION_NAME, user_uuid, movie)
+        return orjson.dumps({"success": True, COLLECTION_NAME: objects_list})
     except HTTPException:
         raise
     except Exception as e:
         logger.error("Error listing %s, user=%s, movie=%s, error=%s", COLLECTION_NAME, user_uuid, movie, e)
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
-
-    return orjson.dumps({"success": success, COLLECTION_NAME: objects_list})

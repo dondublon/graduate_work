@@ -11,7 +11,7 @@ from .common import BaseOrjsonModel
 class Movie(BaseOrjsonModel):
     id: uuid.UUID
 
-
+# Region request models
 class Like(BaseOrjsonModel):
     movie: uuid.UUID
     value: int  # 0-10
@@ -64,5 +64,31 @@ class UserUpdateModel(UserBasic):
 class UserIdModel(BaseOrjsonModel):
     id: uuid.UUID
 
+
 class UserProfilesModel(BaseOrjsonModel):
     users_id: list[Optional[str]]
+# endregion
+
+
+# region Response models
+class SuccessModel(BaseOrjsonModel):
+    success: bool
+
+
+class InsertedSuccessModel(SuccessModel):
+    inserted_id: str  # Str - because Mongo id is not compatible with Python UUID.
+
+
+class UpdatedSuccessModel(SuccessModel):
+    updated_id: str
+
+
+class DeletedCountSuccessModel(SuccessModel):
+    deleted_count: int
+
+
+class ObjectsListSuccessModel(SuccessModel):
+    objects_list: list
+
+
+# endregion

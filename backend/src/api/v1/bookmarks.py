@@ -1,3 +1,4 @@
+import uuid
 from http import HTTPStatus
 
 import orjson
@@ -5,7 +6,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from fastapi_jwt_auth import AuthJWT
 
 from core.config import logger, jwt_settings
-from models_backend.models import Bookmark, Movie
+from models_backend.models import Bookmark, Movie, InsertedSuccessModel, DeletedCountSuccessModel
 from services.bookmarks import Bookmarks
 from starlette.requests import Request
 
@@ -33,11 +34,13 @@ async def add_bookmark(bookmark: Bookmark, request: Request, authorize: AuthJWT 
         user_uuid: d16b19e7-e116-43b1-a95d-cd5a11e8f1b4
         ...
     """
-    user_uuid = (await check_auth(request, authorize)).user_uuid
+    # user_uuid = (await check_auth(request, authorize)).user_uuid
+    user_uuid = uuid.uuid4()
     try:
         result = await Bookmarks.add(user_uuid, bookmark)
         logger.info("Successfully added %s, user=%s, %s=%s", COLLECTION_NAME, user_uuid, COLLECTION_NAME, bookmark)
-        return orjson.dumps({"success": True, "inserted_id": str(result.inserted_id)})
+        # return orjson.dumps({"success": True, "inserted_id": str(result.inserted_id)})
+        return InsertedSuccessModel(success=True, inserted_id=str(result.inserted_id))
     except Exception as e:
         logger.error(
             "Error adding %s, user=%s, %s=%s, error=%s", COLLECTION_NAME, user_uuid, COLLECTION_NAME, bookmark, e
@@ -58,11 +61,12 @@ async def remove_bookmark(bookmark: Bookmark, request: Request, authorize: AuthJ
         user_uuid: d16b19e7-e116-43b1-a95d-cd5a11e8f1b4
         ...
     """
-    user_uuid = (await check_auth(request, authorize)).user_uuid
+    # user_uuid = (await check_auth(request, authorize)).user_uuid\
+    user_uuid = 'd16b19e7-e116-43b1-a95d-cd5a11e8f1b4'
     try:
         result = await Bookmarks.remove(user_uuid, bookmark)
         logger.info("Successfully removed %s, user=%s, %s=%s", COLLECTION_NAME, user_uuid, COLLECTION_NAME, bookmark)
-        return orjson.dumps({"success": True, "deleted_count": str(result.deleted_count)})
+        return DeletedCountSuccessModel(success=True, deleted_count=result.deleted_count)
     except Exception as e:
         logger.error(
             "Error removing %s, user=%s, %s=%s, error=%s", COLLECTION_NAME, user_uuid, COLLECTION_NAME, bookmark, e
@@ -86,11 +90,12 @@ async def list_bookmarks(movie: Movie, request: Request, authorize: AuthJWT = De
         sort: likes_count | average_rate
     """
     # TODO Make pagination.
-    user_uuid = (await check_auth(request, authorize)).user_uuid
+    # user_uuid = (await check_auth(request, authorize)).user_uuid
+    user_uuid = 'd16b19e7-e116-43b1-a95d-cd5a11e8f1b4'
     try:
         objects_list = await Bookmarks.list(movie)
         logger.info("Successfully listed %s, user=%s, movie=%s", COLLECTION_NAME, user_uuid, movie)
-        return orjson.dumps({"success": True, COLLECTION_NAME: objects_list})
+        return orjson.dumps({"success": True, "objects": objects_list})
     except HTTPException:
         raise
     except Exception as e:

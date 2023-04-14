@@ -33,6 +33,7 @@ async def add_like(like: ReviewLike, request: Request, authorize: AuthJWT = Depe
         ...
     """
     user_uuid = (await check_auth(request, authorize)).user_uuid
+    # user_uuid = request.headers["user_uuid"]  # test mode
     if not (0 <= like.value <= 10):
         raise HTTPException(HTTPStatus.BAD_REQUEST, "Value must be from 0 to 10.s")
     try:
@@ -46,14 +47,11 @@ async def add_like(like: ReviewLike, request: Request, authorize: AuthJWT = Depe
         logger.error(e)
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
 
-    try:
-        await rabbitmq_publish(settings.rabbitmq_host, settings.rabbitmq_queue, payload)
-    except Exception as e:
-        logger.error("Error sengins to the %s: %s", settings.rabbitmq_host, e)
-        try:
-            await rabbitmq_publish(settings.rabbitmq_host_dlq, settings.rabbitmq_queue, payload)
-        except Exception as e2:
-            logger.error("Error sengins to the %s: %s", settings.rabbitmq_host_dlq, e2)
+    sent = await rabbitmq_publish(settings.rabbitmq_host, settings.rabbitmq_queue, payload)
+    if not sent:
+        sent = await rabbitmq_publish(settings.rabbitmq_host_dlq, settings.rabbitmq_queue, payload)
+    if not sent:
+        logger.error("Error senging to the rabbit, both queues")
     return http_result
 
 

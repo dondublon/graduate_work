@@ -41,7 +41,7 @@ async def add_like(like: ReviewLike, request: Request, authorize: AuthJWT = Depe
         success = True
         logger.info("Successfully added %s, user=%s, %s=%s", COLLECTION_NAME, user_uuid, COLLECTION_NAME, like)
         payload = {"author_id": str(like.review_author_id), "event_type": "review_like"}
-
+        http_result = orjson.dumps({"success": success, "upserted_id": str(result.upserted_id)})
     except Exception as e:
         logger.error(e)
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
@@ -49,10 +49,12 @@ async def add_like(like: ReviewLike, request: Request, authorize: AuthJWT = Depe
     try:
         await rabbitmq_publish(settings.rabbitmq_host, settings.rabbitmq_queue, payload)
     except Exception as e:
-        logger.error(e)
-        await rabbitmq_publish(settings.rabbitmq_host_dlq, settings.rabbitmq_queue, payload)
-
-    return orjson.dumps({"success": success, "upserted_id": str(result.upserted_id)})
+        logger.error("Error sengins to the %s: %s", settings.rabbitmq_host, e)
+        try:
+            await rabbitmq_publish(settings.rabbitmq_host_dlq, settings.rabbitmq_queue, payload)
+        except Exception as e2:
+            logger.error("Error sengins to the %s: %s", settings.rabbitmq_host_dlq, e2)
+    return http_result
 
 
 @router_reviewlikes.delete("/remove")
@@ -71,19 +73,17 @@ async def remove_like(review: ReviewId, request: Request, authorize: AuthJWT = D
     user_uuid = (await check_auth(request, authorize)).user_uuid
     try:
         result = await ReviewLikes.remove(user_uuid, review)
-        success = True
         logger.info("Successfully deleted %s, user=%s, review=%s", COLLECTION_NAME, user_uuid, review)
+        return orjson.dumps({"success": True, "deleted_count": str(result.deleted_count)})
     except Exception as e:
         logger.error(
             "Error removing %s, user=%s, %s=%s, error=%s", COLLECTION_NAME, user_uuid, COLLECTION_NAME, review, e
         )
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
 
-    return orjson.dumps({"success": success, "deleted_count": str(result.deleted_count)})
-
 
 @router_reviewlikes.get("/count")
-async def count_likes(review: ReviewId, user_uuid, request: Request, authorize: AuthJWT = Depends()):
+async def count_likes(review: ReviewId, request: Request, authorize: AuthJWT = Depends()):
     """
     An example request JSON:
     {
@@ -98,10 +98,8 @@ async def count_likes(review: ReviewId, user_uuid, request: Request, authorize: 
     user_uuid = (await check_auth(request, authorize)).user_uuid
     try:
         count, average = ReviewLikes.count(review=review)
-        success = True
         logger.info("Succesfully counted %s, user=%s, review=%s", COLLECTION_NAME, user_uuid, review)
+        return orjson.dumps({"success": True, "count": count, "average": average})
     except Exception as e:
         logger.error("Error counting %s, user=%s, review=%s, error=%s", COLLECTION_NAME, user_uuid, review, e)
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
-
-    return orjson.dumps({"success": success, "count": count, "average": average})

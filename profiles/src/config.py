@@ -6,6 +6,7 @@ from pydantic import BaseSettings, PostgresDsn, Field  # RedisDsn
 class Settings(BaseSettings):
     # redis_dsn: RedisDsn
     profiles_pg_dsn: PostgresDsn
+    profiles_pg_dsn_sync: PostgresDsn
     pg_schema: str = Field("public", env="PROFILES_PG_DEFAULT_SCHEMA")
     pg_name: str = Field("app", env="PROFILES_PG_USER")
     pg_host: str = Field("profiles", env="PROFILES_PG_HOST")

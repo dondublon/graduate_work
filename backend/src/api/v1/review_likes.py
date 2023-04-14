@@ -1,6 +1,5 @@
 from http import HTTPStatus
 
-import orjson
 from fastapi_jwt_auth import AuthJWT
 
 from brokers.rabbitmq_publish import rabbitmq_publish
@@ -99,7 +98,6 @@ async def count_likes(review: ReviewId, request: Request, authorize: AuthJWT = D
     try:
         count, average = ReviewLikes.count(review=review)
         logger.info("Succesfully counted %s, user=%s, review=%s", COLLECTION_NAME, user_uuid, review)
-        # return orjson.dumps({"success": True, "count": count, "average": average})
         return LikesSetSuccessModel(success=True, count=count, average=average)
     except Exception as e:
         logger.error("Error counting %s, user=%s, review=%s, error=%s", COLLECTION_NAME, user_uuid, review, e)

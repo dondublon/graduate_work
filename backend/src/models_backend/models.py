@@ -1,3 +1,4 @@
+import datetime
 import uuid
 from typing import Optional
 from pydantic import EmailStr
@@ -98,5 +99,10 @@ class ObjectsListSuccessModel(SuccessModel):
 class LikesSetSuccessModel(SuccessModel):
     count: int
     average: float
+
+
+class ReviewSuccessModel(SuccessModel):
+    text: str
+    time: datetime.datetime
 
 # endregion

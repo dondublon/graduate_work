@@ -6,7 +6,8 @@ from fastapi import APIRouter, HTTPException, Depends
 from fastapi_jwt_auth import AuthJWT
 
 from core.config import logger, jwt_settings
-from models_backend.models import Bookmark, Movie, InsertedSuccessModel, DeletedCountSuccessModel
+from models_backend.models import Bookmark, Movie, InsertedSuccessModel, DeletedCountSuccessModel, \
+    ObjectsListSuccessModel
 from services.bookmarks import Bookmarks
 from starlette.requests import Request
 
@@ -95,7 +96,7 @@ async def list_bookmarks(movie: Movie, request: Request, authorize: AuthJWT = De
     try:
         objects_list = await Bookmarks.list(movie)
         logger.info("Successfully listed %s, user=%s, movie=%s", COLLECTION_NAME, user_uuid, movie)
-        return orjson.dumps({"success": True, "objects": objects_list})
+        return ObjectsListSuccessModel(success=True, objects_list=objects_list)
     except HTTPException:
         raise
     except Exception as e:

@@ -3,7 +3,12 @@ from typing import Optional
 
 from pydantic import BaseModel, Field
 
+
 class ProfilesOut(BaseModel):
+    """
+    Модель используется в response_model при
+    пагинации данных в методе GET "/user/profiles" (вывод информации о пользователях)
+    """
     id: str
     email: str
     firstName: str

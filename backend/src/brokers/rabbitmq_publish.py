@@ -33,7 +33,7 @@ def rabbitmq_publish(rabbitmq_host: str, queue: str, payload: dict):
         )
         logger.info(f"{body.get('message_id')} successfully publish to {rabbitmq_host}")
     except Exception as e:
-        logger.error(f"Message for Rabbit failed. Check error: {e}")
+        logger.error(f"Message for Rabbit failed. Queue={queue}. Check error: {e}")
     finally:
         rabbitmq_conn.close()
 

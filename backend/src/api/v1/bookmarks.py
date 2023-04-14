@@ -1,7 +1,5 @@
-import uuid
 from http import HTTPStatus
 
-import orjson
 from fastapi import APIRouter, HTTPException, Depends
 from fastapi_jwt_auth import AuthJWT
 

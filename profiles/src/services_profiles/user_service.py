@@ -1,6 +1,6 @@
 from sqlalchemy import select, delete
 
-from db_profiles import Session
+from db_profiles import Session, get_session_sync
 from models_profiles.user import User
 from logger import logger
 
@@ -57,19 +57,18 @@ class UserService:
                 await session.commit()
 
     @classmethod
-    async def get_users_profiles(cls, users_id: list) -> list:
+    def get_users_profiles(cls, users_id: list) -> list:
         if users_id[0] == '*':
             profiles_q = select(User)
         else:
             profiles_q = select(User).filter(User.id.in_(users_id))
-        async with Session() as session:
-            async with session.begin():
-                profiles = await session.scalars(profiles_q).all()
-                if profiles:
-                    as_dict = [profile.as_dict(to_str=True) for profile in profiles]
-                    return as_dict
-                else:
-                    return []
+        with get_session_sync() as session:
+            profiles = session.scalars(profiles_q).all()
+            if profiles:
+                as_dict = [profile.as_dict(to_str=True) for profile in profiles]
+                return as_dict
+            else:
+                return []
 
     @classmethod
     async def delete_profile(cls, user_id: str):

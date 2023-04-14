@@ -118,7 +118,7 @@ async def get_profiles(users: UserProfilesModel, request: Request, authorize: Au
     auth_result = await check_auth(request, authorize)
     roles_list = await check_role(auth_result.user_uuid, auth_result.access_token)
     try:
-        result = await UserService.get_profiles(users.users_id)
+        result = UserService.get_profiles(users.users_id)
         logger.info("Successfully get profiles for users %s", users.users_id)
         return paginate(result)
     except Exception as e:

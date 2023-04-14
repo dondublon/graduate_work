@@ -35,6 +35,9 @@ class Worker:
         channel.basic_qos(prefetch_count=1)
         # logger.info(f"Starting, url:{self.url}")
         # print(f"(print) Starting, url:{self.url}, broker {broker_host}")
+        # отказоустойчивость - во-первых, у нас два реббита, если не получилось записать в один, пишет в другой.
+        # просто в отладке выводим только один.
+        # Во-вторых, отправка накрыта try-except-ом, не упадёт.
         channel.start_consuming()
 
 

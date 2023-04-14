@@ -17,7 +17,6 @@ from .common import check_auth, check_role, get_email
 from models_backend.models import UserRegisterModel, ChangeEmailModel, UserProfilesModel, UserBasic
 from helpers.reply import reply_to_dict
 
-
 router_user = APIRouter(prefix=f"/user")
 
 
@@ -62,8 +61,8 @@ async def update_profile(user: UserBasic, request: Request, authorize: AuthJWT =
 
     try:
         result = await UserService.update_profile(user_id, user.first_name,
-                                            user.family_name, user.father_name,
-                                            user.phone)
+                                                  user.family_name, user.father_name,
+                                                  user.phone)
 
         success = True
         logger.info("Successfully updated user %s", user)
@@ -81,7 +80,7 @@ async def change_email(user: ChangeEmailModel, request: Request, authorize: Auth
 
     try:
         result = await UserService.change_email(auth_result.access_token, auth_result.user_uuid,
-                                            user.email)
+                                                user.email)
 
         success = True
         logger.info("Successfully updated email for user %s to %s", auth_result.user_uuid, user.email)
@@ -114,7 +113,19 @@ async def get_profile(request: Request, authorize: AuthJWT = Depends()):
 
 @router_user.get('/profiles', response_model=Page[ProfilesOut])
 async def get_profiles(users: UserProfilesModel, request: Request, authorize: AuthJWT = Depends()):
-    """Request to Profiles service"""
+    """Request to Profiles service
+    Метод доступен только для роли Admin.
+    Пагинация реализована посредством библиотеки fastapi_pagination.
+    Метод get_profiles возвращает list[dict]. Итоговые данные обрабатываются с учетом модели response_model.
+    Чтобы не было нагрузки на БД во время поиска всех пользователей, метод get_profiles реализован
+    через генератор - используется stream для gRPC (метод синхронный).
+
+    Для запроса данных по конкретным пользователям:
+    users_id = ["7bd0ac12-bf02-40c8-aeb2-9b09b5ad2f01", ..., "d03c8d84-fd5c-46e5-b0d7-1ac34c6c0315"]
+
+    Для запроса информации по всем пользователям:
+    users_id = ["*"]
+    """
     auth_result = await check_auth(request, authorize)
     roles_list = await check_role(auth_result.user_uuid, auth_result.access_token)
     try:
@@ -136,11 +147,12 @@ async def delete_user(request: Request, authorize: AuthJWT = Depends()):
         logger.error("Error deleting user %s, error=%s", auth_result.user_uuid, e)
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
 
+
 @router_user.get('/avatar/{user_id}',
                  responses={200: {"content": {"image/png": {}, "image/jpeg": {}}}},
                  response_class=Response
                  )
-async def get_avatar(user_id: str, request: Request): # authorize: AuthJWT = Depends()
+async def get_avatar(user_id: str, request: Request):  # authorize: AuthJWT = Depends()
     result = await UserService.get_avatar(user_id)
     # noinspection PyUnresolvedReferences
     return Response(content=result.chunk_data, media_type=f"image/{result.file_extension}")

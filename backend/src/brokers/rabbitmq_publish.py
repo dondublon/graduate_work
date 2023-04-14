@@ -12,15 +12,15 @@ logger = logging.getLogger(__name__)
 def rabbitmq_publish(rabbitmq_host: str, queue: str, payload: dict):
     rabbitmq = RabbitmqConnection(rabbitmq_host)
     rabbitmq_conn = rabbitmq.init_rabbitmq_connection()
+
+    body = {
+        "message_id": generate_uuid(),
+        "payload": payload
+    }
     try:
         rabbitmq_channel = rabbitmq_conn.channel()
 
         rabbitmq_channel.queue_declare(queue=queue, durable=True)
-
-        body = {
-            "message_id": generate_uuid(),
-            "payload": payload
-        }
 
         logger.info(f"RABBITMQ body: {body}")
         rabbitmq_channel.basic_publish(
@@ -33,7 +33,7 @@ def rabbitmq_publish(rabbitmq_host: str, queue: str, payload: dict):
         )
         logger.info(f"{body.get('message_id')} successfully publish to {rabbitmq_host}")
     except Exception as e:
-        logger.error(f"Message for Rabbit failed. Queue={queue}. Check error: {e}")
+        logger.error(f"Message for Rabbit failed. Queue={queue}, message_id={body.get('message_id')}. Check error: {e}")
     finally:
         rabbitmq_conn.close()
 

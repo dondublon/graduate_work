@@ -52,12 +52,8 @@ class UserRoles(db.Model):
         unique=True,
         nullable=False,
     )
-    user_id = db.Column(
-        "user_id", UUID(as_uuid=True), db.ForeignKey("users.id", ondelete="CASCADE")
-    )
-    role_id = db.Column(
-        "role_id", UUID(as_uuid=True), db.ForeignKey("roles.id", ondelete="CASCADE")
-    )
+    user_id = db.Column("user_id", UUID(as_uuid=True), db.ForeignKey("users.id", ondelete="CASCADE"))
+    role_id = db.Column("role_id", UUID(as_uuid=True), db.ForeignKey("roles.id", ondelete="CASCADE"))
 
     def __init__(self, user_id: UUID, role_id: UUID):
         self.user_id = user_id

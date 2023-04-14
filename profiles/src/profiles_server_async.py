@@ -14,12 +14,12 @@ async def serve() -> None:
 
     profiles_pb2_grpc.add_ProfilesServicer_to_server(Profiles(), server)
 
-    server.add_insecure_port(f'[::]:{settings.service_port}')
+    server.add_insecure_port(f"[::]:{settings.service_port}")
     logging.info(f"Starting server on %s', '[::]:{settings.service_port}")
     await server.start()
     await server.wait_for_termination()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     asyncio.run(serve())

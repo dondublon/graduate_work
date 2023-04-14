@@ -21,7 +21,7 @@ router_user = APIRouter(prefix=f"/user")
 
 
 # noinspection PyUnusedLocal
-@router_user.post('/register')
+@router_user.post("/register")
 async def register(user: UserRegisterModel, request: Request):
     """
     An example request JSON:
@@ -35,13 +35,25 @@ async def register(user: UserRegisterModel, request: Request):
         ...
     """
     try:
-        result = await UserService.register(user.password, user.password_confirmation, user.first_name,
-                                            user.family_name, user.father_name,
-                                            user.email, user.phone)
+        result = await UserService.register(
+            user.password,
+            user.password_confirmation,
+            user.first_name,
+            user.family_name,
+            user.father_name,
+            user.email,
+            user.phone,
+        )
         success = True
         logger.info("Successfully added user %s", user)
-        return orjson.dumps({"success": success, "inserted_id": str(result.id_),
-                             "access_token": result.access_token, "refresh_token": result.refresh_token})
+        return orjson.dumps(
+            {
+                "success": success,
+                "inserted_id": str(result.id_),
+                "access_token": result.access_token,
+                "refresh_token": result.refresh_token,
+            }
+        )
     except AioRpcError as e:
         auth_result = await check_auth(request)
         await AuthClient.unregister(auth_result.access_token)
@@ -53,16 +65,16 @@ async def register(user: UserRegisterModel, request: Request):
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
 
 
-@router_user.post('/update-profile')
+@router_user.post("/update-profile")
 async def update_profile(user: UserBasic, request: Request, authorize: AuthJWT = Depends()):
     """No email"""
     # NOT TESTED YET!
     user_id = (await check_auth(request, authorize)).user_uuid
 
     try:
-        result = await UserService.update_profile(user_id, user.first_name,
-                                                  user.family_name, user.father_name,
-                                                  user.phone)
+        result = await UserService.update_profile(
+            user_id, user.first_name, user.family_name, user.father_name, user.phone
+        )
 
         success = True
         logger.info("Successfully updated user %s", user)
@@ -72,15 +84,14 @@ async def update_profile(user: UserBasic, request: Request, authorize: AuthJWT =
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
 
 
-@router_user.post('/change-email')
+@router_user.post("/change-email")
 async def change_email(user: ChangeEmailModel, request: Request, authorize: AuthJWT = Depends()):
     """No email"""
     auth_result = await check_auth(request, authorize)
     old_email = await get_email(auth_result.user_uuid, auth_result.access_token)
 
     try:
-        result = await UserService.change_email(auth_result.access_token, auth_result.user_uuid,
-                                                user.email)
+        result = await UserService.change_email(auth_result.access_token, auth_result.user_uuid, user.email)
 
         success = True
         logger.info("Successfully updated email for user %s to %s", auth_result.user_uuid, user.email)
@@ -94,7 +105,7 @@ async def change_email(user: ChangeEmailModel, request: Request, authorize: Auth
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
 
 
-@router_user.get('/get-profile')
+@router_user.get("/get-profile")
 async def get_profile(request: Request, authorize: AuthJWT = Depends()):
     """No email"""
     auth_result = await check_auth(request, authorize)
@@ -111,7 +122,7 @@ async def get_profile(request: Request, authorize: AuthJWT = Depends()):
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
 
 
-@router_user.get('/profiles', response_model=Page[ProfilesOut])
+@router_user.get("/profiles", response_model=Page[ProfilesOut])
 async def get_profiles(users: UserProfilesModel, request: Request, authorize: AuthJWT = Depends()):
     """Request to Profiles service
     Метод доступен только для роли Admin.
@@ -137,7 +148,7 @@ async def get_profiles(users: UserProfilesModel, request: Request, authorize: Au
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
 
 
-@router_user.delete('/delete-user')
+@router_user.delete("/delete-user")
 async def delete_user(request: Request, authorize: AuthJWT = Depends()):
     auth_result = await check_auth(request, authorize)
     try:
@@ -148,22 +159,21 @@ async def delete_user(request: Request, authorize: AuthJWT = Depends()):
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
 
 
-@router_user.get('/avatar/{user_id}',
-                 responses={200: {"content": {"image/png": {}, "image/jpeg": {}}}},
-                 response_class=Response
-                 )
+@router_user.get(
+    "/avatar/{user_id}", responses={200: {"content": {"image/png": {}, "image/jpeg": {}}}}, response_class=Response
+)
 async def get_avatar(user_id: str, request: Request):  # authorize: AuthJWT = Depends()
     result = await UserService.get_avatar(user_id)
     # noinspection PyUnresolvedReferences
     return Response(content=result.chunk_data, media_type=f"image/{result.file_extension}")
 
 
-@router_user.post('/upload-avatar')
+@router_user.post("/upload-avatar")
 async def create_upload_file(file: UploadFile, request: Request, authorize: AuthJWT = Depends()):
     auth_result = await check_auth(request, authorize)
     data = await file.read()
     short_name, ext = os.path.splitext(str(file.filename))
-    if ext not in ['.jpg', '.jpeg', '.png', '.gif']:
+    if ext not in [".jpg", ".jpeg", ".png", ".gif"]:
         return orjson.dumps({"success": False, "details": "Only 'jpg', 'jpeg', 'png', 'gif' allowed."})
     await UserService.upload_avatar(file.filename, auth_result.user_uuid, bytearray(data))
     return orjson.dumps({"success": True, "user_id": auth_result.user_uuid})

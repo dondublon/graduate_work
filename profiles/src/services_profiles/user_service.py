@@ -11,10 +11,14 @@ class UserService:
     async def register(cls, id_, first_name, family_name, father_name, phone, email):
         async with Session() as session:
             async with session.begin():
-                new_user = User(id=id_, first_name=first_name, family_name=family_name,
-                                father_name=father_name,
-                                phone=phone,
-                                email=email)
+                new_user = User(
+                    id=id_,
+                    first_name=first_name,
+                    family_name=family_name,
+                    father_name=father_name,
+                    phone=phone,
+                    email=email,
+                )
                 session.add(new_user)
                 await session.commit()
 
@@ -58,7 +62,7 @@ class UserService:
 
     @classmethod
     def get_users_profiles(cls, users_id: list) -> list:
-        if users_id[0] == '*':
+        if users_id[0] == "*":
             profiles_q = select(User)
         else:
             profiles_q = select(User).filter(User.id.in_(users_id))

@@ -12,6 +12,7 @@ from .common import BaseOrjsonModel
 class Movie(BaseOrjsonModel):
     id: uuid.UUID
 
+
 # Region request models
 class Like(BaseOrjsonModel):
     movie: uuid.UUID
@@ -68,6 +69,8 @@ class UserIdModel(BaseOrjsonModel):
 
 class UserProfilesModel(BaseOrjsonModel):
     users_id: list[Optional[str]]
+
+
 # endregion
 
 
@@ -104,5 +107,6 @@ class LikesSetSuccessModel(SuccessModel):
 class ReviewSuccessModel(SuccessModel):
     text: str
     time: datetime.datetime
+
 
 # endregion

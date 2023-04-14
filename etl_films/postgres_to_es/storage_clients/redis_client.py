@@ -43,9 +43,7 @@ class RedisClient(BaseClient):
 
         if not self.is_connected:
             # client is lazy, need to check it
-            raise RedisNotConnectedError(
-                f"Connection is not properly established for: `{self.__repr__()}`"
-            )
+            raise RedisNotConnectedError(f"Connection is not properly established for: `{self.__repr__()}`")
 
         logger.info(f"Established new connection for: {self}.")
 
@@ -77,11 +75,12 @@ class RedisClient(BaseClient):
         return self._connection.set(name, value, *args, **kwargs)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     from datetime import datetime
     from contextlib import closing
     from pydantic import BaseSettings
-    url = 'redis://127.0.0.1:6379/1'
+
+    url = "redis://127.0.0.1:6379/1"
 
     class Settings(BaseSettings):
         redis: RedisDsn = url
@@ -89,7 +88,7 @@ if __name__ == '__main__':
     settings = Settings()
 
     with closing(RedisClient(settings.redis)) as r:
-        if not r.exists('modified'):
-            r.set('modified', datetime.min.strftime('%Y-%m-%d %H:%M:%S.%f'))
-        modified_exists = r.exists('modified')
-        modified_val = r.get('modified')
+        if not r.exists("modified"):
+            r.set("modified", datetime.min.strftime("%Y-%m-%d %H:%M:%S.%f"))
+        modified_exists = r.exists("modified")
+        modified_val = r.get("modified")

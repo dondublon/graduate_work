@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 class ElasticsearchClient(BaseClient):
     """Layer over Elasticsearch for backoff implementation and closing connections."""
+
     # base_exceptions = elastic_transport.ConnectionError
     _connection: Elasticsearch
 
@@ -28,10 +29,8 @@ class ElasticsearchClient(BaseClient):
     def connect(self) -> None:
         self._connection = Elasticsearch(self.dsn, *self.args, **self.kwargs)
         if not self.is_connected:
-            raise ElasticsearchNotConnectedError(
-                f'Connection is not properly established for: `{self.__repr__()}`'
-            )
-        logger.info(f'Established new connection for: {self}')
+            raise ElasticsearchNotConnectedError(f"Connection is not properly established for: `{self.__repr__()}`")
+        logger.info(f"Established new connection for: {self}")
 
     def reconnect(self) -> None:
         super().reconnect()
@@ -56,35 +55,35 @@ class ElasticsearchClient(BaseClient):
         helpers.bulk(self._connection, *args, **kwargs)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import json
     from contextlib import closing
 
-    url = 'http://127.0.0.1:9200/'
+    url = "http://127.0.0.1:9200/"
     with closing(ElasticsearchClient(url)) as es:
-        if not es.index_exists('movies'):
-            with open('../indexes/movies.json') as file:
+        if not es.index_exists("movies"):
+            with open("../indexes/movies.json") as file:
                 index = json.loads(file.read())
-            es.index_create('movies', index)
+            es.index_create("movies", index)
 
         es.bulk(
             [
                 {
                     "_index": "movies",
-                    "_id": '1',
+                    "_id": "1",
                     "_source": {
-                        "title": 'test',
-                        "genres": [{'id': 1, 'name': 'test'}],
-                        "genres_names": ['test'],
+                        "title": "test",
+                        "genres": [{"id": 1, "name": "test"}],
+                        "genres_names": ["test"],
                         "imdb_rating": 9.1,
-                        "description": 'test',
+                        "description": "test",
                         "actors": [],
                         "actors_names": [],
                         "writers": [],
                         "writers_names": [],
                         "directors": [],
                         "directors_names": [],
-                    }
+                    },
                 }
             ]
         )

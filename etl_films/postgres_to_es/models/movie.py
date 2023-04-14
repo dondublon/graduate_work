@@ -25,6 +25,6 @@ class Movie(BaseModel):
     class Config:
         validate_assignment = True
 
-    @validator('description', pre=True, always=True)
+    @validator("description", pre=True, always=True)
     def set_description(cls, description):
-        return description or ''
+        return description or ""

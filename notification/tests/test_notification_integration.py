@@ -5,7 +5,7 @@ import time
 from unittest import IsolatedAsyncioTestCase
 from uuid import uuid4
 
-#import pika
+# import pika
 from aio_pika import connect_robust, Message, DeliveryMode
 import psycopg
 from psycopg.rows import dict_row
@@ -34,7 +34,7 @@ class TestMain(IsolatedAsyncioTestCase):
     async def init_rabbitmq_connection(self):
         """Copy-paste from backend/src/brokers/rabbitmq.py"""
         broker_host = os.environ["BROKER_HOST"]
-        conn_sting = f'amqp://guest:guest@{broker_host}/'
+        conn_sting = f"amqp://guest:guest@{broker_host}/"
         connection = await connect_robust(conn_sting)
         return connection
 

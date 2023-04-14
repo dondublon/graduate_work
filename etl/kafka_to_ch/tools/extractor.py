@@ -12,7 +12,7 @@ class KafkaExtractor:
         chunk_size=10000,
         consumer_timeout_ms=1000,
         api_version=(0, 11, 5),
-        data_extract: list = []
+        data_extract: list = [],
     ):
         self.consumer = None
         self.topic = topic
@@ -33,7 +33,7 @@ class KafkaExtractor:
             enable_auto_commit=self.enable_auto_commit,
             group_id=self.group_id,
             consumer_timeout_ms=self.consumer_timeout_ms,
-            api_version=self.api_version
+            api_version=self.api_version,
         )
         return self.consumer
 

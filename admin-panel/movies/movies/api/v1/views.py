@@ -14,28 +14,10 @@ class MoviesMixinAPIView(generics.GenericAPIView):
     def get_queryset(self):
         qs = super(MoviesMixinAPIView, self).get_queryset()
         qs = qs.prefetch_related(
-            'genres',
-            Prefetch(
-                'persons',
-                PersonFilmWork.objects.filter(
-                    role=RoleType.ACTOR
-                ),
-                to_attr='actors'
-            ),
-            Prefetch(
-                'persons',
-                PersonFilmWork.objects.filter(
-                    role=RoleType.WRITER
-                ),
-                to_attr='writers'
-            ),
-            Prefetch(
-                'persons',
-                PersonFilmWork.objects.filter(
-                    role=RoleType.DIRECTOR
-                ),
-                to_attr='directors'
-            ),
+            "genres",
+            Prefetch("persons", PersonFilmWork.objects.filter(role=RoleType.ACTOR), to_attr="actors"),
+            Prefetch("persons", PersonFilmWork.objects.filter(role=RoleType.WRITER), to_attr="writers"),
+            Prefetch("persons", PersonFilmWork.objects.filter(role=RoleType.DIRECTOR), to_attr="directors"),
         )
         return qs
 

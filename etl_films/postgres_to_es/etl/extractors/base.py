@@ -7,14 +7,7 @@ logger = logging.getLogger(__name__)
 
 
 class BaseExtractor:
-    def __init__(
-            self,
-            pg_conn: PostgresClient,
-            state: State,
-            query: str,
-            state_key: str,
-            extract_chunk: int
-    ):
+    def __init__(self, pg_conn: PostgresClient, state: State, query: str, state_key: str, extract_chunk: int):
         self.pg_conn = pg_conn
         self.state = state
         self.query = query
@@ -24,19 +17,14 @@ class BaseExtractor:
     def get_content(self) -> list[dict]:
         data = []
         with self.pg_conn.cursor() as cursor:
-            cursor.execute(
-                self.query.format(
-                    last_modified=self.last_modified,
-                    extract_chunk=self.extract_chunk
-                )
-            )
+            cursor.execute(self.query.format(last_modified=self.last_modified, extract_chunk=self.extract_chunk))
             while results := cursor.fetchmany(self.extract_chunk):
                 data += results
         return data
 
     @property
     def last_modified(self):
-        """ Get last modified content """
+        """Get last modified content"""
         return self.state.get_state(self.state_key)
 
     def extract(self) -> None:

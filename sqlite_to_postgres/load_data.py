@@ -36,17 +36,16 @@ def load_from_sqlite(connection: sqlite3.Connection, pg_conn: _connection):
     postgres_saver.save_film_work_person(person_film_work)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     from dotenv import load_dotenv
 
     load_dotenv()
     dsl = {
-        'dbname': os.getenv('DB_NAME'),
-        'user': os.getenv('DB_USER'),
-        'password': os.getenv('DB_PASSWORD'),
-        'host': os.getenv('DB_HOST', '127.0.0.1'),
-        'port': os.getenv('DB_PORT', 5432)
+        "dbname": os.getenv("DB_NAME"),
+        "user": os.getenv("DB_USER"),
+        "password": os.getenv("DB_PASSWORD"),
+        "host": os.getenv("DB_HOST", "127.0.0.1"),
+        "port": os.getenv("DB_PORT", 5432),
     }
-    with conn_context('db.sqlite') as sqlite_conn, \
-            psycopg2.connect(**dsl, cursor_factory=DictCursor) as pg_conn:
+    with conn_context("db.sqlite") as sqlite_conn, psycopg2.connect(**dsl, cursor_factory=DictCursor) as pg_conn:
         load_from_sqlite(sqlite_conn, pg_conn)

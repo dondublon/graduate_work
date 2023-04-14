@@ -9,7 +9,8 @@ def convert_genre_for_es(genres: list[Genre], index: str) -> list[dict]:
             "_source": {
                 "name": genre.name,
                 "description": genre.description,
-            }
-        } for genre in genres
+            },
+        }
+        for genre in genres
     ]
     return actions

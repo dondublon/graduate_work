@@ -24,7 +24,7 @@ class PostgresClient(BaseClient):
     @backoff()
     def connect(self) -> None:
         self._connection = psycopg2.connect(dsn=self.dsn, *self.args, **self.kwargs)
-        logger.info(f'Established new connection for: {self}')
+        logger.info(f"Established new connection for: {self}")
 
     @property
     def is_connected(self) -> bool:
@@ -32,7 +32,7 @@ class PostgresClient(BaseClient):
 
     @backoff()
     @contextlib.contextmanager
-    def cursor(self) -> 'PostgresCursor':
+    def cursor(self) -> "PostgresCursor":
         cursor: PostgresCursor = PostgresCursor(self)
 
         yield cursor
@@ -41,14 +41,14 @@ class PostgresClient(BaseClient):
 
     def reconnect(self) -> None:
         if not self.is_connected:
-            logger.info(f'Trying to reconnect to: {self}.')
+            logger.info(f"Trying to reconnect to: {self}.")
             self.connect()
 
     @backoff()
     def close(self) -> None:
         if self.is_connected:
             self._connection.close()
-            logger.info(f'Closed connection for: {self}.')
+            logger.info(f"Closed connection for: {self}.")
 
         self._connection = None
 
@@ -62,7 +62,7 @@ class PostgresCursor(ClientInterface):
         self.connect(*args, **kwargs)
 
     def __repr__(self):
-        return f'Postgres cursor with connection dsn: {self._connection.dsn}'
+        return f"Postgres cursor with connection dsn: {self._connection.dsn}"
 
     @property
     def is_cursor_opened(self) -> bool:
@@ -80,22 +80,22 @@ class PostgresCursor(ClientInterface):
     def connect(self, *args, **kwargs) -> None:
         # noinspection PyProtectedMember
         self._cursor: pg_cursor = self._connection._connection.cursor(*args, **kwargs)
-        logger.debug(f'Created new cursor for: {self}.')
+        logger.debug(f"Created new cursor for: {self}.")
 
     def reconnect(self) -> None:
         if not self.is_connection_opened:
-            logger.debug(f'Trying to reconnect to: {self}.')
+            logger.debug(f"Trying to reconnect to: {self}.")
             self._connection.connect()
 
         if not self.is_cursor_opened:
-            logger.debug(f'Trying to create new cursor for: {self}.')
+            logger.debug(f"Trying to create new cursor for: {self}.")
             self.connect()
 
     @backoff()
     def close(self) -> None:
         if self.is_cursor_opened:
             self._cursor.close()
-            logger.debug(f'Cursor closed for: {self}.')
+            logger.debug(f"Cursor closed for: {self}.")
 
     @backoff()
     @storage_reconnect
@@ -108,15 +108,13 @@ class PostgresCursor(ClientInterface):
         return self._cursor.fetchmany(size=chunk)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     from contextlib import closing
 
-    url = 'postgresql://app:123qwe@127.0.0.1:5432/movies_database'
+    url = "postgresql://app:123qwe@127.0.0.1:5432/movies_database"
     with closing(PostgresClient(url)) as conn:
         with conn.cursor() as cursor:
             while True:
-                a = cursor.execute(
-                    '''SELECT COUNT(*) FROM content.genre;'''
-                )
+                a = cursor.execute("""SELECT COUNT(*) FROM content.genre;""")
                 print(cursor.fetchmany(100))
                 time.sleep(5)

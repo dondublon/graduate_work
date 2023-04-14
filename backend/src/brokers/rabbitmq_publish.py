@@ -9,7 +9,7 @@ from helpers.uuid_generate import generate_uuid
 logger = logging.getLogger(__name__)
 
 
-async def rabbitmq_publish(rabbitmq_host: str, queue: str, payload: dict):
+async def rabbitmq_publish(rabbitmq_host: str, queue: str, payload: dict) -> bool:
     rabbitmq = RabbitmqConnection(rabbitmq_host)
     rabbitmq_conn = await rabbitmq.init_rabbitmq_connection()
     async with rabbitmq_conn:
@@ -30,9 +30,11 @@ async def rabbitmq_publish(rabbitmq_host: str, queue: str, payload: dict):
             )
 
             logger.info(f"{body.get('message_id')} successfully published to {rabbitmq_host}")
+            success = True
         except Exception as e:
             logger.error(f"Message for Rabbit failed. Queue={queue}, message_id={body.get('message_id')}. Check error: {e}")
+            success = False
         finally:
             await rabbitmq_conn.close()
-            return
+            return success
 

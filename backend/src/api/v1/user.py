@@ -175,5 +175,5 @@ async def create_upload_file(file: UploadFile, request: Request, authorize: Auth
     short_name, ext = os.path.splitext(str(file.filename))
     if ext not in [".jpg", ".jpeg", ".png", ".gif"]:
         return orjson.dumps({"success": False, "details": "Only 'jpg', 'jpeg', 'png', 'gif' allowed."})
-    await UserService.upload_avatar(file.filename, auth_result.user_uuid, bytearray(data))
+    await UserService.upload_avatar(file.filename, auth_result.user_uuid, data)  # pls dont' change to bytearray
     return orjson.dumps({"success": True, "user_id": auth_result.user_uuid})

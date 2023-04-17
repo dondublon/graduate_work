@@ -8,8 +8,7 @@ import uuid
 import grpc
 import names
 
-# import grpc_
-import profiles_pb2, profiles_pb2_grpc
+from grpc_files import profiles_pb2, profiles_pb2_grpc
 
 # TODO Use host from env
 from randoms import random_email, random_phone

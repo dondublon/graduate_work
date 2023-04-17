@@ -1,3 +1,4 @@
 grpcio==1.53.0
 names==0.3.0
 protobuf==4.22.1
+phonenumbers==8.13.8

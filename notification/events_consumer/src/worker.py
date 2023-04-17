@@ -6,6 +6,8 @@ import pika
 import requests
 
 logger = logging.getLogger()
+stream_handler = logging.StreamHandler()
+logger.addHandler(stream_handler)
 logger.setLevel(logging.INFO)
 
 

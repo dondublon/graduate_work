@@ -124,7 +124,8 @@ class UserService(ProfilesService):
         with grpc.insecure_channel(settings.profiles_host_port) as channel:
             try:
                 stub = profiles_pb2_grpc.ProfilesStub(channel)
-                response = await stub.DeleteProfile(profiles_pb2.GettingRequest(id=user_id))
+                response = stub.DeleteProfile(profiles_pb2.GettingRequest(id=user_id))
+                # Can't do DeleteProfile async. Quick fix.
                 return response.success
             except grpc.RpcError as e:
                 # noinspection PyUnresolvedReferences

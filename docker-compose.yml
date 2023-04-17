@@ -163,6 +163,8 @@ services:
     build:
       context: notification/notificator/
       dockerfile: Dockerfile
+    expose:
+      - "5000"
     depends_on:
       - notificator_postgres
       - rabbitmq

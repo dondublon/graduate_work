@@ -59,7 +59,7 @@ class UGCTest(TestBackendCommon):
         obj = {"movie": movie_id}
         headers = {"Content-Type": "application/json", "Authorization": f'Bearer {response_reg_json["access_token"]}'}
         response_bm_add = requests.post(bm_add_url, headers=headers, json=obj)
-        # second inserting. There is an unique indexm only one record will be eventually:
+        # second inserting. There is an unique index, only one record will be eventually:
         requests.post(bm_add_url, headers=headers, json=obj)
         # endregion
         status = response_bm_add.status_code

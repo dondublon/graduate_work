@@ -79,4 +79,5 @@ class UGCTest(TestBackendCommon):
         print("user id", response_reg_json['inserted_id'])
         self.assertEqual(len(obj_list), 1)
         self.assertEqual(obj_list[0]['user'], response_reg_json['inserted_id'])
+        self.assertEqual(response_bm_add.json()['objects_list'][0]['id'], obj_list[0]['id'])
         # endregion

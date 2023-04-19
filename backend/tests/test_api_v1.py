@@ -59,6 +59,8 @@ class UGCTest(TestBackendCommon):
         obj = {"movie": movie_id}
         headers = {"Content-Type": "application/json", "Authorization": f'Bearer {response_reg_json["access_token"]}'}
         response_bm_add = requests.post(bm_add_url, headers=headers, json=obj)
+        # second inserting. There is an unique indexm only one record will be eventually:
+        requests.post(bm_add_url, headers=headers, json=obj)
         # endregion
         status = response_bm_add.status_code
         status_ok = 200 <= status < 300
@@ -70,9 +72,11 @@ class UGCTest(TestBackendCommon):
         obj = {"id": movie_id}
         headers = {"Content-Type": "application/json", "Authorization": f'Bearer {response_reg_json["access_token"]}'}
         response_bm_add = requests.get(bm_list_url, headers=headers, json=obj)
+
         list_json = response_bm_add.json()
         self.assertTrue(list_json['success'])
         obj_list = list_json['objects_list']
-        for itm in obj_list:
-            self.assertEqual(itm['user'], response_reg_json['inserted_id'])
+        print("user id", response_reg_json['inserted_id'])
+        self.assertEqual(len(obj_list), 1)
+        self.assertEqual(obj_list[0]['user'], response_reg_json['inserted_id'])
         # endregion

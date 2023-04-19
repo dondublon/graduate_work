@@ -27,9 +27,10 @@ class Bookmarks(ServiceMongo):
         return result
 
     @classmethod
-    async def list(cls, movie):
+    async def list(cls, movie, user_id):
         collection = await cls.get_collection()
-        objects = collection.find({"movie": str(movie.id)}).sort("time", 1)
+        query = {"movie": str(movie.id), 'user': str(user_id)}
+        objects = collection.find(query).sort("time", 1)
         objects_list = [
             {
                 "user": r["user"],

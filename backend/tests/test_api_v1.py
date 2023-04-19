@@ -1,24 +1,14 @@
 """Integration tests with launched services"""
 import json
 import os
-from unittest import TestCase
 
 
 import requests
 
+from common import TestBackendCommon
 
-class Likes(TestCase):
-    def setUp(self) -> None:
-        # users_file = '../investigation/users'
-        # movies_file = '../investigation/movies'
-        # with open(users_file) as fu:
-        #     self.users = [s.strip() for s in fu.readlines()]
-        # with open(movies_file) as fm:
-        #     self.movies = [s.strip() for s in fm.readlines()]
-        backend_host = os.environ["BACKEND_HOST"]
-        backend_port = os.environ["BACKEND_PORT"]
-        self.host_port = f"{backend_host}:{backend_port}"
 
+class UGCTest(TestBackendCommon):
     def test_add_like(self):
         result = requests.post(
             f"http://{self.host_port}/v1/likes/add",
@@ -57,3 +47,37 @@ class Likes(TestCase):
         self.assertEqual(result.status_code, 200)
         obj = json.loads(result.json())
         self.assertTrue(obj["success"])
+
+    def test_add_bookmark(self):
+        response_reg, user_obj = self._register()
+        assert 200 <= response_reg.status_code < 300  # this is not a test assert
+        response_reg_json = json.loads(response_reg.json())
+        # region add bookmark
+        url = os.environ['BACKEND_BOOKMARK_ADD']
+        bm_add_url = f"{self.full_host}{url}"
+        movie_id = "803c794c-ddf0-482d-b2c2-6fa92da4c5e2"
+        obj = {"movie": movie_id}
+        headers = {"Content-Type": "application/json", "Authorization": f'Bearer {response_reg_json["access_token"]}'}
+        response_bm_add = requests.post(bm_add_url, headers=headers, json=obj)
+        # second inserting. There is an unique index, only one record will be eventually:
+        requests.post(bm_add_url, headers=headers, json=obj)
+        # endregion
+        status = response_bm_add.status_code
+        status_ok = 200 <= status < 300
+        self.assertTrue(status_ok)
+
+        # region Getting
+        url = os.environ['BACKEND_BOOKMARK_LIST']
+        bm_list_url = f'{self.full_host}{url}'
+        obj = {"id": movie_id}
+        headers = {"Content-Type": "application/json", "Authorization": f'Bearer {response_reg_json["access_token"]}'}
+        response_bm_add = requests.get(bm_list_url, headers=headers, json=obj)
+
+        list_json = response_bm_add.json()
+        self.assertTrue(list_json['success'])
+        obj_list = list_json['objects_list']
+        print("user id", response_reg_json['inserted_id'])
+        self.assertEqual(len(obj_list), 1)
+        self.assertEqual(obj_list[0]['user'], response_reg_json['inserted_id'])
+        self.assertEqual(response_bm_add.json()['objects_list'][0]['id'], obj_list[0]['id'])
+        # endregion

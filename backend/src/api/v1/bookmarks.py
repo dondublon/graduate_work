@@ -93,7 +93,7 @@ async def list_bookmarks(movie: Movie, request: Request, authorize: AuthJWT = De
     # TODO Make pagination.
     user_uuid = (await check_auth(request, authorize)).user_uuid
     try:
-        objects_list = await Bookmarks.list(movie)
+        objects_list = await Bookmarks.list(movie, user_uuid)
         logger.info("Successfully listed %s, user=%s, movie=%s", COLLECTION_NAME, user_uuid, movie)
         return ObjectsListSuccessModel(success=True, objects_list=objects_list)
     except HTTPException:

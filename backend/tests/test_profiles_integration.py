@@ -17,12 +17,15 @@ class TestBackend(TestBackendCommon):
     def test_change_email(self):
         response_reg, user_obj = self._register()
         assert 200 <= response_reg.status_code < 300  # this is not a test assert
+        response_reg_json = json.loads(response_reg.json())
+
         url = os.environ["BACKEND_CHANGE_EMAIL_URL"]
-        print("old email: ", user_obj["email"])
         change_full_url = f"{self.full_host}{url}"
 
-        response_reg_json = json.loads(response_reg.json())
+        user_id = response_reg_json['inserted_id']
         new_email = random_email()
+        print("User id:", user_id)
+        print("old email: ", user_obj["email"])
         print("new email: ", new_email)
         obj = {"id": response_reg_json["inserted_id"], "email": new_email}
         headers = {"Content-Type": "application/json", "Authorization": f'Bearer {response_reg_json["access_token"]}'}
